@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>asaplimo</title>
+<style>
+:root {
+  --bg: #1a1915;
+  --panel: #232019;
+  --panel-2: #2c2a25;
+  --border: #3a3833;
+  --text: #e8e4da;
+  --text-dim: #c9c5b9;
+  --text-faint: #8c887d;
+  --text-faintest: #6b6860;
+  --accent: #d97757;
+  --accent-hover: #c96a4c;
+  --accent-ink: #1a1915;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  height: 100vh;
+  overflow: hidden;
+}
+button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+input, textarea { font-family: inherit; color: inherit; }
+img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-shrink: 0; }
+
+#login-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+}
+.login-box { width: 100%; max-width: 380px; }
+.login-logo-wrap { display: flex; flex-direction: column; align-items: center; margin-bottom: 32px; }
+.login-logo {
+  width: 44px; height: 44px; border-radius: 12px;
+  background: var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 20px;
+}
+.login-logo span { color: var(--accent-ink); font-weight: 600; font-size: 18px; }
+.login-title { font-size: 20px; font-weight: 500; letter-spacing: -0.01em; }
+.login-sub { font-size: 14px; color: var(--text-faintest); margin-top: 4px; }
+
+.google-btn {
+  width: 100%; display: flex; align-items: center; justify-content: center; gap: 12px;
+  border: 1px solid var(--border); border-radius: 8px; padding: 10px;
+  margin-bottom: 12px; font-size: 14px;
+  transition: background 0.15s;
+}
+.google-btn:hover { background: var(--panel); }
+
+.divider { display: flex; align-items: center; gap: 12px; margin: 20px 0; }
+.divider .line { height: 1px; flex: 1; background: var(--border); }
+.divider span { font-size: 12px; color: var(--text-faintest); }
+
+#email-form { display: flex; flex-direction: column; gap: 12px; }
+#email-input {
+  width: 100%; background: var(--panel); border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 14px; font-size: 14px; outline: none;
+}
+#email-input::placeholder { color: var(--text-faintest); }
+#email-input:focus { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+
+.primary-btn {
+  width: 100%; background: var(--accent); color: var(--accent-ink); font-weight: 500;
+  border-radius: 8px; padding: 10px; font-size: 14px; transition: background 0.15s;
+}
+.primary-btn:hover { background: var(--accent-hover); }
+
+.login-footnote { font-size: 12px; color: var(--text-faintest); text-align: center; margin-top: 24px; line-height: 1.5; }
+
+#chat-screen { height: 100vh; width: 100%; display: none; font-size: 14px; }
+#chat-screen.active { display: flex; }
+
+#sidebar { width: 256px; flex-shrink: 0; border-right: 1px solid var(--border); display: flex; flex-direction: column; }
+.sidebar-header { padding: 16px 16px 8px; font-weight: 600; font-size: 16px; letter-spacing: -0.01em; display: flex; align-items: center; justify-content: space-between; }
+.theme-toggle { padding: 6px; border-radius: 8px; color: var(--text-faintest); transition: background 0.15s; }
+.theme-toggle:hover { background: var(--panel); }
+
+.sidebar-nav { padding: 0 12px; margin-top: 8px; }
+.sidebar-item {
+  width: 100%; display: flex; align-items: center; gap: 10px; padding: 8px 10px;
+  border-radius: 8px; color: var(--text-dim); transition: background 0.15s; text-align: left;
+}
+.sidebar-item:hover { background: var(--panel); }
+.sidebar-item.main { color: var(--text); }
+
+.sidebar-section-label { padding: 0 16px; margin-top: 20px; margin-bottom: 4px; font-size: 12px; color: var(--text-faintest); }
+.sidebar-recents { flex: 1; overflow-y: auto; padding: 0 8px; }
+.recent-item {
+  width: 100%; text-align: left; padding: 6px 10px; border-radius: 8px; color: var(--text-dim);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; transition: background 0.15s;
+}
+.recent-item:hover { background: var(--panel); }
+
+.trial-pill {
+  margin: 10px; padding: 10px 12px; border-radius: 10px;
+  background: var(--panel); border: 1px solid var(--border); font-size: 12.5px; color: var(--text-dim);
+}
+.trial-pill strong { color: var(--text); }
+.trial-pill button {
+  margin-top: 8px; width: 100%; background: var(--accent); color: var(--accent-ink); font-weight: 600;
+  padding: 7px; border-radius: 6px; font-size: 12.5px;
+}
+
+.sidebar-footer { border-top: 1px solid var(--border); padding: 12px; display: flex; flex-direction: column; gap: 4px; }
+.signout-btn { width: 100%; display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 8px; transition: background 0.15s; }
+.signout-btn:hover { background: var(--panel); }
+.avatar { width: 24px; height: 24px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; color: var(--accent-ink); flex-shrink: 0; overflow: hidden; }
+.avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+#main-panel { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+#chat-header { height: 56px; flex-shrink: 0; display: flex; align-items: center; padding: 0 24px; border-bottom: 1px solid var(--border); color: var(--text-dim); }
+#chat-header svg { margin-left: 4px; color: var(--text-faintest); }
+
+#messages-area { flex: 1; overflow-y: auto; padding: 32px 24px; }
+#empty-state { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.empty-logo { width: 40px; height: 40px; border-radius: 10px; background: var(--accent); display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
+.empty-logo span { color: var(--accent-ink); font-weight: 600; }
+#empty-state h2 { font-size: 20px; font-weight: 500; }
+#empty-state p { font-size: 14px; color: var(--text-faintest); margin-top: 4px; max-width: 380px; }
+
+#messages-list { max-width: 680px; margin: 0 auto; display: none; flex-direction: column; gap: 24px; }
+.msg-row { display: flex; }
+.msg-row.user { justify-content: flex-end; }
+.msg-row.assistant { justify-content: flex-start; }
+.bubble { max-width: 420px; padding: 10px 16px; border-radius: 16px; line-height: 1.5; }
+.bubble.user { background: var(--accent); color: var(--accent-ink); border-bottom-right-radius: 4px; }
+.bubble.assistant { background: var(--panel); color: var(--text); border-bottom-left-radius: 4px; }
+
+#input-area { padding: 0 24px 24px; }
+#input-form {
+  max-width: 680px; margin: 0 auto; background: var(--panel); border: 1px solid var(--border);
+  border-radius: 16px; padding: 10px 12px; display: flex; align-items: flex-end; gap: 8px;
+}
+#chat-input { flex: 1; background: transparent; border: none; outline: none; resize: none; max-height: 160px; padding: 6px 0; font-size: 14px; }
+#chat-input::placeholder { color: var(--text-faintest); }
+.icon-btn { padding: 8px; border-radius: 8px; color: var(--text-faint); transition: background 0.15s; }
+.icon-btn:hover { background: var(--panel-2); }
+#send-btn { padding: 8px; border-radius: 8px; background: var(--accent); color: var(--accent-ink); transition: background 0.15s, opacity 0.15s; }
+#send-btn:hover { background: var(--accent-hover); }
+#send-btn:disabled { opacity: 0.4; cursor: default; }
+.input-footnote { text-align: center; font-size: 12px; color: var(--text-faintest); margin-top: 8px; }
+
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 50; padding: 16px; }
+.overlay.active { display: flex; }
+.modal { width: 100%; max-width: 380px; background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 26px; }
+.modal h3 { font-size: 18px; font-weight: 600; margin-bottom: 6px; }
+.modal p { font-size: 13.5px; color: var(--text-dim); line-height: 1.5; margin-bottom: 18px; }
+.plan-row { display: flex; justify-content: space-between; align-items: baseline; padding: 14px 16px; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 18px; background: var(--panel-2); }
+.plan-row .price { font-size: 21px; font-weight: 600; }
+.plan-row .price span { font-size: 13px; font-weight: 400; color: var(--text-faintest); }
+.modal-actions { display: flex; flex-direction: column; gap: 10px; }
+.modal-secondary { text-align: center; font-size: 13px; color: var(--text-faintest); padding: 4px; }
+.modal-secondary:hover { color: var(--text-dim); }
+
+.theme-panel { position: absolute; top: 54px; right: 24px; width: 210px; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 14px; display: none; z-index: 40; }
+.theme-panel.active { display: block; }
+.theme-panel h4 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-faintest); margin-bottom: 10px; }
+.swatch-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.swatch { width: 24px; height: 24px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; }
+.swatch.active { border-color: var(--text); }
+.mode-row { display: flex; gap: 8px; }
+.mode-btn { flex: 1; padding: 6px; border-radius: 6px; background: var(--panel-2); font-size: 12px; text-align: center; }
+.mode-btn.active { background: var(--accent); color: var(--accent-ink); }
+</style>
+</head>
+<body>
+
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo-wrap">
+      <div class="login-logo"><span>A</span></div>
+      <div class="login-title">Sign in to continue</div>
+      <div class="login-sub">4 days free, then $5/month</div>
+    </div>
+
+    <button class="google-btn" id="google-btn">
+      <svg width="16" height="16" viewBox="0 0 48 48">
+        <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 3l6-6C34.5 5.1 29.6 3 24 3 12.4 3 3 12.4 3 24s9.4 21 21 21 21-9.4 21-21c0-1.2-.1-2.4-.4-3.5z"/>
+        <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.5 15.9 18.9 13 24 13c3.1 0 5.8 1.1 8 3l6-6C34.5 5.1 29.6 3 24 3 16.3 3 9.7 7.3 6.3 14.7z"/>
+        <path fill="#4CAF50" d="M24 45c5.5 0 10.4-1.9 14.1-5.1l-6.5-5.5C29.5 36.4 26.9 37 24 37c-5.2 0-9.6-3.3-11.3-8l-6.6 5.1C9.6 40.6 16.3 45 24 45z"/>
+        <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.2 4.2-4.1 5.6l6.5 5.5C41.4 35.9 45 30.5 45 24c0-1.2-.1-2.4-.4-3.5z"/>
+      </svg>
+      Continue with Google
+    </button>
+
+    <div class="divider"><div class="line"></div><span>OR</span><div class="line"></div></div>
+
+    <form id="email-form">
+      <input id="email-input" type="email" required placeholder="Enter your email">
+      <button type="submit" class="primary-btn">Continue with email</button>
+    </form>
+
+    <p class="login-footnote">By continuing you agree to start a 4 day free trial, then $5/month.</p>
+  </div>
+</div>
+
+<div id="chat-screen">
+  <aside id="sidebar">
+    <div class="sidebar-header">
+      <span>asaplimo</span>
+      <button class="theme-toggle" id="theme-toggle-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </button>
+    </div>
+
+    <div class="sidebar-nav">
+      <button class="sidebar-item main">
+        <img class="icon" src="icons/newchat.png" alt="">
+        <span>New chat</span>
+      </button>
+      <button class="sidebar-item">
+        <img class="icon" src="icons/search.png" alt="">
+        <span>Search</span>
+      </button>
+      <button class="sidebar-item">
+        <img class="icon" src="icons/projects.png" alt="">
+        <span>Projects</span>
+      </button>
+      <button class="sidebar-item">
+        <img class="icon" src="icons/code.png" alt="">
+        <span>Code</span>
+      </button>
+    </div>
+
+    <div class="sidebar-section-label">Recents</div>
+    <div class="sidebar-recents" id="recents-list"></div>
+
+    <div id="trial-pill-wrap"></div>
+
+    <div class="sidebar-footer">
+      <button class="signout-btn" id="signout-btn">
+        <div class="avatar" id="avatar-slot">U</div>
+        <span id="user-email" style="color: var(--text-dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Sign out</span>
+      </button>
+    </div>
+  </aside>
+
+  <main id="main-panel">
+    <header id="chat-header" style="position: relative;">
+      <span>New chat</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+
+      <div class="theme-panel" id="theme-panel">
+        <h4>Accent color</h4>
+        <div class="swatch-row" id="swatch-row"></div>
+        <h4>Appearance</h4>
+        <div class="mode-row">
+          <div class="mode-btn active" data-mode="dark">Dark</div>
+          <div class="mode-btn" data-mode="light">Light</div>
+        </div>
+      </div>
+    </header>
+
+    <div id="messages-area">
+      <div id="empty-state">
+        <div class="empty-logo"><span>A</span></div>
+        <h2>Chat UI placeholder</h2>
+        <p>This panel is wired to the backend session, but replies are still placeholder text until the AI endpoint is connected.</p>
+      </div>
+      <div id="messages-list"></div>
+    </div>
+
+    <div id="input-area">
+      <form id="input-form">
+        <textarea id="chat-input" rows="1" placeholder="Reply to placeholder..."></textarea>
+        <button type="button" class="icon-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
+        </button>
+        <button type="submit" id="send-btn" disabled>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+        </button>
+      </form>
+      <p class="input-footnote">Placeholder UI — no AI is connected yet.</p>
+    </div>
+  </main>
+</div>
+
+<div class="overlay" id="trial-overlay">
+  <div class="modal">
+    <h3>Start your free trial</h3>
+    <p>Try everything free for 4 days. Cancel anytime before it ends and you won't be charged.</p>
+    <div class="plan-row">
+      <div>
+        <div style="font-weight:600;">Full access</div>
+        <div style="font-size:12.5px; color: var(--text-faintest); margin-top:2px;">4 day free trial</div>
+      </div>
+      <div class="price">$5<span>/mo after</span></div>
+    </div>
+    <div class="modal-actions">
+      <button class="primary-btn" id="start-trial-btn">Start free trial</button>
+      <button class="modal-secondary" id="dismiss-trial-btn">Not now</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="paywall-overlay">
+  <div class="modal">
+    <h3>Your trial has ended</h3>
+    <p>Subscribe to keep chatting. $5/month, cancel anytime.</p>
+    <div class="modal-actions">
+      <button class="primary-btn" id="subscribe-btn">Subscribe for $5/mo</button>
+      <button class="modal-secondary" id="signout-from-paywall-btn">Sign out</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API_BASE = "https://frosty-moon-2b57.oakambe24fi.workers.dev";
+const ACCENT_OPTIONS = ["#d97757", "#8b6bf2", "#4dabf7", "#51cf66", "#ff6b9d", "#f5a623"];
+const recentChats = [
+  "Cross-platform app idea",
+  "Recording audio with ffmpeg",
+  "Sober Linux executor UI",
+  "The inevitability of foreseen future",
+  "Minecraft OpenGL context error",
+  "AI UI design feedback"
+];
+
+function renderRecents() {
+  const list = document.getElementById("recents-list");
+  list.innerHTML = "";
+  recentChats.forEach((title) => {
+    const btn = document.createElement("button");
+    btn.className = "recent-item";
+    btn.textContent = title;
+    list.appendChild(btn);
+  });
+}
+
+function renderSwatches() {
+  const row = document.getElementById("swatch-row");
+  row.innerHTML = "";
+  const current = localStorage.getItem("accent") || ACCENT_OPTIONS[0];
+  ACCENT_OPTIONS.forEach((color) => {
+    const sw = document.createElement("div");
+    sw.className = "swatch" + (color === current ? " active" : "");
+    sw.style.background = color;
+    sw.addEventListener("click", () => setAccent(color));
+    row.appendChild(sw);
+  });
+}
+
+function setAccent(color) {
+  document.documentElement.style.setProperty("--accent", color);
+  document.documentElement.style.setProperty("--accent-hover", color);
+  localStorage.setItem("accent", color);
+  renderSwatches();
+}
+
+function setMode(mode) {
+  const root = document.documentElement.style;
+  if (mode === "light") {
+    root.setProperty("--bg", "#faf8f4");
+    root.setProperty("--panel", "#ffffff");
+    root.setProperty("--panel-2", "#f0ece3");
+    root.setProperty("--border", "#e2ddd2");
+    root.setProperty("--text", "#211f1a");
+    root.setProperty("--text-dim", "#57534a");
+    root.setProperty("--text-faint", "#8c887d");
+    root.setProperty("--text-faintest", "#9c988d");
+  } else {
+    root.setProperty("--bg", "#1a1915");
+    root.setProperty("--panel", "#232019");
+    root.setProperty("--panel-2", "#2c2a25");
+    root.setProperty("--border", "#3a3833");
+    root.setProperty("--text", "#e8e4da");
+    root.setProperty("--text-dim", "#c9c5b9");
+    root.setProperty("--text-faint", "#8c887d");
+    root.setProperty("--text-faintest", "#6b6860");
+  }
+  localStorage.setItem("mode", mode);
+  document.querySelectorAll(".mode-btn").forEach((b) => {
+    b.classList.toggle("active", b.dataset.mode === mode);
+  });
+}
+
+function applyStoredTheme() {
+  const accent = localStorage.getItem("accent");
+  const mode = localStorage.getItem("mode") || "dark";
+  if (accent) setAccent(accent);
+  setMode(mode);
+}
+
+document.getElementById("theme-toggle-btn").addEventListener("click", () => {
+  document.getElementById("theme-panel").classList.toggle("active");
+});
+
+document.querySelectorAll(".mode-btn").forEach((btn) => {
+  btn.addEventListener("click", () => setMode(btn.dataset.mode));
+});
+
+function showLogin() {
+  document.getElementById("login-screen").style.display = "flex";
+  document.getElementById("chat-screen").classList.remove("active");
+}
+
+function showChat(user) {
+  document.getElementById("login-screen").style.display = "none";
+  document.getElementById("chat-screen").classList.add("active");
+  document.getElementById("user-email").textContent = user.email;
+  const avatarSlot = document.getElementById("avatar-slot");
+  if (user.picture) {
+    avatarSlot.innerHTML = '<img src="' + user.picture + '" alt="">';
+  } else {
+    avatarSlot.textContent = (user.email || "U").charAt(0).toUpperCase();
+  }
+  renderTrialPill(user);
+}
+
+function renderTrialPill(user) {
+  const wrap = document.getElementById("trial-pill-wrap");
+  if (user.paid) {
+    wrap.innerHTML = "";
+    return;
+  }
+  if (user.onTrial) {
+    wrap.innerHTML =
+      '<div class="trial-pill"><strong>' + user.daysLeft + ' day' + (user.daysLeft === 1 ? "" : "s") + '</strong> left in your trial<button id="upgrade-now-btn">Upgrade now</button></div>';
+    document.getElementById("upgrade-now-btn").addEventListener("click", startCheckout);
+  } else if (user.trialExpired) {
+    document.getElementById("paywall-overlay").classList.add("active");
+  }
+}
+
+async function checkSession() {
+  try {
+    const res = await fetch(API_BASE + "/api/me", { credentials: "include" });
+    const data = await res.json();
+    if (data.authenticated) {
+      showChat(data);
+    } else {
+      showLogin();
+    }
+  } catch (err) {
+    showLogin();
+  }
+}
+
+document.getElementById("google-btn").addEventListener("click", () => {
+  window.location.href = API_BASE + "/auth/google";
+});
+
+document.getElementById("email-form").addEventListener("submit", (e) => {
+  e.preventDefault();
+  document.getElementById("trial-overlay").classList.add("active");
+});
+
+document.getElementById("dismiss-trial-btn").addEventListener("click", () => {
+  document.getElementById("trial-overlay").classList.remove("active");
+});
+
+document.getElementById("start-trial-btn").addEventListener("click", () => {
+  window.location.href = API_BASE + "/auth/google";
+});
+
+async function startCheckout() {
+  try {
+    const res = await fetch(API_BASE + "/api/checkout", { method: "POST", credentials: "include" });
+    const data = await res.json();
+    if (data.url) window.location.href = data.url;
+  } catch (err) {}
+}
+
+document.getElementById("subscribe-btn").addEventListener("click", startCheckout);
+
+document.getElementById("signout-btn").addEventListener("click", async () => {
+  await fetch(API_BASE + "/api/logout", { method: "POST", credentials: "include" });
+  showLogin();
+});
+
+document.getElementById("signout-from-paywall-btn").addEventListener("click", async () => {
+  document.getElementById("paywall-overlay").classList.remove("active");
+  await fetch(API_BASE + "/api/logout", { method: "POST", credentials: "include" });
+  showLogin();
+});
+
+function autoGrow(el) {
+  el.style.height = "auto";
+  el.style.height = el.scrollHeight + "px";
+}
+
+const chatInput = document.getElementById("chat-input");
+const sendBtn = document.getElementById("send-btn");
+
+chatInput.addEventListener("input", () => {
+  autoGrow(chatInput);
+  sendBtn.disabled = chatInput.value.trim().length === 0;
+});
+
+chatInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+});
+
+function addBubble(role, text) {
+  const list = document.getElementById("messages-list");
+  const row = document.createElement("div");
+  row.className = "msg-row " + role;
+  const bubble = document.createElement("div");
+  bubble.className = "bubble " + role;
+  bubble.textContent = text;
+  row.appendChild(bubble);
+  list.appendChild(row);
+  document.getElementById("messages-area").scrollTop = document.getElementById("messages-area").scrollHeight;
+}
+
+async function sendMessage() {
+  const text = chatInput.value.trim();
+  if (!text) return;
+
+  document.getElementById("empty-state").style.display = "none";
+  document.getElementById("messages-list").style.display = "flex";
+
+  addBubble("user", text);
+  chatInput.value = "";
+  chatInput.style.height = "auto";
+  sendBtn.disabled = true;
+
+  try {
+    const res = await fetch(API_BASE + "/api/chat", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: text })
+    });
+    if (res.status === 402) {
+      document.getElementById("paywall-overlay").classList.add("active");
+      return;
+    }
+    const data = await res.json();
+    addBubble("assistant", data.reply || "No response.");
+  } catch (err) {
+    addBubble("assistant", "Could not reach the server.");
+  }
+}
+
+document.getElementById("input-form").addEventListener("submit", (e) => {
+  e.preventDefault();
+  sendMessage();
+});
+
+renderRecents();
+renderSwatches();
+applyStoredTheme();
+checkSession();
+</script>
+
+</body>
+</html>
