@@ -316,6 +316,7 @@ img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-
 
 <script>
 const API_BASE = "https://frosty-moon-2b57.oakambe24fi.workers.dev";
+const TOKEN_KEY = "asaplimo_session_token";
 const ACCENT_OPTIONS = ["#d97757", "#8b6bf2", "#4dabf7", "#51cf66", "#ff6b9d", "#f5a623"];
 const recentChats = [
   "Cross-platform app idea",
@@ -325,6 +326,37 @@ const recentChats = [
   "Minecraft OpenGL context error",
   "AI UI design feedback"
 ];
+
+function getToken() {
+  return localStorage.getItem(TOKEN_KEY);
+}
+
+function setToken(token) {
+  localStorage.setItem(TOKEN_KEY, token);
+}
+
+function clearToken() {
+  localStorage.removeItem(TOKEN_KEY);
+}
+
+function authHeaders(extra) {
+  const token = getToken();
+  const headers = Object.assign({}, extra || {});
+  if (token) headers["Authorization"] = "Bearer " + token;
+  return headers;
+}
+
+function captureTokenFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get("token");
+  if (token) {
+    setToken(token);
+    params.delete("token");
+    const newSearch = params.toString();
+    const newUrl = window.location.pathname + (newSearch ? "?" + newSearch : "") + window.location.hash;
+    window.history.replaceState({}, "", newUrl);
+  }
+}
 
 function renderRecents() {
   const list = document.getElementById("recents-list");
@@ -433,12 +465,18 @@ function renderTrialPill(user) {
 }
 
 async function checkSession() {
+  const token = getToken();
+  if (!token) {
+    showLogin();
+    return;
+  }
   try {
-    const res = await fetch(API_BASE + "/api/me", { credentials: "include" });
+    const res = await fetch(API_BASE + "/api/me", { headers: authHeaders() });
     const data = await res.json();
     if (data.authenticated) {
       showChat(data);
     } else {
+      clearToken();
       showLogin();
     }
   } catch (err) {
@@ -465,7 +503,7 @@ document.getElementById("start-trial-btn").addEventListener("click", () => {
 
 async function startCheckout() {
   try {
-    const res = await fetch(API_BASE + "/api/checkout", { method: "POST", credentials: "include" });
+    const res = await fetch(API_BASE + "/api/checkout", { method: "POST", headers: authHeaders() });
     const data = await res.json();
     if (data.url) window.location.href = data.url;
   } catch (err) {}
@@ -474,13 +512,19 @@ async function startCheckout() {
 document.getElementById("subscribe-btn").addEventListener("click", startCheckout);
 
 document.getElementById("signout-btn").addEventListener("click", async () => {
-  await fetch(API_BASE + "/api/logout", { method: "POST", credentials: "include" });
+  try {
+    await fetch(API_BASE + "/api/logout", { method: "POST", headers: authHeaders() });
+  } catch (err) {}
+  clearToken();
   showLogin();
 });
 
 document.getElementById("signout-from-paywall-btn").addEventListener("click", async () => {
   document.getElementById("paywall-overlay").classList.remove("active");
-  await fetch(API_BASE + "/api/logout", { method: "POST", credentials: "include" });
+  try {
+    await fetch(API_BASE + "/api/logout", { method: "POST", headers: authHeaders() });
+  } catch (err) {}
+  clearToken();
   showLogin();
 });
 
@@ -531,8 +575,7 @@ async function sendMessage() {
   try {
     const res = await fetch(API_BASE + "/api/chat", {
       method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
+      headers: authHeaders({ "Content-Type": "application/json" }),
       body: JSON.stringify({ message: text })
     });
     if (res.status === 402) {
@@ -551,6 +594,7 @@ document.getElementById("input-form").addEventListener("submit", (e) => {
   sendMessage();
 });
 
+captureTokenFromUrl();
 renderRecents();
 renderSwatches();
 applyStoredTheme();
