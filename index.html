@@ -317,6 +317,35 @@ img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-
 .mail-item .mail-snippet { font-size: 12.5px; color: var(--text-faintest); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
 .mail-empty { color: var(--text-faintest); font-size: 13px; padding: 18px 8px; text-align: center; }
 
+/* ---------- storage/cookies notice ---------- */
+.storage-banner {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 70;
+  display: none; justify-content: center; padding: 16px;
+  pointer-events: none;
+}
+.storage-banner.active { display: flex; }
+.storage-banner-card {
+  pointer-events: auto;
+  width: 100%; max-width: 520px; background: var(--panel); border: 1px solid var(--border);
+  border-radius: 16px; padding: 16px 18px; box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+  display: flex; gap: 12px; align-items: flex-start;
+}
+.storage-banner-icon {
+  width: 32px; height: 32px; border-radius: 50%; background: var(--panel-2); color: var(--accent);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.storage-banner-body { flex: 1; min-width: 0; }
+.storage-banner-body h4 { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+.storage-banner-body p { font-size: 12.5px; color: var(--text-dim); line-height: 1.5; }
+.storage-banner-actions { display: flex; gap: 8px; margin-top: 10px; }
+.storage-banner-actions button {
+  font-size: 12.5px; padding: 6px 12px; border-radius: 12px; font-weight: 500;
+}
+.storage-banner-actions .primary { background: var(--accent); color: var(--accent-ink); }
+.storage-banner-actions .secondary { background: var(--panel-2); color: var(--text-dim); }
+.storage-banner-close { color: var(--text-faintest); padding: 2px; flex-shrink: 0; }
+.storage-banner-close:hover { color: var(--text-dim); }
+
 /* ---------- responsive layout ---------- */
 #hamburger-btn { display: none; margin-right: 6px; }
 .sidebar-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; z-index: 39; }
@@ -335,6 +364,7 @@ img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-
   #input-area { padding: 0 12px 16px; }
   .bubble { max-width: 90%; }
   .bubble.embed { max-width: 94%; }
+  .storage-banner { padding: 12px; }
 }
 </style>
 </head>
@@ -373,6 +403,26 @@ img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-
 <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
 <div class="dropzone-overlay" id="dropzone-overlay">
   <div class="dropzone-inner">Drop files to attach</div>
+</div>
+
+<!-- ---------- cookies / local storage notice ---------- -->
+<div class="storage-banner" id="storage-banner">
+  <div class="storage-banner-card">
+    <div class="storage-banner-icon">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+    </div>
+    <div class="storage-banner-body">
+      <h4>Cookies &amp; site data are blocked</h4>
+      <p>asaplimo needs cookies and local storage enabled to keep you signed in and save your chats. Enable them for this site in your browser settings, then reload the page.</p>
+      <div class="storage-banner-actions">
+        <button type="button" class="primary" id="storage-banner-reload">Reload page</button>
+        <button type="button" class="secondary" id="storage-banner-dismiss">Dismiss</button>
+      </div>
+    </div>
+    <button type="button" class="storage-banner-close" id="storage-banner-close" title="Close">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
 </div>
 
 <div id="chat-screen">
@@ -543,16 +593,62 @@ const LONG_MSG_COLLAPSE_THRESHOLD = 500;
 const MAX_FILES = 5;
 const MAX_FILE_SIZE = 15 * 1024 * 1024;
 
+/* ---------- storage / cookies availability check ---------- */
+function storageIsUsable() {
+  try {
+    const testKey = "__asaplimo_storage_test__";
+    localStorage.setItem(testKey, "1");
+    localStorage.removeItem(testKey);
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+
+function showStorageBanner() {
+  const banner = document.getElementById("storage-banner");
+  if (!banner) return;
+  banner.classList.add("active");
+}
+
+function hideStorageBanner() {
+  const banner = document.getElementById("storage-banner");
+  if (!banner) return;
+  banner.classList.remove("active");
+}
+
+function initStorageCheck() {
+  if (storageIsUsable()) return;
+  showStorageBanner();
+  const reloadBtn = document.getElementById("storage-banner-reload");
+  const dismissBtn = document.getElementById("storage-banner-dismiss");
+  const closeBtn = document.getElementById("storage-banner-close");
+  if (reloadBtn) reloadBtn.addEventListener("click", () => window.location.reload());
+  if (dismissBtn) dismissBtn.addEventListener("click", hideStorageBanner);
+  if (closeBtn) closeBtn.addEventListener("click", hideStorageBanner);
+}
+
 function getToken() {
-  return localStorage.getItem(TOKEN_KEY);
+  try {
+    return localStorage.getItem(TOKEN_KEY);
+  } catch (err) {
+    showStorageBanner();
+    return null;
+  }
 }
 
 function setToken(token) {
-  localStorage.setItem(TOKEN_KEY, token);
+  try {
+    localStorage.setItem(TOKEN_KEY, token);
+  } catch (err) {
+    showStorageBanner();
+  }
 }
 
 function clearToken() {
-  localStorage.removeItem(TOKEN_KEY);
+  try {
+    localStorage.removeItem(TOKEN_KEY);
+  } catch (err) {}
 }
 
 function authHeaders(extra) {
@@ -1879,6 +1975,7 @@ micBtn.addEventListener("click", () => {
 });
 
 /* ---------- init ---------- */
+initStorageCheck();
 captureTokenFromUrl();
 renderRecents();
 renderSwatches();
@@ -1888,4 +1985,3 @@ checkSession();
 
 </body>
 </html>
-```
