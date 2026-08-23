@@ -219,7 +219,7 @@ img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-
 .mode-btn { flex: 1; padding: 6px; border-radius: 14px; background: var(--panel-2); font-size: 12px; text-align: center; }
 .mode-btn.active { background: var(--accent); color: var(--accent-ink); }
 
-/* ---------- embeds (structured/report-style assistant messages) ---------- */
+/* ---------- embeds (structured/report-style assistant messages, long user messages) ---------- */
 .bubble.embed {
   max-width: 90%;
   background: var(--panel);
@@ -234,6 +234,15 @@ img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-
 .embed-sublist { margin: 4px 0 0 18px; padding: 0; }
 .embed-sublist li { margin-bottom: 3px; color: var(--text-dim); }
 
+/* long pasted user text gets collapsed with a fade + toggle, same idea as Claude's message cards */
+.long-msg-collapsed { max-height: 160px; overflow: hidden; position: relative; white-space: pre-wrap; word-break: break-word; }
+.long-msg-collapsed:not(.expanded)::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 40px;
+  background: linear-gradient(to bottom, transparent, var(--panel));
+}
+.long-msg-collapsed.expanded { max-height: none; }
+.long-msg-toggle { display: block; margin-top: 8px; font-size: 12px; font-weight: 600; color: var(--accent); }
+
 /* small inline copy affordance next to `code` spans */
 .inline-copy-btn {
   display: inline-flex; align-items: center; justify-content: center;
@@ -242,6 +251,52 @@ img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-
 }
 .inline-copy-btn:hover { background: var(--panel-2); color: var(--text-dim); }
 .inline-copy-btn svg { width: 11px; height: 11px; display: block; }
+
+/* ---------- attachments (files/images sent or received in a bubble) ---------- */
+.msg-attachments { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.msg-attachment-img { width: 120px; height: 120px; object-fit: cover; border-radius: 10px; display: block; }
+.msg-attachment-file {
+  display: flex; align-items: center; gap: 8px; background: var(--panel-2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 7px 12px; font-size: 12px; color: var(--text-dim); max-width: 220px;
+}
+.msg-attachment-ext { font-weight: 700; font-size: 10px; color: var(--accent); flex-shrink: 0; }
+.msg-attachment-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ---------- file attach chips (pending, in the input area) ---------- */
+#file-preview-wrap { display: none; }
+.file-chip {
+  display: flex; align-items: center; gap: 8px; background: var(--panel-2);
+  border: 1px solid var(--border); border-radius: 12px; padding: 6px 8px 6px 6px;
+  max-width: 220px;
+}
+.file-chip-thumb { width: 36px; height: 36px; border-radius: 8px; object-fit: cover; flex-shrink: 0; display: block; }
+.file-chip-icon {
+  width: 36px; height: 36px; border-radius: 8px; background: var(--accent); color: var(--accent-ink);
+  display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700;
+  flex-shrink: 0;
+}
+.file-chip-meta { min-width: 0; display: flex; flex-direction: column; }
+.file-chip-name { font-size: 12px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px; }
+.file-chip-size { font-size: 10.5px; color: var(--text-faintest); }
+.file-chip-remove {
+  width: 18px; height: 18px; border-radius: 50%; background: var(--panel); border: 1px solid var(--border);
+  font-size: 12px; line-height: 1; display: flex; align-items: center; justify-content: center; color: var(--text-dim);
+  flex-shrink: 0; margin-left: 2px;
+}
+
+/* ---------- drag and drop ---------- */
+.dropzone-overlay {
+  position: fixed; inset: 0; background: rgba(66,133,244,0.12);
+  border: 2px dashed var(--accent); z-index: 60;
+  display: none; align-items: center; justify-content: center;
+  pointer-events: none;
+}
+.dropzone-overlay.active { display: flex; }
+.dropzone-inner {
+  background: var(--panel); border: 1px solid var(--border); border-radius: 16px;
+  padding: 20px 28px; font-size: 15px; font-weight: 500; color: var(--text);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+}
 
 /* ---------- mails ---------- */
 .mail-nav-badge {
@@ -317,6 +372,10 @@ img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-
 </div>
 
 <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+<div class="dropzone-overlay" id="dropzone-overlay">
+  <div class="dropzone-inner">Drop files to attach</div>
+</div>
+
 <div id="chat-screen">
   <aside id="sidebar">
     <div class="sidebar-header">
@@ -402,17 +461,12 @@ img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-
     </div>
 
     <div id="input-area">
-      <div id="image-preview-wrap" style="display:none; max-width:min(94%, 980px); margin:0 auto 8px;">
-        <div style="position:relative; display:inline-block;">
-          <img id="image-preview" style="max-height:64px; max-width:64px; object-fit:cover; border-radius:10px; display:block; border:1px solid var(--border);">
-          <button type="button" id="remove-image-btn" style="position:absolute; top:-6px; right:-6px; width:18px; height:18px; border-radius:50%; background:var(--panel-2); border:1px solid var(--border); font-size:11px; line-height:1; display:flex; align-items:center; justify-content:center; color:var(--text-dim);">×</button>
-        </div>
-      </div>
+      <div id="file-preview-wrap"></div>
       <form id="input-form">
         <textarea id="chat-input" rows="1" placeholder="Ask anything..."></textarea>
-        <input type="file" id="image-input" accept="image/png,image/jpeg" style="display:none">
-        <button type="button" class="icon-btn" id="image-btn" title="Attach image">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+        <input type="file" id="file-input" accept="*/*" multiple style="display:none">
+        <button type="button" class="icon-btn" id="image-btn" title="Attach files">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
         </button>
         <button type="button" class="icon-btn" id="mic-btn" title="Voice input">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
@@ -485,6 +539,10 @@ img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-
 const API_BASE = "https://frosty-moon-2b57.oakambe24fi.workers.dev";
 const TOKEN_KEY = "asaplimo_session_token";
 const ACCENT_OPTIONS = ["#4285f4", "#ea4335", "#fbbc05", "#34a853", "#8b6bf2", "#ff6b9d"];
+const LONG_MSG_EMBED_THRESHOLD = 170;
+const LONG_MSG_COLLAPSE_THRESHOLD = 500;
+const MAX_FILES = 5;
+const MAX_FILE_SIZE = 15 * 1024 * 1024;
 
 function getToken() {
   return localStorage.getItem(TOKEN_KEY);
@@ -637,7 +695,6 @@ document.getElementById("hamburger-btn").addEventListener("click", () => {
   document.getElementById("sidebar-backdrop").classList.toggle("active");
 });
 document.getElementById("sidebar-backdrop").addEventListener("click", closeSidebar);
-// picking a chat/action on a small screen should close the drawer
 document.querySelectorAll(".sidebar-item, .recent-item").forEach((el) => {
   el.addEventListener("click", closeSidebar);
 });
@@ -1026,43 +1083,157 @@ const chatInput = document.getElementById("chat-input");
 const sendBtn = document.getElementById("send-btn");
 const inputForm = document.getElementById("input-form");
 
+function updateSendState() {
+  sendBtn.disabled = isSending || (chatInput.value.trim().length === 0 && pendingFiles.length === 0);
+}
+
 chatInput.addEventListener("input", () => {
   autoGrow(chatInput);
-  if (!isSending) sendBtn.disabled = chatInput.value.trim().length === 0 && !pendingImage;
+  updateSendState();
 });
 
-/* ---------- image attachment ---------- */
-let pendingImage = null;
+/* ---------- file attachments ---------- */
+let pendingFiles = [];
 
-function clearPendingImage() {
-  pendingImage = null;
-  document.getElementById("image-preview-wrap").style.display = "none";
-  document.getElementById("image-input").value = "";
+function fileExt(name) {
+  const parts = (name || "").split(".");
+  if (parts.length < 2) return "FILE";
+  return parts[parts.length - 1].slice(0, 4).toUpperCase();
+}
+
+function formatBytes(bytes) {
+  if (!bytes && bytes !== 0) return "";
+  if (bytes < 1024) return bytes + " B";
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+  return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+}
+
+function renderFileChips() {
+  const wrap = document.getElementById("file-preview-wrap");
+  wrap.innerHTML = "";
+  if (pendingFiles.length === 0) {
+    wrap.style.display = "none";
+    return;
+  }
+  wrap.style.display = "flex";
+  wrap.style.flexWrap = "wrap";
+  wrap.style.gap = "8px";
+  wrap.style.maxWidth = "min(94%, 980px)";
+  wrap.style.margin = "0 auto 8px";
+  pendingFiles.forEach((f, idx) => {
+    const chip = document.createElement("div");
+    chip.className = "file-chip";
+    if (f.isImage && f.previewUrl) {
+      const thumb = document.createElement("img");
+      thumb.className = "file-chip-thumb";
+      thumb.src = f.previewUrl;
+      chip.appendChild(thumb);
+    } else {
+      const icon = document.createElement("div");
+      icon.className = "file-chip-icon";
+      icon.textContent = fileExt(f.name);
+      chip.appendChild(icon);
+    }
+    const meta = document.createElement("div");
+    meta.className = "file-chip-meta";
+    const nameEl = document.createElement("div");
+    nameEl.className = "file-chip-name";
+    nameEl.textContent = f.name;
+    const sizeEl = document.createElement("div");
+    sizeEl.className = "file-chip-size";
+    sizeEl.textContent = formatBytes(f.size);
+    meta.appendChild(nameEl);
+    meta.appendChild(sizeEl);
+    chip.appendChild(meta);
+    const rm = document.createElement("button");
+    rm.type = "button";
+    rm.className = "file-chip-remove";
+    rm.textContent = "×";
+    rm.addEventListener("click", () => {
+      pendingFiles.splice(idx, 1);
+      renderFileChips();
+      updateSendState();
+    });
+    chip.appendChild(rm);
+    wrap.appendChild(chip);
+  });
+}
+
+function clearPendingFiles() {
+  pendingFiles = [];
+  document.getElementById("file-input").value = "";
+  renderFileChips();
+}
+
+function handleFiles(fileList) {
+  const files = Array.from(fileList);
+  const room = MAX_FILES - pendingFiles.length;
+  if (files.length > room) {
+    alert("You can attach up to " + MAX_FILES + " files at a time.");
+  }
+  files.slice(0, Math.max(0, room)).forEach((file) => {
+    if (file.size > MAX_FILE_SIZE) {
+      alert(file.name + " is too large (max 15MB).");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = reader.result;
+      const isImage = file.type.startsWith("image/");
+      pendingFiles.push({
+        name: file.name,
+        size: file.size,
+        mimeType: file.type || "application/octet-stream",
+        base64: dataUrl.split(",")[1],
+        previewUrl: isImage ? dataUrl : null,
+        isImage
+      });
+      renderFileChips();
+      updateSendState();
+    };
+    reader.readAsDataURL(file);
+  });
 }
 
 document.getElementById("image-btn").addEventListener("click", () => {
-  document.getElementById("image-input").click();
+  document.getElementById("file-input").click();
 });
 
-document.getElementById("image-input").addEventListener("change", (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-  if (file.type !== "image/png" && file.type !== "image/jpeg") {
-    alert("Please choose a PNG or JPEG image.");
-    return;
-  }
-  const reader = new FileReader();
-  reader.onload = () => {
-    const dataUrl = reader.result;
-    pendingImage = { mimeType: file.type, base64: dataUrl.split(",")[1], previewUrl: dataUrl };
-    document.getElementById("image-preview").src = dataUrl;
-    document.getElementById("image-preview-wrap").style.display = "block";
-    sendBtn.disabled = isSending || (chatInput.value.trim().length === 0 && !pendingImage);
-  };
-  reader.readAsDataURL(file);
+document.getElementById("file-input").addEventListener("change", (e) => {
+  if (e.target.files && e.target.files.length) handleFiles(e.target.files);
 });
 
-document.getElementById("remove-image-btn").addEventListener("click", clearPendingImage);
+let dragCounter = 0;
+
+function dragHasFiles(e) {
+  return e.dataTransfer && Array.from(e.dataTransfer.types || []).includes("Files");
+}
+
+window.addEventListener("dragenter", (e) => {
+  if (!dragHasFiles(e)) return;
+  e.preventDefault();
+  dragCounter++;
+  document.getElementById("dropzone-overlay").classList.add("active");
+});
+
+window.addEventListener("dragover", (e) => {
+  if (!dragHasFiles(e)) return;
+  e.preventDefault();
+});
+
+window.addEventListener("dragleave", (e) => {
+  if (!dragHasFiles(e)) return;
+  dragCounter = Math.max(0, dragCounter - 1);
+  if (dragCounter === 0) document.getElementById("dropzone-overlay").classList.remove("active");
+});
+
+window.addEventListener("drop", (e) => {
+  if (!dragHasFiles(e)) return;
+  e.preventDefault();
+  dragCounter = 0;
+  document.getElementById("dropzone-overlay").classList.remove("active");
+  if (e.dataTransfer.files && e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
+});
 
 chatInput.addEventListener("keydown", (e) => {
   if (e.key === "Enter" && !e.shiftKey) {
@@ -1153,6 +1324,28 @@ function renderProse(container, text) {
       continue;
     }
 
+    if (/^-{3,}\s*$/.test(trimmed) || /^\*{3,}\s*$/.test(trimmed)) {
+      flushParagraph();
+      const hr = document.createElement("hr");
+      hr.style.cssText = "border:none;border-top:1px solid var(--border);margin:14px 0;";
+      container.appendChild(hr);
+      i++;
+      continue;
+    }
+
+    const headingMatch = /^(#{1,6})\s+(.+)$/.exec(trimmed);
+    if (headingMatch) {
+      flushParagraph();
+      const level = headingMatch[1].length;
+      const h = document.createElement("div");
+      const sizes = { 1: "20px", 2: "17px", 3: "15.5px", 4: "14.5px", 5: "14px", 6: "13.5px" };
+      h.style.cssText = "font-weight:600;margin:" + (level <= 2 ? "14px 0 6px" : "10px 0 4px") + ";font-size:" + sizes[level] + ";color:var(--text);";
+      parseInline(h, headingMatch[2]);
+      container.appendChild(h);
+      i++;
+      continue;
+    }
+
     if (/^[*-]\s+/.test(trimmed)) {
       flushParagraph();
       const ul = document.createElement("ul");
@@ -1177,9 +1370,6 @@ function renderProse(container, text) {
         li.style.marginBottom = "3px";
         parseInline(li, lines[i].trim().replace(/^\d+\.\s+/, ""));
         i++;
-        // Bullets immediately following a numbered line belong to that
-        // item (e.g. "1. Main IDE: * Editor... * Terminal...") — nest
-        // them instead of flattening everything into one level.
         if (i < lines.length && /^[*-]\s+/.test(lines[i].trim())) {
           const sub = document.createElement("ul");
           sub.className = "embed-sublist";
@@ -1249,16 +1439,40 @@ function renderMessageContent(bubble, text) {
   }
 }
 
-// A message reads like a structured report/breakdown (multiple numbered
-// sections, at least one with sub-bullets) rather than plain conversational
-// text — render those as a distinct "embed" card instead of a plain bubble.
 function isStructuredContent(text) {
   const numberedLines = text.match(/^\s*\d+\.\s+.+$/gm) || [];
   if (numberedLines.length < 2) return false;
   return /^\s*[*-]\s+/m.test(text);
 }
 
-function addBubble(role, text, imageUrl, thinking) {
+function renderAttachments(bubble, attachments) {
+  if (!attachments || attachments.length === 0) return;
+  const attWrap = document.createElement("div");
+  attWrap.className = "msg-attachments";
+  attachments.forEach((f) => {
+    if (f.isImage && f.previewUrl) {
+      const img = document.createElement("img");
+      img.className = "msg-attachment-img";
+      img.src = f.previewUrl;
+      attWrap.appendChild(img);
+    } else {
+      const chip = document.createElement("div");
+      chip.className = "msg-attachment-file";
+      const ext = document.createElement("span");
+      ext.className = "msg-attachment-ext";
+      ext.textContent = fileExt(f.name);
+      const name = document.createElement("span");
+      name.className = "msg-attachment-name";
+      name.textContent = f.name;
+      chip.appendChild(ext);
+      chip.appendChild(name);
+      attWrap.appendChild(chip);
+    }
+  });
+  bubble.appendChild(attWrap);
+}
+
+function addBubble(role, text, attachments, thinking) {
   const list = document.getElementById("messages-list");
   const row = document.createElement("div");
   row.className = "msg-row " + role;
@@ -1290,18 +1504,36 @@ function addBubble(role, text, imageUrl, thinking) {
     list.appendChild(thinkRow);
   }
 
+  const isLongUser = role === "user" && !!text && text.length > LONG_MSG_EMBED_THRESHOLD;
+
   const bubble = document.createElement("div");
-  bubble.className = "bubble " + role + (role === "assistant" && isStructuredContent(text) ? " embed" : "");
-  if (imageUrl) {
-    const img = document.createElement("img");
-    img.src = imageUrl;
-    img.style.cssText = "max-width:100%;border-radius:10px;display:block;" + (text ? "margin-bottom:6px;" : "");
-    bubble.appendChild(img);
-  }
+  bubble.className = "bubble " + role + ((role === "assistant" && isStructuredContent(text)) || isLongUser ? " embed" : "");
+
+  renderAttachments(bubble, attachments);
+
   if (role === "assistant") {
     renderMessageContent(bubble, text);
   } else if (text) {
-    bubble.appendChild(document.createTextNode(text));
+    if (isLongUser && text.length > LONG_MSG_COLLAPSE_THRESHOLD) {
+      const textWrap = document.createElement("div");
+      textWrap.className = "long-msg-collapsed";
+      textWrap.textContent = text;
+      const toggle = document.createElement("button");
+      toggle.type = "button";
+      toggle.className = "long-msg-toggle";
+      toggle.textContent = "Show more";
+      toggle.addEventListener("click", () => {
+        const open = textWrap.classList.toggle("expanded");
+        toggle.textContent = open ? "Show less" : "Show more";
+      });
+      bubble.appendChild(textWrap);
+      bubble.appendChild(toggle);
+    } else {
+      const textWrap = document.createElement("div");
+      textWrap.style.whiteSpace = "pre-wrap";
+      textWrap.textContent = text;
+      bubble.appendChild(textWrap);
+    }
   }
 
   if (role === "assistant" && text) {
@@ -1411,7 +1643,7 @@ function setSending(sending) {
   isSending = sending;
   chatInput.disabled = sending;
   inputForm.classList.toggle("disabled", sending);
-  sendBtn.disabled = sending || (chatInput.value.trim().length === 0 && !pendingImage);
+  updateSendState();
   if (!sending) chatInput.focus();
 }
 
@@ -1433,15 +1665,15 @@ async function ensureConversation() {
 async function sendMessage() {
   if (isSending) return;
   const text = chatInput.value.trim();
-  if (!text && !pendingImage) return;
+  if (!text && pendingFiles.length === 0) return;
 
   document.getElementById("empty-state").style.display = "none";
   document.getElementById("messages-list").style.display = "flex";
 
-  const imageToSend = pendingImage;
+  const filesToSend = pendingFiles.slice();
   lastUserMessage = text;
-  addBubble("user", text, imageToSend ? imageToSend.previewUrl : null);
-  clearPendingImage();
+  addBubble("user", text, filesToSend);
+  clearPendingFiles();
   chatInput.value = "";
   chatInput.style.height = "auto";
   setSending(true);
@@ -1449,13 +1681,14 @@ async function sendMessage() {
 
   try {
     const conversationId = await ensureConversation();
+    const primaryFile = filesToSend[0] || null;
     const res = await fetch(API_BASE + "/api/chat", {
       method: "POST",
       headers: authHeaders({ "Content-Type": "application/json" }),
       body: JSON.stringify({
         message: text,
         conversationId,
-        image: imageToSend ? { mimeType: imageToSend.mimeType, data: imageToSend.base64 } : null
+        image: primaryFile ? { mimeType: primaryFile.mimeType, data: primaryFile.base64 } : null
       })
     });
     removeTyping();
@@ -1470,7 +1703,7 @@ async function sendMessage() {
     } else {
       const conv = allConversations.find((c) => c.id === conversationId);
       if (conv && conv.title === "New chat") {
-        const fallback = deriveTitle(text || "Image");
+        const fallback = deriveTitle(text || (primaryFile ? primaryFile.name : "Attachment"));
         applyTitle(fallback);
         try {
           await fetch(API_BASE + "/api/conversations/" + conversationId, {
@@ -1514,7 +1747,7 @@ function insertTranscript(transcript) {
   const existing = chatInput.value.trim();
   chatInput.value = existing ? existing + " " + transcript : transcript;
   autoGrow(chatInput);
-  sendBtn.disabled = isSending || (chatInput.value.trim().length === 0 && !pendingImage);
+  updateSendState();
 }
 
 if (!useFallbackRecording) {
