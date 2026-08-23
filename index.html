@@ -225,19 +225,15 @@ img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-
     </div>
 
     <div class="sidebar-nav">
-      <button class="sidebar-item main">
+      <button class="sidebar-item main" id="new-chat-btn">
         <img class="icon" src="icons/newchat.png" alt="">
         <span>New chat</span>
       </button>
-      <button class="sidebar-item">
+      <button class="sidebar-item" id="search-btn">
         <img class="icon" src="icons/search.png" alt="">
         <span>Search</span>
       </button>
-      <button class="sidebar-item">
-        <img class="icon" src="icons/projects.png" alt="">
-        <span>Projects</span>
-      </button>
-      <button class="sidebar-item">
+      <button class="sidebar-item" id="code-btn">
         <img class="icon" src="icons/code.png" alt="">
         <span>Code</span>
       </button>
@@ -306,6 +302,15 @@ img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-
   </main>
 </div>
 
+<div class="overlay" id="search-overlay">
+  <div class="modal" style="max-width: 460px;">
+    <h3>Search chats</h3>
+    <input id="search-input" type="text" placeholder="Search your conversations..." style="width:100%;background:var(--panel-2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:14px;outline:none;margin-bottom:14px;">
+    <div id="search-results" style="display:flex;flex-direction:column;gap:2px;max-height:320px;overflow-y:auto;"></div>
+    <button class="modal-secondary" id="close-search-btn" style="margin-top:14px;">Close</button>
+  </div>
+</div>
+
 <div class="overlay" id="trial-overlay">
   <div class="modal">
     <h3>Start your free trial</h3>
@@ -369,23 +374,108 @@ function captureTokenFromUrl() {
     window.history.replaceState({}, "", newUrl);
   }
 }
-const recentChats = [
-  "Cross-platform app idea",
-  "Recording audio with ffmpeg",
-  "Sober Linux executor UI",
-  "The inevitability of foreseen future",
-  "Minecraft OpenGL context error",
-  "AI UI design feedback"
-];
+let currentConversationId = null;
+let allConversations = [];
+let isSending = false;
+
+async function loadConversations() {
+  try {
+    const res = await fetch(API_BASE + "/api/conversations", { headers: authHeaders() });
+    const data = await res.json();
+    allConversations = data.conversations || [];
+    renderRecents();
+  } catch (err) {}
+}
 
 function renderRecents() {
   const list = document.getElementById("recents-list");
   list.innerHTML = "";
-  recentChats.forEach((title) => {
+  allConversations.forEach((conv) => {
     const btn = document.createElement("button");
     btn.className = "recent-item";
-    btn.textContent = title;
+    btn.textContent = conv.title;
+    if (conv.id === currentConversationId) {
+      btn.style.background = "var(--panel-2)";
+      btn.style.color = "var(--text)";
+    }
+    btn.addEventListener("click", () => openConversation(conv.id));
     list.appendChild(btn);
+  });
+}
+
+async function openConversation(id) {
+  try {
+    const res = await fetch(API_BASE + "/api/conversations/" + id, { headers: authHeaders() });
+    if (!res.ok) return;
+    const conv = await res.json();
+    currentConversationId = conv.id;
+    document.getElementById("messages-list").innerHTML = "";
+    if (conv.messages.length === 0) {
+      document.getElementById("empty-state").style.display = "flex";
+      document.getElementById("messages-list").style.display = "none";
+    } else {
+      document.getElementById("empty-state").style.display = "none";
+      document.getElementById("messages-list").style.display = "flex";
+      conv.messages.forEach((m) => addBubble(m.role === "model" ? "assistant" : "user", m.text));
+    }
+    document.querySelector("#chat-header span").textContent = conv.title;
+    renderRecents();
+  } catch (err) {}
+}
+
+async function createNewConversation(mode) {
+  try {
+    const res = await fetch(API_BASE + "/api/conversations", {
+      method: "POST",
+      headers: authHeaders({ "Content-Type": "application/json" }),
+      body: JSON.stringify({ mode: mode || "chat" })
+    });
+    const data = await res.json();
+    currentConversationId = data.id;
+    document.getElementById("messages-list").innerHTML = "";
+    document.getElementById("messages-list").style.display = "none";
+    document.getElementById("empty-state").style.display = "flex";
+    document.querySelector("#chat-header span").textContent = "New chat";
+    await loadConversations();
+  } catch (err) {}
+}
+
+document.getElementById("new-chat-btn").addEventListener("click", () => createNewConversation("chat"));
+document.getElementById("code-btn").addEventListener("click", () => createNewConversation("code"));
+
+document.getElementById("search-btn").addEventListener("click", () => {
+  document.getElementById("search-overlay").classList.add("active");
+  renderSearchResults(allConversations);
+  document.getElementById("search-input").value = "";
+  document.getElementById("search-input").focus();
+});
+
+document.getElementById("close-search-btn").addEventListener("click", () => {
+  document.getElementById("search-overlay").classList.remove("active");
+});
+
+document.getElementById("search-input").addEventListener("input", (e) => {
+  const q = e.target.value.trim().toLowerCase();
+  const filtered = q ? allConversations.filter((c) => c.title.toLowerCase().includes(q)) : allConversations;
+  renderSearchResults(filtered);
+});
+
+function renderSearchResults(list) {
+  const wrap = document.getElementById("search-results");
+  wrap.innerHTML = "";
+  if (list.length === 0) {
+    wrap.innerHTML = '<div style="color:var(--text-faintest);font-size:13px;padding:8px;">No chats found.</div>';
+    return;
+  }
+  list.forEach((conv) => {
+    const row = document.createElement("button");
+    row.style.cssText = "width:100%;text-align:left;padding:9px 10px;border-radius:8px;font-size:13.5px;color:var(--text-dim);";
+    row.textContent = conv.title;
+    row.addEventListener("click", () => {
+      document.getElementById("search-overlay").classList.remove("active");
+      openConversation(conv.id);
+    });
+    wrap.appendChild(row);
   });
 }
 
