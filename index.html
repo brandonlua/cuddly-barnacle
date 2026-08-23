@@ -150,10 +150,10 @@ img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-
 #input-area { padding: 0 24px 24px; }
 #input-form {
   max-width: 680px; margin: 0 auto; background: var(--panel); border: 1px solid var(--border);
-  border-radius: 28px; padding: 10px 14px; display: flex; align-items: flex-end; gap: 8px;
+  border-radius: 28px; padding: 8px 8px 8px 18px; display: flex; align-items: center; gap: 6px;
 }
 #input-form.disabled { opacity: 0.65; }
-#chat-input { flex: 1; background: transparent; border: none; outline: none; resize: none; max-height: 160px; padding: 6px 0; font-size: 14px; }
+#chat-input { flex: 1; background: transparent; border: none; outline: none; resize: none; max-height: 160px; padding: 8px 0; line-height: 1.4; font-size: 14px; }
 #chat-input::placeholder { color: var(--text-faintest); }
 #chat-input:disabled { cursor: not-allowed; }
 .icon-btn { padding: 8px; border-radius: 50%; color: var(--text-faint); transition: background 0.15s, color 0.15s; }
@@ -293,8 +293,18 @@ img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-
     </div>
 
     <div id="input-area">
+      <div id="image-preview-wrap" style="display:none; max-width:680px; margin:0 auto 8px;">
+        <div style="position:relative; display:inline-block;">
+          <img id="image-preview" style="max-height:64px; max-width:64px; object-fit:cover; border-radius:10px; display:block; border:1px solid var(--border);">
+          <button type="button" id="remove-image-btn" style="position:absolute; top:-6px; right:-6px; width:18px; height:18px; border-radius:50%; background:var(--panel-2); border:1px solid var(--border); font-size:11px; line-height:1; display:flex; align-items:center; justify-content:center; color:var(--text-dim);">×</button>
+        </div>
+      </div>
       <form id="input-form">
         <textarea id="chat-input" rows="1" placeholder="Ask anything..."></textarea>
+        <input type="file" id="image-input" accept="image/png,image/jpeg" style="display:none">
+        <button type="button" class="icon-btn" id="image-btn" title="Attach image">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+        </button>
         <button type="button" class="icon-btn" id="mic-btn" title="Voice input">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
         </button>
@@ -752,8 +762,41 @@ const inputForm = document.getElementById("input-form");
 
 chatInput.addEventListener("input", () => {
   autoGrow(chatInput);
-  if (!isSending) sendBtn.disabled = chatInput.value.trim().length === 0;
+  if (!isSending) sendBtn.disabled = chatInput.value.trim().length === 0 && !pendingImage;
 });
+
+/* ---------- image attachment ---------- */
+let pendingImage = null;
+
+function clearPendingImage() {
+  pendingImage = null;
+  document.getElementById("image-preview-wrap").style.display = "none";
+  document.getElementById("image-input").value = "";
+}
+
+document.getElementById("image-btn").addEventListener("click", () => {
+  document.getElementById("image-input").click();
+});
+
+document.getElementById("image-input").addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (file.type !== "image/png" && file.type !== "image/jpeg") {
+    alert("Please choose a PNG or JPEG image.");
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = () => {
+    const dataUrl = reader.result;
+    pendingImage = { mimeType: file.type, base64: dataUrl.split(",")[1], previewUrl: dataUrl };
+    document.getElementById("image-preview").src = dataUrl;
+    document.getElementById("image-preview-wrap").style.display = "block";
+    sendBtn.disabled = isSending || (chatInput.value.trim().length === 0 && !pendingImage);
+  };
+  reader.readAsDataURL(file);
+});
+
+document.getElementById("remove-image-btn").addEventListener("click", clearPendingImage);
 
 chatInput.addEventListener("keydown", (e) => {
   if (e.key === "Enter" && !e.shiftKey) {
@@ -806,16 +849,22 @@ function renderMessageContent(bubble, text) {
   if (!found) bubble.textContent = text;
 }
 
-function addBubble(role, text) {
+function addBubble(role, text, imageUrl) {
   const list = document.getElementById("messages-list");
   const row = document.createElement("div");
   row.className = "msg-row " + role;
   const bubble = document.createElement("div");
   bubble.className = "bubble " + role;
+  if (imageUrl) {
+    const img = document.createElement("img");
+    img.src = imageUrl;
+    img.style.cssText = "max-width:100%;border-radius:10px;display:block;" + (text ? "margin-bottom:6px;" : "");
+    bubble.appendChild(img);
+  }
   if (role === "assistant") {
     renderMessageContent(bubble, text);
-  } else {
-    bubble.textContent = text;
+  } else if (text) {
+    bubble.appendChild(document.createTextNode(text));
   }
   row.appendChild(bubble);
   list.appendChild(row);
@@ -840,33 +889,23 @@ function removeTyping() {
   if (row) row.remove();
 }
 
-/* ---------- auto title ---------- */
+/* ---------- titles (AI-generated server-side, with a client fallback) ---------- */
 function deriveTitle(text) {
-  let t = text.replace(/\s+/g, " ").trim();
+  let t = (text || "").replace(/\s+/g, " ").trim();
   if (t.length > 42) t = t.slice(0, 42).trim() + "…";
   return t || "New chat";
 }
 
-async function maybeAutoTitle(text) {
-  if (!currentConversationId) return;
-  let conv = allConversations.find((c) => c.id === currentConversationId);
-  if (conv && conv.title && conv.title !== "New chat") return;
-  const title = deriveTitle(text);
+function applyTitle(title) {
+  if (!currentConversationId || !title) return;
   document.querySelector("#chat-header span").textContent = title;
+  let conv = allConversations.find((c) => c.id === currentConversationId);
   if (conv) {
     conv.title = title;
   } else {
-    conv = { id: currentConversationId, title };
-    allConversations.unshift(conv);
+    allConversations.unshift({ id: currentConversationId, title });
   }
   renderRecents();
-  try {
-    await fetch(API_BASE + "/api/conversations/" + currentConversationId, {
-      method: "PATCH",
-      headers: authHeaders({ "Content-Type": "application/json" }),
-      body: JSON.stringify({ title })
-    });
-  } catch (err) {}
 }
 
 /* ---------- sending (blocks spam while AI is replying) ---------- */
@@ -874,30 +913,51 @@ function setSending(sending) {
   isSending = sending;
   chatInput.disabled = sending;
   inputForm.classList.toggle("disabled", sending);
-  sendBtn.disabled = sending || chatInput.value.trim().length === 0;
+  sendBtn.disabled = sending || (chatInput.value.trim().length === 0 && !pendingImage);
   if (!sending) chatInput.focus();
+}
+
+async function ensureConversation() {
+  if (currentConversationId) return currentConversationId;
+  try {
+    const res = await fetch(API_BASE + "/api/conversations", {
+      method: "POST",
+      headers: authHeaders({ "Content-Type": "application/json" }),
+      body: JSON.stringify({ mode: currentConversationMode || "chat" })
+    });
+    const data = await res.json();
+    currentConversationId = data.id;
+    await loadConversations();
+  } catch (err) {}
+  return currentConversationId;
 }
 
 async function sendMessage() {
   if (isSending) return;
   const text = chatInput.value.trim();
-  if (!text) return;
+  if (!text && !pendingImage) return;
 
   document.getElementById("empty-state").style.display = "none";
   document.getElementById("messages-list").style.display = "flex";
 
-  addBubble("user", text);
-  maybeAutoTitle(text);
+  const imageToSend = pendingImage;
+  addBubble("user", text, imageToSend ? imageToSend.previewUrl : null);
+  clearPendingImage();
   chatInput.value = "";
   chatInput.style.height = "auto";
   setSending(true);
   showTyping();
 
   try {
+    const conversationId = await ensureConversation();
     const res = await fetch(API_BASE + "/api/chat", {
       method: "POST",
       headers: authHeaders({ "Content-Type": "application/json" }),
-      body: JSON.stringify({ message: text })
+      body: JSON.stringify({
+        message: text,
+        conversationId,
+        image: imageToSend ? { mimeType: imageToSend.mimeType, data: imageToSend.base64 } : null
+      })
     });
     removeTyping();
     if (res.status === 402) {
@@ -906,6 +966,22 @@ async function sendMessage() {
     }
     const data = await res.json();
     addBubble("assistant", data.reply || "No response.");
+    if (data.title) {
+      applyTitle(data.title);
+    } else {
+      const conv = allConversations.find((c) => c.id === conversationId);
+      if (conv && conv.title === "New chat") {
+        const fallback = deriveTitle(text || "Image");
+        applyTitle(fallback);
+        try {
+          await fetch(API_BASE + "/api/conversations/" + conversationId, {
+            method: "PATCH",
+            headers: authHeaders({ "Content-Type": "application/json" }),
+            body: JSON.stringify({ title: fallback })
+          });
+        } catch (err) {}
+      }
+    }
   } catch (err) {
     removeTyping();
     addBubble("assistant", "Could not reach the server.");
@@ -919,13 +995,30 @@ document.getElementById("input-form").addEventListener("submit", (e) => {
   sendMessage();
 });
 
-/* ---------- voice input ---------- */
+/* ---------- voice input ----------
+   Chrome/Edge/Safari ship a native SpeechRecognition API, so we use that
+   directly. Firefox has never implemented SpeechRecognition/
+   webkitSpeechRecognition at all (not partially — not present), so for
+   Firefox (and anywhere else it's missing) we fall back to recording audio
+   with MediaRecorder and sending it to the backend's /api/transcribe
+   endpoint, which has Gemini do the transcription instead. */
 const micBtn = document.getElementById("mic-btn");
 const SpeechRecognitionCtor = window.SpeechRecognition || window.webkitSpeechRecognition;
+const useFallbackRecording = !SpeechRecognitionCtor;
 let recognizer = null;
 let isRecording = false;
+let mediaRecorder = null;
+let audioChunks = [];
 
-if (SpeechRecognitionCtor) {
+function insertTranscript(transcript) {
+  if (!transcript) return;
+  const existing = chatInput.value.trim();
+  chatInput.value = existing ? existing + " " + transcript : transcript;
+  autoGrow(chatInput);
+  sendBtn.disabled = isSending || (chatInput.value.trim().length === 0 && !pendingImage);
+}
+
+if (!useFallbackRecording) {
   recognizer = new SpeechRecognitionCtor();
   recognizer.continuous = false;
   recognizer.interimResults = false;
@@ -934,39 +1027,79 @@ if (SpeechRecognitionCtor) {
   recognizer.addEventListener("result", (e) => {
     let transcript = "";
     for (let i = 0; i < e.results.length; i++) transcript += e.results[i][0].transcript;
-    const existing = chatInput.value.trim();
-    chatInput.value = existing ? existing + " " + transcript : transcript;
-    autoGrow(chatInput);
-    sendBtn.disabled = isSending || chatInput.value.trim().length === 0;
+    insertTranscript(transcript);
   });
-
   recognizer.addEventListener("end", () => {
     isRecording = false;
     micBtn.classList.remove("recording");
   });
-
   recognizer.addEventListener("error", () => {
     isRecording = false;
     micBtn.classList.remove("recording");
   });
-
-  micBtn.addEventListener("click", () => {
-    if (isSending) return;
-    if (isRecording) {
-      recognizer.stop();
-      return;
-    }
-    try {
-      recognizer.start();
-      isRecording = true;
-      micBtn.classList.add("recording");
-    } catch (err) {}
-  });
-} else {
-  micBtn.addEventListener("click", () => {
-    alert("Voice input isn't supported in this browser.");
-  });
 }
+
+async function startFallbackRecording() {
+  if (!navigator.mediaDevices || !window.MediaRecorder) {
+    alert("Voice input isn't supported in this browser.");
+    return;
+  }
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    audioChunks = [];
+    mediaRecorder = new MediaRecorder(stream);
+    mediaRecorder.addEventListener("dataavailable", (e) => {
+      if (e.data.size > 0) audioChunks.push(e.data);
+    });
+    mediaRecorder.addEventListener("stop", () => {
+      stream.getTracks().forEach((t) => t.stop());
+      const blob = new Blob(audioChunks, { type: mediaRecorder.mimeType || "audio/webm" });
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const base64 = reader.result.split(",")[1];
+        try {
+          const res = await fetch(API_BASE + "/api/transcribe", {
+            method: "POST",
+            headers: authHeaders({ "Content-Type": "application/json" }),
+            body: JSON.stringify({ audio: base64, mimeType: blob.type })
+          });
+          const data = await res.json();
+          insertTranscript(data.text);
+        } catch (err) {}
+        micBtn.classList.remove("recording");
+      };
+      reader.readAsDataURL(blob);
+    });
+    mediaRecorder.start();
+    isRecording = true;
+    micBtn.classList.add("recording");
+  } catch (err) {
+    alert("Couldn't access your microphone.");
+  }
+}
+
+function stopFallbackRecording() {
+  if (mediaRecorder && mediaRecorder.state !== "inactive") mediaRecorder.stop();
+  isRecording = false;
+}
+
+micBtn.addEventListener("click", () => {
+  if (isSending) return;
+  if (useFallbackRecording) {
+    if (isRecording) stopFallbackRecording();
+    else startFallbackRecording();
+    return;
+  }
+  if (isRecording) {
+    recognizer.stop();
+    return;
+  }
+  try {
+    recognizer.start();
+    isRecording = true;
+    micBtn.classList.add("recording");
+  } catch (err) {}
+});
 
 /* ---------- init ---------- */
 captureTokenFromUrl();
