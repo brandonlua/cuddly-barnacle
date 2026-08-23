@@ -130,11 +130,11 @@ img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-
 #empty-state h2 { font-size: 21px; font-weight: 500; }
 #empty-state p { font-size: 14px; color: var(--text-faintest); margin-top: 4px; max-width: 380px; }
 
-#messages-list { max-width: 680px; margin: 0 auto; display: none; flex-direction: column; gap: 24px; }
+#messages-list { max-width: min(94%, 980px); margin: 0 auto; display: none; flex-direction: column; gap: 24px; }
 .msg-row { display: flex; }
 .msg-row.user { justify-content: flex-end; }
 .msg-row.assistant { justify-content: flex-start; }
-.bubble { max-width: 420px; padding: 10px 16px; border-radius: 16px; line-height: 1.5; }
+.bubble { max-width: 85%; padding: 10px 16px; border-radius: 16px; line-height: 1.5; }
 .bubble.user { background: var(--accent); color: var(--accent-ink); border-bottom-right-radius: 4px; }
 .bubble.assistant { background: var(--panel); color: var(--text); border-bottom-left-radius: 4px; }
 
@@ -149,7 +149,7 @@ img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-
 
 #input-area { padding: 0 24px 24px; }
 #input-form {
-  max-width: 680px; margin: 0 auto; background: var(--panel); border: 1px solid var(--border);
+  max-width: min(94%, 980px); margin: 0 auto; background: var(--panel); border: 1px solid var(--border);
   border-radius: 28px; padding: 8px 8px 8px 18px; display: flex; align-items: center; gap: 6px;
 }
 #input-form.disabled { opacity: 0.65; }
@@ -158,7 +158,9 @@ img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-
 #chat-input:disabled { cursor: not-allowed; }
 .icon-btn { padding: 8px; border-radius: 50%; color: var(--text-faint); transition: background 0.15s, color 0.15s; }
 .icon-btn:hover { background: var(--panel-2); }
+#image-btn svg { transform: translateY(1px); display: block; }
 #mic-btn svg { transform: translateY(1px); display: block; }
+#send-btn svg { transform: translateY(1px); display: block; }
 .icon-btn.recording { color: #ea4335; background: rgba(234,67,53,0.12); animation: mic-pulse 1s infinite; }
 @keyframes mic-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.55; } }
 #send-btn { padding: 8px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); transition: background 0.15s, opacity 0.15s; }
@@ -190,7 +192,7 @@ img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-
 
 /* ---------- embeds (structured/report-style assistant messages) ---------- */
 .bubble.embed {
-  max-width: 480px;
+  max-width: 90%;
   background: var(--panel);
   border: 1px solid var(--border);
   border-left: 3px solid var(--accent);
@@ -229,6 +231,28 @@ img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-
 .mail-item .mail-subject { font-size: 13px; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
 .mail-item .mail-snippet { font-size: 12.5px; color: var(--text-faintest); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
 .mail-empty { color: var(--text-faintest); font-size: 13px; padding: 18px 8px; text-align: center; }
+
+/* ---------- responsive layout ---------- */
+#hamburger-btn { display: none; margin-right: 6px; }
+.sidebar-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; z-index: 39; }
+.sidebar-backdrop.active { display: block; }
+
+@media (max-width: 720px) {
+  #hamburger-btn { display: flex; }
+  #sidebar {
+    position: fixed; top: 0; left: 0; height: 100vh; z-index: 45;
+    transform: translateX(-100%); transition: transform 0.2s ease;
+    background: var(--bg);
+  }
+  #sidebar.open { transform: translateX(0); }
+  #chat-header { padding: 0 12px; }
+  #messages-area { padding: 20px 12px; }
+  #input-area { padding: 0 12px 16px; }
+  /* on a narrow display there's little room next to a message anyway,
+     so let bubbles use most of the width instead of a fixed max */
+  .bubble { max-width: 90%; }
+  .bubble.embed { max-width: 94%; }
+}
 </style>
 </head>
 <body>
@@ -263,6 +287,7 @@ img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-
   </div>
 </div>
 
+<div class="sidebar-backdrop" id="sidebar-backdrop"></div>
 <div id="chat-screen">
   <aside id="sidebar">
     <div class="sidebar-header">
@@ -311,6 +336,9 @@ img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-
 
   <main id="main-panel">
     <header id="chat-header" style="position: relative;">
+      <button class="theme-toggle" id="hamburger-btn" title="Menu">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
       <span>New chat</span>
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
 
@@ -345,7 +373,7 @@ img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-
     </div>
 
     <div id="input-area">
-      <div id="image-preview-wrap" style="display:none; max-width:680px; margin:0 auto 8px;">
+      <div id="image-preview-wrap" style="display:none; max-width:min(94%, 980px); margin:0 auto 8px;">
         <div style="position:relative; display:inline-block;">
           <img id="image-preview" style="max-height:64px; max-width:64px; object-fit:cover; border-radius:10px; display:block; border:1px solid var(--border);">
           <button type="button" id="remove-image-btn" style="position:absolute; top:-6px; right:-6px; width:18px; height:18px; border-radius:50%; background:var(--panel-2); border:1px solid var(--border); font-size:11px; line-height:1; display:flex; align-items:center; justify-content:center; color:var(--text-dim);">×</button>
@@ -503,7 +531,7 @@ function renderRecents() {
       btn.style.background = "var(--panel-2)";
       btn.style.color = "var(--text)";
     }
-    btn.addEventListener("click", () => openConversation(conv.id));
+    btn.addEventListener("click", () => { closeSidebar(); openConversation(conv.id); });
     list.appendChild(btn);
   });
 }
@@ -563,6 +591,21 @@ function applyModeUI() {
 
 document.getElementById("new-chat-btn").addEventListener("click", () => createNewConversation("chat"));
 document.getElementById("code-btn").addEventListener("click", () => createNewConversation("code"));
+
+/* ---------- mobile sidebar drawer ---------- */
+function closeSidebar() {
+  document.getElementById("sidebar").classList.remove("open");
+  document.getElementById("sidebar-backdrop").classList.remove("active");
+}
+document.getElementById("hamburger-btn").addEventListener("click", () => {
+  document.getElementById("sidebar").classList.toggle("open");
+  document.getElementById("sidebar-backdrop").classList.toggle("active");
+});
+document.getElementById("sidebar-backdrop").addEventListener("click", closeSidebar);
+// picking a chat/action on a small screen should close the drawer
+document.querySelectorAll(".sidebar-item, .recent-item").forEach((el) => {
+  el.addEventListener("click", closeSidebar);
+});
 
 /* ---------- search ---------- */
 document.getElementById("search-btn").addEventListener("click", () => {
