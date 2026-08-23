@@ -180,8 +180,37 @@ img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-
 .modal-secondary { text-align: center; font-size: 13px; color: var(--text-faintest); padding: 4px; }
 .modal-secondary:hover { color: var(--text-dim); }
 
-.theme-panel { position: absolute; top: 54px; right: 24px; width: 210px; background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 14px; display: none; z-index: 40; }
-.theme-panel.active { display: block; }
+.theme-panel {
+  position: absolute; top: 54px; right: 24px; width: 210px; background: var(--panel); border: 1px solid var(--border);
+  border-radius: 16px; padding: 14px; z-index: 40; transform-origin: top right;
+  opacity: 0; transform: scale(0.94) translateY(-6px); pointer-events: none;
+  transition: opacity 0.14s ease, transform 0.14s ease; display: block; visibility: hidden;
+}
+.theme-panel.active { opacity: 1; transform: scale(1) translateY(0); pointer-events: auto; visibility: visible; }
+
+.thinking-block { margin-bottom: 6px; }
+.thinking-toggle {
+  display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-faintest);
+  padding: 3px 0; transition: color 0.15s;
+}
+.thinking-toggle:hover { color: var(--text-faint); }
+.thinking-toggle svg { transition: transform 0.15s; }
+.thinking-toggle.open svg { transform: rotate(90deg); }
+.thinking-body {
+  font-size: 12.5px; color: var(--text-faintest); font-style: italic; line-height: 1.5;
+  border-left: 2px solid var(--border); padding: 2px 0 2px 10px; margin: 6px 0;
+  max-height: 0; overflow: hidden; opacity: 0; transition: max-height 0.2s ease, opacity 0.2s ease;
+}
+.thinking-body.open { max-height: 600px; opacity: 1; }
+
+.msg-actions { display: flex; gap: 2px; margin-top: 4px; opacity: 0; transition: opacity 0.15s; }
+.msg-row.assistant:hover .msg-actions { opacity: 1; }
+.msg-action-btn {
+  display: flex; align-items: center; justify-content: center; width: 24px; height: 24px;
+  border-radius: 8px; color: var(--text-faintest); transition: background 0.15s, color 0.15s;
+}
+.msg-action-btn:hover { background: var(--panel-2); color: var(--text-dim); }
+.msg-action-btn svg { width: 13px; height: 13px; display: block; }
 .theme-panel h4 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-faintest); margin-bottom: 10px; }
 .swatch-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
 .swatch { width: 24px; height: 24px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; }
@@ -442,6 +471,12 @@ img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-
     <p>You need an active subscription to keep using asaplimo. $5/month, cancel anytime.</p>
     <div class="modal-actions">
       <button class="primary-btn" id="subscribe-btn">Subscribe for $5/mo</button>
+      <button class="modal-secondary" id="network-code-toggle-btn">Have a network code?</button>
+    </div>
+    <div id="network-code-wrap" style="display:none; margin-top:12px;">
+      <input id="network-code-input" type="text" placeholder="Enter code" style="width:100%;background:var(--panel-2);border:1px solid var(--border);border-radius:16px;padding:10px 14px;font-size:14px;outline:none;text-transform:uppercase;">
+      <button class="primary-btn" id="network-code-submit-btn" style="margin-top:8px;">Unlock</button>
+      <div id="network-code-error" style="display:none;font-size:12.5px;color:#ea4335;margin-top:6px;text-align:center;">That code isn't valid.</div>
     </div>
   </div>
 </div>
@@ -811,8 +846,17 @@ function renderModelList(models, current) {
   list.innerHTML = "";
   models.forEach((m) => {
     const row = document.createElement("button");
-    row.style.cssText = "width:100%;text-align:left;padding:8px 10px;border-radius:12px;font-size:13px;display:flex;align-items:center;justify-content:space-between;color:var(--text-dim);";
-    row.innerHTML = "<span>" + m.label + "</span>" + (m.locked ? "<span style=\"font-size:11px;color:var(--text-faintest);\">Paid only</span>" : "");
+    row.style.cssText = "width:100%;text-align:left;padding:8px 10px;border-radius:12px;font-size:13px;display:flex;flex-direction:column;gap:1px;color:var(--text-dim);";
+    const top = document.createElement("div");
+    top.style.cssText = "display:flex;align-items:center;justify-content:space-between;";
+    top.innerHTML = "<span>" + m.label + "</span>" + (m.locked ? "<span style=\"font-size:11px;color:var(--text-faintest);\">Paid only</span>" : "");
+    row.appendChild(top);
+    if (m.id === "tinygpt") {
+      const note = document.createElement("div");
+      note.style.cssText = "font-size:10.5px;color:var(--text-faintest);";
+      note.textContent = "Tiny self-trained model — flavor text, not real answers";
+      row.appendChild(note);
+    }
     if (m.id === current) {
       row.style.background = "var(--panel-2)";
       row.style.color = "var(--text)";
@@ -933,6 +977,35 @@ async function startCheckout() {
 }
 
 document.getElementById("subscribe-btn").addEventListener("click", startCheckout);
+
+document.getElementById("network-code-toggle-btn").addEventListener("click", () => {
+  const wrap = document.getElementById("network-code-wrap");
+  wrap.style.display = wrap.style.display === "none" ? "block" : "none";
+});
+
+document.getElementById("network-code-submit-btn").addEventListener("click", async () => {
+  const input = document.getElementById("network-code-input");
+  const errorEl = document.getElementById("network-code-error");
+  const code = input.value.trim();
+  if (!code) return;
+  try {
+    const res = await fetch(API_BASE + "/api/network-unlock", {
+      method: "POST",
+      headers: authHeaders({ "Content-Type": "application/json" }),
+      body: JSON.stringify({ code })
+    });
+    if (res.ok) {
+      errorEl.style.display = "none";
+      document.getElementById("paywall-overlay").classList.remove("active");
+      document.getElementById("trial-pill-wrap").innerHTML = "";
+      loadModels();
+    } else {
+      errorEl.style.display = "block";
+    }
+  } catch (err) {
+    errorEl.style.display = "block";
+  }
+});
 
 document.getElementById("signout-btn").addEventListener("click", async () => {
   try {
@@ -1185,10 +1258,38 @@ function isStructuredContent(text) {
   return /^\s*[*-]\s+/m.test(text);
 }
 
-function addBubble(role, text, imageUrl) {
+function addBubble(role, text, imageUrl, thinking) {
   const list = document.getElementById("messages-list");
   const row = document.createElement("div");
   row.className = "msg-row " + role;
+
+  if (role === "assistant" && thinking) {
+    const thinkRow = document.createElement("div");
+    thinkRow.className = "msg-row assistant";
+    const thinkWrap = document.createElement("div");
+    thinkWrap.style.maxWidth = "85%";
+    thinkWrap.className = "thinking-block";
+
+    const toggle = document.createElement("button");
+    toggle.type = "button";
+    toggle.className = "thinking-toggle";
+    toggle.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 6 15 12 9 18"/></svg><span>Thought for a moment</span>';
+
+    const body = document.createElement("div");
+    body.className = "thinking-body";
+    body.textContent = thinking;
+
+    toggle.addEventListener("click", () => {
+      toggle.classList.toggle("open");
+      body.classList.toggle("open");
+    });
+
+    thinkWrap.appendChild(toggle);
+    thinkWrap.appendChild(body);
+    thinkRow.appendChild(thinkWrap);
+    list.appendChild(thinkRow);
+  }
+
   const bubble = document.createElement("div");
   bubble.className = "bubble " + role + (role === "assistant" && isStructuredContent(text) ? " embed" : "");
   if (imageUrl) {
@@ -1202,9 +1303,70 @@ function addBubble(role, text, imageUrl) {
   } else if (text) {
     bubble.appendChild(document.createTextNode(text));
   }
-  row.appendChild(bubble);
+
+  if (role === "assistant" && text) {
+    const wrap = document.createElement("div");
+    wrap.style.cssText = "display:flex;flex-direction:column;max-width:85%;";
+    wrap.appendChild(bubble);
+
+    const actions = document.createElement("div");
+    actions.className = "msg-actions";
+    const copyBtn = document.createElement("button");
+    copyBtn.type = "button";
+    copyBtn.className = "msg-action-btn";
+    copyBtn.title = "Copy response";
+    copyBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg>';
+    copyBtn.addEventListener("click", () => {
+      navigator.clipboard.writeText(text);
+      const original = copyBtn.innerHTML;
+      copyBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>';
+      setTimeout(() => { copyBtn.innerHTML = original; }, 900);
+    });
+    actions.appendChild(copyBtn);
+
+    const retryBtn = document.createElement("button");
+    retryBtn.type = "button";
+    retryBtn.className = "msg-action-btn";
+    retryBtn.title = "Regenerate";
+    retryBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>';
+    retryBtn.addEventListener("click", () => regenerateLast());
+    actions.appendChild(retryBtn);
+
+    wrap.appendChild(actions);
+    row.appendChild(wrap);
+  } else {
+    row.appendChild(bubble);
+  }
+
   list.appendChild(row);
   document.getElementById("messages-area").scrollTop = document.getElementById("messages-area").scrollHeight;
+}
+
+let lastUserMessage = null;
+
+async function regenerateLast() {
+  if (isSending || !lastUserMessage || !currentConversationId) return;
+  setSending(true);
+  showTyping();
+  try {
+    const res = await fetch(API_BASE + "/api/chat", {
+      method: "POST",
+      headers: authHeaders({ "Content-Type": "application/json" }),
+      body: JSON.stringify({ message: lastUserMessage, conversationId: currentConversationId })
+    });
+    removeTyping();
+    if (res.status === 402) {
+      document.getElementById("paywall-overlay").classList.add("active");
+      return;
+    }
+    const data = await res.json();
+    addBubble("assistant", data.reply || "No response.", null, data.thinking);
+  } catch (err) {
+    removeTyping();
+    addBubble("assistant", "Could not reach the server.");
+  } finally {
+    setSending(false);
+  }
 }
 
 function showTyping() {
@@ -1277,6 +1439,7 @@ async function sendMessage() {
   document.getElementById("messages-list").style.display = "flex";
 
   const imageToSend = pendingImage;
+  lastUserMessage = text;
   addBubble("user", text, imageToSend ? imageToSend.previewUrl : null);
   clearPendingImage();
   chatInput.value = "";
@@ -1301,7 +1464,7 @@ async function sendMessage() {
       return;
     }
     const data = await res.json();
-    addBubble("assistant", data.reply || "No response.");
+    addBubble("assistant", data.reply || "No response.", null, data.thinking);
     if (data.title) {
       applyTitle(data.title);
     } else {
