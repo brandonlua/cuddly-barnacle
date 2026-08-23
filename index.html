@@ -211,6 +211,7 @@ img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-
     </form>
 
     <p class="login-footnote">By continuing you agree to start a 4 day free trial, then $5/month.</p>
+    <p class="login-footnote">Made by gbubemi (AKA Mitchell)</p>
   </div>
 </div>
 
@@ -261,7 +262,7 @@ img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
 
       <button class="theme-toggle" id="model-toggle-btn" style="margin-left: auto; margin-right: 8px; display: flex; align-items: center; gap: 6px; padding: 6px 10px; border: 1px solid var(--border); border-radius: 8px;">
-        <span id="model-label" style="font-size: 13px; color: var(--text-dim);">Haiku 4.5</span>
+        <span id="model-label" style="font-size: 13px; color: var(--text-dim);">Flash Lite</span>
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
       </button>
 
@@ -300,7 +301,7 @@ img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
         </button>
       </form>
-      <p class="input-footnote">Placeholder UI — no AI is connected yet.</p>
+      <p class="input-footnote">Made by gbubemi (AKA Mitchell)</p>
     </div>
   </main>
 </div>
@@ -326,10 +327,9 @@ img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-
 <div class="overlay" id="paywall-overlay">
   <div class="modal">
     <h3>Your trial has ended</h3>
-    <p>Subscribe to keep chatting. $5/month, cancel anytime.</p>
+    <p>You need an active subscription to keep using asaplimo. $5/month, cancel anytime.</p>
     <div class="modal-actions">
       <button class="primary-btn" id="subscribe-btn">Subscribe for $5/mo</button>
-      <button class="modal-secondary" id="signout-from-paywall-btn">Sign out</button>
     </div>
   </div>
 </div>
@@ -588,15 +588,6 @@ async function startCheckout() {
 document.getElementById("subscribe-btn").addEventListener("click", startCheckout);
 
 document.getElementById("signout-btn").addEventListener("click", async () => {
-  try {
-    await fetch(API_BASE + "/api/logout", { method: "POST", headers: authHeaders() });
-  } catch (err) {}
-  clearToken();
-  showLogin();
-});
-
-document.getElementById("signout-from-paywall-btn").addEventListener("click", async () => {
-  document.getElementById("paywall-overlay").classList.remove("active");
   try {
     await fetch(API_BASE + "/api/logout", { method: "POST", headers: authHeaders() });
   } catch (err) {}
