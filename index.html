@@ -187,6 +187,48 @@ img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-
 .mode-row { display: flex; gap: 8px; }
 .mode-btn { flex: 1; padding: 6px; border-radius: 14px; background: var(--panel-2); font-size: 12px; text-align: center; }
 .mode-btn.active { background: var(--accent); color: var(--accent-ink); }
+
+/* ---------- embeds (structured/report-style assistant messages) ---------- */
+.bubble.embed {
+  max-width: 480px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+.bubble.embed ol { margin: 0 0 0 18px; padding: 0; }
+.bubble.embed ol > li { margin-bottom: 10px; }
+.bubble.embed ol > li:last-child { margin-bottom: 0; }
+.embed-sublist { margin: 4px 0 0 18px; padding: 0; }
+.embed-sublist li { margin-bottom: 3px; color: var(--text-dim); }
+
+/* small inline copy affordance next to `code` spans */
+.inline-copy-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 16px; height: 16px; margin-left: 2px; border-radius: 4px;
+  color: var(--text-faintest); vertical-align: -3px; transition: background 0.15s, color 0.15s;
+}
+.inline-copy-btn:hover { background: var(--panel-2); color: var(--text-dim); }
+.inline-copy-btn svg { width: 11px; height: 11px; display: block; }
+
+/* ---------- mails ---------- */
+.mail-nav-badge {
+  margin-left: auto; background: var(--accent); color: var(--accent-ink);
+  font-size: 10.5px; font-weight: 600; border-radius: 999px; padding: 1px 6px; line-height: 1.4;
+}
+.mail-item { display: flex; gap: 10px; padding: 10px 12px; border-radius: 12px; text-align: left; width: 100%; }
+.mail-item:hover { background: var(--panel-2); }
+.mail-item .mail-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; margin-top: 6px; }
+.mail-item.read .mail-dot { background: transparent; }
+.mail-item .mail-body { flex: 1; min-width: 0; }
+.mail-item .mail-top { display: flex; justify-content: space-between; gap: 8px; }
+.mail-item .mail-from { font-size: 13.5px; color: var(--text); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mail-item.read .mail-from { font-weight: 500; color: var(--text-dim); }
+.mail-item .mail-date { font-size: 11.5px; color: var(--text-faintest); flex-shrink: 0; }
+.mail-item .mail-subject { font-size: 13px; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
+.mail-item .mail-snippet { font-size: 12.5px; color: var(--text-faintest); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
+.mail-empty { color: var(--text-faintest); font-size: 13px; padding: 18px 8px; text-align: center; }
 </style>
 </head>
 <body>
@@ -242,6 +284,15 @@ img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-
       <button class="sidebar-item" id="code-btn">
         <img class="icon" src="icons/code.png" alt="">
         <span>Code</span>
+      </button>
+    </div>
+
+    <div class="sidebar-section-label">Mails</div>
+    <div class="sidebar-nav" style="margin-top: 0;">
+      <button class="sidebar-item" id="mails-btn">
+        <img class="icon" src="icons/mail.png" alt="" onerror="this.style.display='none'">
+        <span>Inbox</span>
+        <span class="mail-nav-badge" id="mail-badge" style="display:none;"></span>
       </button>
     </div>
 
@@ -324,6 +375,18 @@ img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-
     <input id="search-input" type="text" placeholder="Search your conversations..." style="width:100%;background:var(--panel-2);border:1px solid var(--border);border-radius:16px;padding:10px 14px;font-size:14px;outline:none;margin-bottom:14px;">
     <div id="search-results" style="display:flex;flex-direction:column;gap:2px;max-height:320px;overflow-y:auto;"></div>
     <button class="modal-secondary" id="close-search-btn" style="margin-top:14px;">Close</button>
+  </div>
+</div>
+
+<div class="overlay" id="mails-overlay">
+  <div class="modal" style="max-width: 480px;">
+    <h3 style="display:flex;align-items:center;justify-content:space-between;">
+      <span>Mails</span>
+      <button class="modal-secondary" id="refresh-mails-btn" style="padding:2px 6px;">Refresh</button>
+    </h3>
+    <p>Emails received on your connected account.</p>
+    <div id="mails-list" style="display:flex;flex-direction:column;gap:2px;max-height:380px;overflow-y:auto;"></div>
+    <button class="modal-secondary" id="close-mails-btn" style="margin-top:14px;">Close</button>
   </div>
 </div>
 
@@ -538,6 +601,91 @@ function renderSearchResults(list) {
   });
 }
 
+/* ---------- mails ---------- */
+let allMails = [];
+
+async function loadMails() {
+  const list = document.getElementById("mails-list");
+  list.innerHTML = '<div class="mail-empty">Loading…</div>';
+  try {
+    const res = await fetch(API_BASE + "/api/mails", { headers: authHeaders() });
+    if (!res.ok) throw new Error("bad status");
+    const data = await res.json();
+    allMails = data.mails || data.emails || [];
+    renderMails();
+    updateMailBadge();
+  } catch (err) {
+    list.innerHTML = '<div class="mail-empty">Couldn\'t load mail. Connect an account and try again.</div>';
+    updateMailBadge();
+  }
+}
+
+function updateMailBadge() {
+  const badge = document.getElementById("mail-badge");
+  const unread = allMails.filter((m) => !m.read).length;
+  if (unread > 0) {
+    badge.textContent = unread > 99 ? "99+" : String(unread);
+    badge.style.display = "inline-block";
+  } else {
+    badge.style.display = "none";
+  }
+}
+
+function formatMailDate(value) {
+  if (!value) return "";
+  const d = new Date(value);
+  if (isNaN(d.getTime())) return String(value);
+  const now = new Date();
+  const sameDay = d.toDateString() === now.toDateString();
+  return sameDay
+    ? d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })
+    : d.toLocaleDateString([], { month: "short", day: "numeric" });
+}
+
+function renderMails() {
+  const list = document.getElementById("mails-list");
+  list.innerHTML = "";
+  if (allMails.length === 0) {
+    list.innerHTML = '<div class="mail-empty">No emails yet.</div>';
+    return;
+  }
+  allMails.forEach((mail) => {
+    const item = document.createElement("button");
+    item.className = "mail-item" + (mail.read ? " read" : "");
+    item.innerHTML =
+      '<div class="mail-dot"></div>' +
+      '<div class="mail-body">' +
+        '<div class="mail-top">' +
+          '<div class="mail-from"></div>' +
+          '<div class="mail-date"></div>' +
+        '</div>' +
+        '<div class="mail-subject"></div>' +
+        '<div class="mail-snippet"></div>' +
+      '</div>';
+    item.querySelector(".mail-from").textContent = mail.from || mail.sender || "Unknown sender";
+    item.querySelector(".mail-date").textContent = formatMailDate(mail.date);
+    item.querySelector(".mail-subject").textContent = mail.subject || "(no subject)";
+    item.querySelector(".mail-snippet").textContent = mail.snippet || "";
+    item.addEventListener("click", () => {
+      mail.read = true;
+      renderMails();
+      updateMailBadge();
+    });
+    list.appendChild(item);
+  });
+}
+
+document.getElementById("mails-btn").addEventListener("click", () => {
+  document.getElementById("mails-overlay").classList.add("active");
+  loadMails();
+});
+
+document.getElementById("close-mails-btn").addEventListener("click", () => {
+  document.getElementById("mails-overlay").classList.remove("active");
+});
+
+document.getElementById("refresh-mails-btn").addEventListener("click", loadMails);
+
 /* ---------- theme ---------- */
 function renderSwatches() {
   const row = document.getElementById("swatch-row");
@@ -678,6 +826,7 @@ function showChat(user) {
   renderTrialPill(user);
   loadModels();
   loadConversations();
+  loadMails();
 }
 
 function renderTrialPill(user) {
@@ -821,17 +970,32 @@ function parseInline(container, text) {
       strong.textContent = token.slice(2, -2);
       container.appendChild(strong);
     } else {
+      const codeText = token.slice(1, -1);
       const code = document.createElement("code");
-      code.textContent = token.slice(1, -1);
+      code.textContent = codeText;
       code.title = "Click to copy";
       code.style.cssText = "font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:0.88em;background:rgba(127,127,127,0.2);padding:1px 6px;border-radius:5px;cursor:pointer;";
       code.addEventListener("click", () => {
-        navigator.clipboard.writeText(code.textContent);
+        navigator.clipboard.writeText(codeText);
         const original = code.textContent;
         code.textContent = "Copied!";
         setTimeout(() => { code.textContent = original; }, 900);
       });
       container.appendChild(code);
+
+      const copyIcon = document.createElement("button");
+      copyIcon.type = "button";
+      copyIcon.className = "inline-copy-btn";
+      copyIcon.title = "Copy";
+      copyIcon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg>';
+      copyIcon.addEventListener("click", (ev) => {
+        ev.stopPropagation();
+        navigator.clipboard.writeText(codeText);
+        const original = copyIcon.innerHTML;
+        copyIcon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>';
+        setTimeout(() => { copyIcon.innerHTML = original; }, 900);
+      });
+      container.appendChild(copyIcon);
     }
     lastIndex = regex.lastIndex;
   }
@@ -889,8 +1053,22 @@ function renderProse(container, text) {
         const li = document.createElement("li");
         li.style.marginBottom = "3px";
         parseInline(li, lines[i].trim().replace(/^\d+\.\s+/, ""));
-        ol.appendChild(li);
         i++;
+        // Bullets immediately following a numbered line belong to that
+        // item (e.g. "1. Main IDE: * Editor... * Terminal...") — nest
+        // them instead of flattening everything into one level.
+        if (i < lines.length && /^[*-]\s+/.test(lines[i].trim())) {
+          const sub = document.createElement("ul");
+          sub.className = "embed-sublist";
+          while (i < lines.length && /^[*-]\s+/.test(lines[i].trim())) {
+            const subLi = document.createElement("li");
+            parseInline(subLi, lines[i].trim().replace(/^[*-]\s+/, ""));
+            sub.appendChild(subLi);
+            i++;
+          }
+          li.appendChild(sub);
+        }
+        ol.appendChild(li);
       }
       container.appendChild(ol);
       continue;
@@ -948,12 +1126,21 @@ function renderMessageContent(bubble, text) {
   }
 }
 
+// A message reads like a structured report/breakdown (multiple numbered
+// sections, at least one with sub-bullets) rather than plain conversational
+// text — render those as a distinct "embed" card instead of a plain bubble.
+function isStructuredContent(text) {
+  const numberedLines = text.match(/^\s*\d+\.\s+.+$/gm) || [];
+  if (numberedLines.length < 2) return false;
+  return /^\s*[*-]\s+/m.test(text);
+}
+
 function addBubble(role, text, imageUrl) {
   const list = document.getElementById("messages-list");
   const row = document.createElement("div");
   row.className = "msg-row " + role;
   const bubble = document.createElement("div");
-  bubble.className = "bubble " + role;
+  bubble.className = "bubble " + role + (role === "assistant" && isStructuredContent(text) ? " embed" : "");
   if (imageUrl) {
     const img = document.createElement("img");
     img.src = imageUrl;
