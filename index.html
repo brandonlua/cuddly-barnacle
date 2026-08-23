@@ -158,6 +158,7 @@ img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-
 #chat-input:disabled { cursor: not-allowed; }
 .icon-btn { padding: 8px; border-radius: 50%; color: var(--text-faint); transition: background 0.15s, color 0.15s; }
 .icon-btn:hover { background: var(--panel-2); }
+#mic-btn svg { transform: translateY(1px); display: block; }
 .icon-btn.recording { color: #ea4335; background: rgba(234,67,53,0.12); animation: mic-pulse 1s infinite; }
 @keyframes mic-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.55; } }
 #send-btn { padding: 8px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); transition: background 0.15s, opacity 0.15s; }
@@ -459,7 +460,7 @@ async function openConversation(id) {
     } else {
       document.getElementById("empty-state").style.display = "none";
       document.getElementById("messages-list").style.display = "flex";
-      conv.messages.forEach((m) => addBubble(m.role === "model" ? "assistant" : "user", m.text));
+      conv.messages.forEach((m) => addBubble(m.role, m.text));
     }
     document.querySelector("#chat-header span").textContent = conv.title;
     applyModeUI();
@@ -806,6 +807,101 @@ chatInput.addEventListener("keydown", (e) => {
 });
 
 /* ---------- messages / code rendering ---------- */
+function parseInline(container, text) {
+  const regex = /(\*\*[^*]+?\*\*|`[^`]+?`)/g;
+  let lastIndex = 0;
+  let match;
+  while ((match = regex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      container.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
+    }
+    const token = match[0];
+    if (token.startsWith("**")) {
+      const strong = document.createElement("strong");
+      strong.textContent = token.slice(2, -2);
+      container.appendChild(strong);
+    } else {
+      const code = document.createElement("code");
+      code.textContent = token.slice(1, -1);
+      code.title = "Click to copy";
+      code.style.cssText = "font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:0.88em;background:rgba(127,127,127,0.2);padding:1px 6px;border-radius:5px;cursor:pointer;";
+      code.addEventListener("click", () => {
+        navigator.clipboard.writeText(code.textContent);
+        const original = code.textContent;
+        code.textContent = "Copied!";
+        setTimeout(() => { code.textContent = original; }, 900);
+      });
+      container.appendChild(code);
+    }
+    lastIndex = regex.lastIndex;
+  }
+  if (lastIndex < text.length) {
+    container.appendChild(document.createTextNode(text.slice(lastIndex)));
+  }
+}
+
+function renderProse(container, text) {
+  const lines = text.replace(/^\n+|\n+$/g, "").split("\n");
+  let i = 0;
+  let paragraphBuffer = [];
+
+  function flushParagraph() {
+    if (paragraphBuffer.length === 0) return;
+    const p = document.createElement("div");
+    p.style.marginBottom = "6px";
+    paragraphBuffer.forEach((line, idx) => {
+      parseInline(p, line);
+      if (idx < paragraphBuffer.length - 1) p.appendChild(document.createElement("br"));
+    });
+    container.appendChild(p);
+    paragraphBuffer = [];
+  }
+
+  while (i < lines.length) {
+    const trimmed = lines[i].trim();
+
+    if (trimmed === "") {
+      flushParagraph();
+      i++;
+      continue;
+    }
+
+    if (/^[*-]\s+/.test(trimmed)) {
+      flushParagraph();
+      const ul = document.createElement("ul");
+      ul.style.cssText = "margin:4px 0 8px 20px;padding:0;";
+      while (i < lines.length && /^[*-]\s+/.test(lines[i].trim())) {
+        const li = document.createElement("li");
+        li.style.marginBottom = "3px";
+        parseInline(li, lines[i].trim().replace(/^[*-]\s+/, ""));
+        ul.appendChild(li);
+        i++;
+      }
+      container.appendChild(ul);
+      continue;
+    }
+
+    if (/^\d+\.\s+/.test(trimmed)) {
+      flushParagraph();
+      const ol = document.createElement("ol");
+      ol.style.cssText = "margin:4px 0 8px 20px;padding:0;";
+      while (i < lines.length && /^\d+\.\s+/.test(lines[i].trim())) {
+        const li = document.createElement("li");
+        li.style.marginBottom = "3px";
+        parseInline(li, lines[i].trim().replace(/^\d+\.\s+/, ""));
+        ol.appendChild(li);
+        i++;
+      }
+      container.appendChild(ol);
+      continue;
+    }
+
+    paragraphBuffer.push(lines[i]);
+    i++;
+  }
+  flushParagraph();
+}
+
 function renderMessageContent(bubble, text) {
   const fence = /```(\w*)\n?([\s\S]*?)```/g;
   let lastIndex = 0;
@@ -814,7 +910,7 @@ function renderMessageContent(bubble, text) {
   while ((match = fence.exec(text)) !== null) {
     found = true;
     const before = text.slice(lastIndex, match.index);
-    if (before) bubble.appendChild(document.createTextNode(before));
+    if (before.trim()) renderProse(bubble, before);
 
     const code = match[2].replace(/\n$/, "");
     const wrap = document.createElement("div");
@@ -845,8 +941,11 @@ function renderMessageContent(bubble, text) {
     lastIndex = fence.lastIndex;
   }
   const rest = text.slice(lastIndex);
-  if (rest) bubble.appendChild(document.createTextNode(rest));
-  if (!found) bubble.textContent = text;
+  if (found) {
+    if (rest.trim()) renderProse(bubble, rest);
+  } else {
+    renderProse(bubble, text);
+  }
 }
 
 function addBubble(role, text, imageUrl) {
