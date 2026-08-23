@@ -17,6 +17,7 @@
   --accent: #d97757;
   --accent-hover: #c96a4c;
   --accent-ink: #1a1915;
+  --icon-filter: brightness(0) invert(1);
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
@@ -28,7 +29,7 @@ body {
 }
 button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
 input, textarea { font-family: inherit; color: inherit; }
-img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-shrink: 0; }
+img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-shrink: 0; filter: var(--icon-filter); }
 
 #login-screen {
   min-height: 100vh;
@@ -135,6 +136,15 @@ img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-
 .bubble { max-width: 420px; padding: 10px 16px; border-radius: 16px; line-height: 1.5; }
 .bubble.user { background: var(--accent); color: var(--accent-ink); border-bottom-right-radius: 4px; }
 .bubble.assistant { background: var(--panel); color: var(--text); border-bottom-left-radius: 4px; }
+
+.typing-dots { display: flex; align-items: center; gap: 4px; padding: 4px 0; }
+.typing-dots span { width: 6px; height: 6px; border-radius: 50%; background: var(--text-faint); animation: typing-bounce 1.2s infinite ease-in-out; }
+.typing-dots span:nth-child(2) { animation-delay: 0.15s; }
+.typing-dots span:nth-child(3) { animation-delay: 0.3s; }
+@keyframes typing-bounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+  30% { transform: translateY(-4px); opacity: 1; }
+}
 
 #input-area { padding: 0 24px 24px; }
 #input-form {
@@ -318,13 +328,6 @@ img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-
 const API_BASE = "https://frosty-moon-2b57.oakambe24fi.workers.dev";
 const TOKEN_KEY = "asaplimo_session_token";
 const ACCENT_OPTIONS = ["#d97757", "#8b6bf2", "#4dabf7", "#51cf66", "#ff6b9d", "#f5a623"];
-const recentChats = [
-  "Cross-platform app idea",
-  "Recording audio with ffmpeg",
-  "Sober Linux executor UI",
-  "The inevitability of foreseen future",
-  "AI UI design feedback"
-];
 
 function getToken() {
   return localStorage.getItem(TOKEN_KEY);
@@ -356,6 +359,14 @@ function captureTokenFromUrl() {
     window.history.replaceState({}, "", newUrl);
   }
 }
+const recentChats = [
+  "Cross-platform app idea",
+  "Recording audio with ffmpeg",
+  "Sober Linux executor UI",
+  "The inevitability of foreseen future",
+  "Minecraft OpenGL context error",
+  "AI UI design feedback"
+];
 
 function renderRecents() {
   const list = document.getElementById("recents-list");
@@ -399,6 +410,7 @@ function setMode(mode) {
     root.setProperty("--text-dim", "#57534a");
     root.setProperty("--text-faint", "#8c887d");
     root.setProperty("--text-faintest", "#9c988d");
+    root.setProperty("--icon-filter", "none");
   } else {
     root.setProperty("--bg", "#1a1915");
     root.setProperty("--panel", "#232019");
@@ -408,6 +420,7 @@ function setMode(mode) {
     root.setProperty("--text-dim", "#c9c5b9");
     root.setProperty("--text-faint", "#8c887d");
     root.setProperty("--text-faintest", "#6b6860");
+    root.setProperty("--icon-filter", "brightness(0) invert(1)");
   }
   localStorage.setItem("mode", mode);
   document.querySelectorAll(".mode-btn").forEach((b) => {
@@ -559,6 +572,24 @@ function addBubble(role, text) {
   document.getElementById("messages-area").scrollTop = document.getElementById("messages-area").scrollHeight;
 }
 
+function showTyping() {
+  const list = document.getElementById("messages-list");
+  const row = document.createElement("div");
+  row.className = "msg-row assistant";
+  row.id = "typing-row";
+  const bubble = document.createElement("div");
+  bubble.className = "bubble assistant";
+  bubble.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
+  row.appendChild(bubble);
+  list.appendChild(row);
+  document.getElementById("messages-area").scrollTop = document.getElementById("messages-area").scrollHeight;
+}
+
+function removeTyping() {
+  const row = document.getElementById("typing-row");
+  if (row) row.remove();
+}
+
 async function sendMessage() {
   const text = chatInput.value.trim();
   if (!text) return;
@@ -570,6 +601,7 @@ async function sendMessage() {
   chatInput.value = "";
   chatInput.style.height = "auto";
   sendBtn.disabled = true;
+  showTyping();
 
   try {
     const res = await fetch(API_BASE + "/api/chat", {
@@ -577,6 +609,7 @@ async function sendMessage() {
       headers: authHeaders({ "Content-Type": "application/json" }),
       body: JSON.stringify({ message: text })
     });
+    removeTyping();
     if (res.status === 402) {
       document.getElementById("paywall-overlay").classList.add("active");
       return;
@@ -584,6 +617,7 @@ async function sendMessage() {
     const data = await res.json();
     addBubble("assistant", data.reply || "No response.");
   } catch (err) {
+    removeTyping();
     addBubble("assistant", "Could not reach the server.");
   }
 }
