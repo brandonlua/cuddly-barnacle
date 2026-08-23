@@ -1,3 +1,4 @@
+html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -263,11 +264,11 @@ img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-
 .msg-attachment-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* ---------- file attach chips (pending, in the input area) ---------- */
-#file-preview-wrap { display: none; }
+#file-preview-wrap { display: none; display: flex; flex-wrap: wrap; gap: 8px; max-width: min(94%, 980px); margin: 0 auto 8px; }
 .file-chip {
   display: flex; align-items: center; gap: 8px; background: var(--panel-2);
   border: 1px solid var(--border); border-radius: 12px; padding: 6px 8px 6px 6px;
-  max-width: 220px;
+  max-width: 240px;
 }
 .file-chip-thumb { width: 36px; height: 36px; border-radius: 8px; object-fit: cover; flex-shrink: 0; display: block; }
 .file-chip-icon {
@@ -276,8 +277,9 @@ img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-
   flex-shrink: 0;
 }
 .file-chip-meta { min-width: 0; display: flex; flex-direction: column; }
-.file-chip-name { font-size: 12px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px; }
-.file-chip-size { font-size: 10.5px; color: var(--text-faintest); }
+.file-chip-name { font-size: 12px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; }
+.file-chip-size { font-size: 10.5px; color: var(--text-faintest); display: flex; align-items: center; gap: 4px; }
+.file-chip-badge { background: var(--border); color: var(--text-dim); font-size: 9.5px; padding: 0 4px; border-radius: 4px; font-weight: 600; text-transform: uppercase; }
 .file-chip-remove {
   width: 18px; height: 18px; border-radius: 50%; background: var(--panel); border: 1px solid var(--border);
   font-size: 12px; line-height: 1; display: flex; align-items: center; justify-content: center; color: var(--text-dim);
@@ -1082,7 +1084,7 @@ const sendBtn = document.getElementById("send-btn");
 const inputForm = document.getElementById("input-form");
 
 function updateSendState() {
-  sendBtn.disabled = isSending || (chatInput.value.trim().length === 0 && pendingFiles.length === 0);
+  sendBtn.disabled = isSending || (chatInput.value.trim().length === 0 && pendingFiles.length === 0 && !pendingPastedText);
 }
 
 chatInput.addEventListener("input", () => {
@@ -1090,8 +1092,21 @@ chatInput.addEventListener("input", () => {
   updateSendState();
 });
 
-/* ---------- file attachments ---------- */
+/* ---------- pasted text & file attachments ---------- */
 let pendingFiles = [];
+let pendingPastedText = null; // Holds the long text object when pasted
+
+chatInput.addEventListener("paste", (e) => {
+  const pasted = (e.clipboardData || window.clipboardData).getData("text");
+  if (pasted && pasted.length > LONG_MSG_EMBED_THRESHOLD) {
+    e.preventDefault();
+    pendingPastedText = pasted;
+    chatInput.value = "";
+    autoGrow(chatInput);
+    renderFileChips();
+    updateSendState();
+  }
+});
 
 function fileExt(name) {
   const parts = (name || "").split(".");
@@ -1109,15 +1124,51 @@ function formatBytes(bytes) {
 function renderFileChips() {
   const wrap = document.getElementById("file-preview-wrap");
   wrap.innerHTML = "";
-  if (pendingFiles.length === 0) {
+  const hasFiles = pendingFiles.length > 0;
+  const hasText = pendingPastedText !== null;
+
+  if (!hasFiles && !hasText) {
     wrap.style.display = "none";
     return;
   }
   wrap.style.display = "flex";
-  wrap.style.flexWrap = "wrap";
-  wrap.style.gap = "8px";
-  wrap.style.maxWidth = "min(94%, 980px)";
-  wrap.style.margin = "0 auto 8px";
+
+  // Render pasted text chip (Claude style)
+  if (hasText) {
+    const chip = document.createElement("div");
+    chip.className = "file-chip";
+    const icon = document.createElement("div");
+    icon.className = "file-chip-icon";
+    icon.style.background = "var(--text-faint)";
+    icon.textContent = "TXT";
+    chip.appendChild(icon);
+
+    const meta = document.createElement("div");
+    meta.className = "file-chip-meta";
+    const nameEl = document.createElement("div");
+    nameEl.className = "file-chip-name";
+    nameEl.textContent = pendingPastedText.slice(0, 24).trim() + "…";
+    const sizeEl = document.createElement("div");
+    sizeEl.className = "file-chip-size";
+    sizeEl.innerHTML = '<span class="file-chip-badge">Pasted</span> ' + pendingPastedText.length + " chars";
+    meta.appendChild(nameEl);
+    meta.appendChild(sizeEl);
+    chip.appendChild(meta);
+
+    const rm = document.createElement("button");
+    rm.type = "button";
+    rm.className = "file-chip-remove";
+    rm.textContent = "×";
+    rm.addEventListener("click", () => {
+      pendingPastedText = null;
+      renderFileChips();
+      updateSendState();
+    });
+    chip.appendChild(rm);
+    wrap.appendChild(chip);
+  }
+
+  // Render file chips
   pendingFiles.forEach((f, idx) => {
     const chip = document.createElement("div");
     chip.className = "file-chip";
@@ -1157,8 +1208,9 @@ function renderFileChips() {
   });
 }
 
-function clearPendingFiles() {
+function clearPendingInputs() {
   pendingFiles = [];
+  pendingPastedText = null;
   document.getElementById("file-input").value = "";
   renderFileChips();
 }
@@ -1575,7 +1627,7 @@ function addBubble(role, text, attachments, thinking) {
 let lastUserMessage = null;
 
 async function regenerateLast() {
-  if (isSending || !lastUserMessage || !currentConversationId) return;
+  if (isSending || (!lastUserMessage && !lastUserAttachments)) return;
   setSending(true);
   showTyping();
   try {
@@ -1662,7 +1714,9 @@ async function ensureConversation() {
 
 async function sendMessage() {
   if (isSending) return;
-  const text = chatInput.value.trim();
+  const typedText = chatInput.value.trim();
+  const text = pendingPastedText ? (typedText ? pendingPastedText + "\n\n" + typedText : pendingPastedText) : typedText;
+
   if (!text && pendingFiles.length === 0) return;
 
   document.getElementById("empty-state").style.display = "none";
@@ -1671,7 +1725,7 @@ async function sendMessage() {
   const filesToSend = pendingFiles.slice();
   lastUserMessage = text;
   addBubble("user", text, filesToSend);
-  clearPendingFiles();
+  clearPendingInputs();
   chatInput.value = "";
   chatInput.style.height = "auto";
   setSending(true);
@@ -1835,3 +1889,4 @@ checkSession();
 
 </body>
 </html>
+```
