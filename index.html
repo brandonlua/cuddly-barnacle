@@ -260,6 +260,16 @@ img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-
       <span>New chat</span>
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
 
+      <button class="theme-toggle" id="model-toggle-btn" style="margin-left: auto; margin-right: 8px; display: flex; align-items: center; gap: 6px; padding: 6px 10px; border: 1px solid var(--border); border-radius: 8px;">
+        <span id="model-label" style="font-size: 13px; color: var(--text-dim);">Haiku 4.5</span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+
+      <div class="theme-panel" id="model-panel" style="right: 100px;">
+        <h4>Model</h4>
+        <div id="model-list" style="display: flex; flex-direction: column; gap: 4px;"></div>
+      </div>
+
       <div class="theme-panel" id="theme-panel">
         <h4>Accent color</h4>
         <div class="swatch-row" id="swatch-row"></div>
@@ -437,7 +447,60 @@ function applyStoredTheme() {
 
 document.getElementById("theme-toggle-btn").addEventListener("click", () => {
   document.getElementById("theme-panel").classList.toggle("active");
+  document.getElementById("model-panel").classList.remove("active");
 });
+
+document.getElementById("model-toggle-btn").addEventListener("click", () => {
+  document.getElementById("model-panel").classList.toggle("active");
+  document.getElementById("theme-panel").classList.remove("active");
+});
+
+async function loadModels() {
+  try {
+    const res = await fetch(API_BASE + "/api/models", { headers: authHeaders() });
+    const data = await res.json();
+    if (!data.models) return;
+    renderModelList(data.models, data.current);
+  } catch (err) {}
+}
+
+function renderModelList(models, current) {
+  const list = document.getElementById("model-list");
+  list.innerHTML = "";
+  models.forEach((m) => {
+    const row = document.createElement("button");
+    row.style.cssText = "width:100%;text-align:left;padding:8px 10px;border-radius:8px;font-size:13px;display:flex;align-items:center;justify-content:space-between;color:var(--text-dim);";
+    row.innerHTML = "<span>" + m.label + "</span>" + (m.locked ? "<span style=\"font-size:11px;color:var(--text-faintest);\">Paid only</span>" : "");
+    if (m.id === current) {
+      row.style.background = "var(--panel-2)";
+      row.style.color = "var(--text)";
+    }
+    row.addEventListener("click", () => selectModel(m));
+    list.appendChild(row);
+  });
+  const currentModel = models.find((m) => m.id === current);
+  if (currentModel) document.getElementById("model-label").textContent = currentModel.label;
+}
+
+async function selectModel(model) {
+  if (model.locked) {
+    document.getElementById("model-panel").classList.remove("active");
+    document.getElementById("paywall-overlay").classList.add("active");
+    return;
+  }
+  try {
+    const res = await fetch(API_BASE + "/api/set-model", {
+      method: "POST",
+      headers: authHeaders({ "Content-Type": "application/json" }),
+      body: JSON.stringify({ model: model.id })
+    });
+    if (res.ok) {
+      document.getElementById("model-label").textContent = model.label;
+      document.getElementById("model-panel").classList.remove("active");
+      loadModels();
+    }
+  } catch (err) {}
+}
 
 document.querySelectorAll(".mode-btn").forEach((btn) => {
   btn.addEventListener("click", () => setMode(btn.dataset.mode));
@@ -459,6 +522,7 @@ function showChat(user) {
     avatarSlot.textContent = (user.email || "U").charAt(0).toUpperCase();
   }
   renderTrialPill(user);
+  loadModels();
 }
 
 function renderTrialPill(user) {
