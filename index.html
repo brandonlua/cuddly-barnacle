@@ -234,7 +234,7 @@ img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-
 .embed-sublist { margin: 4px 0 0 18px; padding: 0; }
 .embed-sublist li { margin-bottom: 3px; color: var(--text-dim); }
 
-/* long pasted user text gets collapsed with a fade + toggle, same idea as Claude's message cards */
+/* long pasted user text gets collapsed with a fade + toggle */
 .long-msg-collapsed { max-height: 160px; overflow: hidden; position: relative; white-space: pre-wrap; word-break: break-word; }
 .long-msg-collapsed:not(.expanded)::after {
   content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 40px;
@@ -254,7 +254,7 @@ img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-
 
 /* ---------- attachments (files/images sent or received in a bubble) ---------- */
 .msg-attachments { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
-.msg-attachment-img { width: 120px; height: 120px; object-fit: cover; border-radius: 10px; display: block; }
+.msg-attachment-img { width: 48px; height: 48px; object-fit: cover; border-radius: 8px; display: block; border: 1px solid rgba(255,255,255,0.1); }
 .msg-attachment-file {
   display: flex; align-items: center; gap: 8px; background: var(--panel-2); border: 1px solid var(--border);
   border-radius: 10px; padding: 7px 12px; font-size: 12px; color: var(--text-dim); max-width: 220px;
@@ -332,8 +332,6 @@ img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-
   #chat-header { padding: 0 12px; }
   #messages-area { padding: 20px 12px; }
   #input-area { padding: 0 12px 16px; }
-  /* on a narrow display there's little room next to a message anyway,
-     so let bubbles use most of the width instead of a fixed max */
   .bubble { max-width: 90%; }
   .bubble.embed { max-width: 94%; }
 }
@@ -1619,7 +1617,7 @@ function removeTyping() {
   if (row) row.remove();
 }
 
-/* ---------- titles (AI-generated server-side, with a client fallback) ---------- */
+/* ---------- titles ---------- */
 function deriveTitle(text) {
   let t = (text || "").replace(/\s+/g, " ").trim();
   if (t.length > 42) t = t.slice(0, 42).trim() + "…";
@@ -1638,7 +1636,7 @@ function applyTitle(title) {
   renderRecents();
 }
 
-/* ---------- sending (blocks spam while AI is replying) ---------- */
+/* ---------- sending ---------- */
 function setSending(sending) {
   isSending = sending;
   chatInput.disabled = sending;
@@ -1727,13 +1725,7 @@ document.getElementById("input-form").addEventListener("submit", (e) => {
   sendMessage();
 });
 
-/* ---------- voice input ----------
-   Chrome/Edge/Safari ship a native SpeechRecognition API, so we use that
-   directly. Firefox has never implemented SpeechRecognition/
-   webkitSpeechRecognition at all (not partially — not present), so for
-   Firefox (and anywhere else it's missing) we fall back to recording audio
-   with MediaRecorder and sending it to the backend's /api/transcribe
-   endpoint, which has Gemini do the transcription instead. */
+/* ---------- voice input ---------- */
 const micBtn = document.getElementById("mic-btn");
 const SpeechRecognitionCtor = window.SpeechRecognition || window.webkitSpeechRecognition;
 const useFallbackRecording = !SpeechRecognitionCtor;
