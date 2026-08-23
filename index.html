@@ -1000,7 +1000,7 @@ chatInput.addEventListener("keydown", (e) => {
 
 /* ---------- messages / code rendering ---------- */
 function parseInline(container, text) {
-  const regex = /(\*\*[^*]+?\*\*|`[^`]+?`)/g;
+  const regex = /(!\[[^\]]*?\]\([^)]+?\)|\*\*[^*]+?\*\*|`[^`]+?`)/g;
   let lastIndex = 0;
   let match;
   while ((match = regex.exec(text)) !== null) {
@@ -1008,7 +1008,14 @@ function parseInline(container, text) {
       container.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
     }
     const token = match[0];
-    if (token.startsWith("**")) {
+    if (token.startsWith("![")) {
+      const imgMatch = /^!\[([^\]]*?)\]\(([^)]+?)\)$/.exec(token);
+      const alt = imgMatch ? imgMatch[1] : "";
+      const wrap = document.createElement("span");
+      wrap.style.cssText = "display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:10px;background:var(--panel-2);color:var(--text-faintest);font-size:12.5px;font-style:italic;";
+      wrap.textContent = "Generating image" + (alt ? ": " + alt : "") + "…";
+      container.appendChild(wrap);
+    } else if (token.startsWith("**")) {
       const strong = document.createElement("strong");
       strong.textContent = token.slice(2, -2);
       container.appendChild(strong);
