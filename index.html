@@ -3,7 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>asaplimo</title>
+<title>asaplimo — AI Chatbot</title>
+<meta name="description" content="Your intelligent AI companion for homework, coding, writing, and everyday problem solving.">
+<link rel="icon" type="image/png" href="icons/logo.png">
+
+<!-- Open Graph / Social Embed Meta Tags -->
+<meta property="og:title" content="asaplimo — AI Chatbot">
+<meta property="og:description" content="Your intelligent AI companion for homework, coding, writing, and everyday problem solving.">
+<meta property="og:image" content="icons/logo.png">
+<meta property="og:type" content="website">
+
+<!-- Twitter Card Meta Tags -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="asaplimo — AI Chatbot">
+<meta name="twitter:description" content="Your intelligent AI companion for homework, coding, writing, and everyday problem solving.">
+<meta name="twitter:image" content="icons/logo.png">
+
 <style>
 :root {
   --bg: #1a1915;
@@ -42,12 +57,13 @@ img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-
 .login-logo-wrap { display: flex; flex-direction: column; align-items: center; margin-bottom: 32px; }
 .login-logo {
   width: 48px; height: 48px; border-radius: 50%;
-  background: conic-gradient(from 180deg, #4285f4 0deg 90deg, #ea4335 90deg 180deg, #fbbc05 180deg 270deg, #34a853 270deg 360deg);
+  background: var(--panel-2); border: 1px solid var(--border);
   display: flex; align-items: center; justify-content: center;
   margin-bottom: 20px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+  overflow: hidden;
 }
-.login-logo span { color: #fff; font-weight: 700; font-size: 18px; text-shadow: 0 1px 2px rgba(0,0,0,0.35); }
+.login-logo img { width: 32px; height: 32px; object-fit: contain; }
 .login-title { font-size: 20px; font-weight: 500; letter-spacing: -0.01em; }
 .login-sub { font-size: 14px; color: var(--text-faintest); margin-top: 4px; }
 
@@ -125,8 +141,14 @@ img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-
 
 #messages-area { flex: 1; overflow-y: auto; padding: 32px 24px; }
 #empty-state { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-.empty-logo { width: 44px; height: 44px; border-radius: 50%; background: conic-gradient(from 180deg, #4285f4 0deg 90deg, #ea4335 90deg 180deg, #fbbc05 180deg 270deg, #34a853 270deg 360deg); display: flex; align-items: center; justify-content: center; margin-bottom: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.25); }
-.empty-logo span { color: #fff; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.35); }
+.empty-logo {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--panel-2); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+  overflow: hidden;
+}
+.empty-logo img { width: 28px; height: 28px; object-fit: contain; }
 #empty-state h2 { font-size: 21px; font-weight: 500; }
 #empty-state p { font-size: 14px; color: var(--text-faintest); margin-top: 4px; max-width: 380px; }
 
@@ -262,7 +284,7 @@ img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-
 .msg-attachment-ext { font-weight: 700; font-size: 10px; color: var(--accent); flex-shrink: 0; }
 .msg-attachment-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-/* ---------- file attach chips (pending, in the input area) ---------- */
+/* ---------- file & text attach chips (pending, in the input area) ---------- */
 #file-preview-wrap { display: none; display: flex; flex-wrap: wrap; gap: 8px; max-width: min(94%, 980px); margin: 0 auto 8px; }
 .file-chip {
   display: flex; align-items: center; gap: 8px; background: var(--panel-2);
@@ -373,7 +395,7 @@ img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-
 <div id="login-screen">
   <div class="login-box">
     <div class="login-logo-wrap">
-      <div class="login-logo"><span>A</span></div>
+      <div class="login-logo"><img src="icons/logo.png" alt="asaplimo"></div>
       <div class="login-title">Sign in to continue</div>
       <div class="login-sub">4 days free, then $5/month</div>
     </div>
@@ -501,9 +523,9 @@ img.icon { width: 16px; height: 16px; object-fit: contain; display: block; flex-
 
     <div id="messages-area">
       <div id="empty-state">
-        <div class="empty-logo"><span>A</span></div>
+        <div class="empty-logo"><img src="icons/logo.png" alt="asaplimo"></div>
         <h2 id="empty-greeting">Hi there</h2>
-        <p>Ask anything — I'll pick up right where placeholder replies leave off once the AI endpoint is connected.</p>
+        <p>Your intelligent AI companion for homework, coding, writing, and everyday problem solving.</p>
       </div>
       <div id="messages-list"></div>
     </div>
@@ -589,7 +611,7 @@ const TOKEN_KEY = "asaplimo_session_token";
 const ACCENT_OPTIONS = ["#4285f4", "#ea4335", "#fbbc05", "#34a853", "#8b6bf2", "#ff6b9d"];
 const LONG_MSG_EMBED_THRESHOLD = 170;
 const LONG_MSG_COLLAPSE_THRESHOLD = 500;
-const MAX_FILES = 5;
+const MAX_TOTAL_ITEMS = 15;
 const MAX_FILE_SIZE = 15 * 1024 * 1024;
 
 /* ---------- storage / cookies availability check ---------- */
@@ -627,12 +649,7 @@ function getCookie(name) {
 }
 
 function initStorageCheck() {
-  // Show the cookie notice on every load until the user dismisses it.
-  // Dismissal is remembered via a plain cookie (not localStorage) so it
-  // still works even for the exact users this notice is meant for —
-  // people with storage partially blocked.
   if (getCookie("asaplimo_cookie_notice_dismissed") === "1") return;
-
   showStorageBanner();
   const dismissBtn = document.getElementById("storage-banner-dismiss");
   const closeBtn = document.getElementById("storage-banner-close");
@@ -1194,8 +1211,12 @@ const chatInput = document.getElementById("chat-input");
 const sendBtn = document.getElementById("send-btn");
 const inputForm = document.getElementById("input-form");
 
+function totalAttachedCount() {
+  return pendingFiles.length + pendingPastedTexts.length;
+}
+
 function updateSendState() {
-  sendBtn.disabled = isSending || (chatInput.value.trim().length === 0 && pendingFiles.length === 0 && !pendingPastedText);
+  sendBtn.disabled = isSending || (chatInput.value.trim().length === 0 && totalAttachedCount() === 0);
 }
 
 chatInput.addEventListener("input", () => {
@@ -1205,15 +1226,17 @@ chatInput.addEventListener("input", () => {
 
 /* ---------- pasted text & file attachments ---------- */
 let pendingFiles = [];
-let pendingPastedText = null; // Holds the long text object when pasted
+let pendingPastedTexts = []; // Array to hold multiple pasted long texts
 
 chatInput.addEventListener("paste", (e) => {
   const pasted = (e.clipboardData || window.clipboardData).getData("text");
   if (pasted && pasted.length > LONG_MSG_EMBED_THRESHOLD) {
     e.preventDefault();
-    pendingPastedText = pasted;
-    chatInput.value = "";
-    autoGrow(chatInput);
+    if (totalAttachedCount() >= MAX_TOTAL_ITEMS) {
+      alert("You can attach up to " + MAX_TOTAL_ITEMS + " items total.");
+      return;
+    }
+    pendingPastedTexts.push(pasted);
     renderFileChips();
     updateSendState();
   }
@@ -1235,17 +1258,16 @@ function formatBytes(bytes) {
 function renderFileChips() {
   const wrap = document.getElementById("file-preview-wrap");
   wrap.innerHTML = "";
-  const hasFiles = pendingFiles.length > 0;
-  const hasText = pendingPastedText !== null;
+  const totalCount = totalAttachedCount();
 
-  if (!hasFiles && !hasText) {
+  if (totalCount === 0) {
     wrap.style.display = "none";
     return;
   }
   wrap.style.display = "flex";
 
-  // Render pasted text chip (Claude style)
-  if (hasText) {
+  // Render pasted text chips
+  pendingPastedTexts.forEach((txt, idx) => {
     const chip = document.createElement("div");
     chip.className = "file-chip";
     const icon = document.createElement("div");
@@ -1258,10 +1280,10 @@ function renderFileChips() {
     meta.className = "file-chip-meta";
     const nameEl = document.createElement("div");
     nameEl.className = "file-chip-name";
-    nameEl.textContent = pendingPastedText.slice(0, 24).trim() + "…";
+    nameEl.textContent = txt.slice(0, 24).trim() + "…";
     const sizeEl = document.createElement("div");
     sizeEl.className = "file-chip-size";
-    sizeEl.innerHTML = '<span class="file-chip-badge">Pasted</span> ' + pendingPastedText.length + " chars";
+    sizeEl.innerHTML = '<span class="file-chip-badge">Pasted</span> ' + txt.length + " chars";
     meta.appendChild(nameEl);
     meta.appendChild(sizeEl);
     chip.appendChild(meta);
@@ -1271,13 +1293,13 @@ function renderFileChips() {
     rm.className = "file-chip-remove";
     rm.textContent = "×";
     rm.addEventListener("click", () => {
-      pendingPastedText = null;
+      pendingPastedTexts.splice(idx, 1);
       renderFileChips();
       updateSendState();
     });
     chip.appendChild(rm);
     wrap.appendChild(chip);
-  }
+  });
 
   // Render file chips
   pendingFiles.forEach((f, idx) => {
@@ -1321,16 +1343,16 @@ function renderFileChips() {
 
 function clearPendingInputs() {
   pendingFiles = [];
-  pendingPastedText = null;
+  pendingPastedTexts = [];
   document.getElementById("file-input").value = "";
   renderFileChips();
 }
 
 function handleFiles(fileList) {
   const files = Array.from(fileList);
-  const room = MAX_FILES - pendingFiles.length;
+  const room = MAX_TOTAL_ITEMS - totalAttachedCount();
   if (files.length > room) {
-    alert("You can attach up to " + MAX_FILES + " files at a time.");
+    alert("You can attach up to " + MAX_TOTAL_ITEMS + " items total.");
   }
   files.slice(0, Math.max(0, room)).forEach((file) => {
     if (file.size > MAX_FILE_SIZE) {
@@ -1738,7 +1760,7 @@ function addBubble(role, text, attachments, thinking) {
 let lastUserMessage = null;
 
 async function regenerateLast() {
-  if (isSending || (!lastUserMessage && !lastUserAttachments)) return;
+  if (isSending || (!lastUserMessage)) return;
   setSending(true);
   showTyping();
   try {
@@ -1826,7 +1848,15 @@ async function ensureConversation() {
 async function sendMessage() {
   if (isSending) return;
   const typedText = chatInput.value.trim();
-  const text = pendingPastedText ? (typedText ? pendingPastedText + "\n\n" + typedText : pendingPastedText) : typedText;
+  
+  let combinedParts = [];
+  if (pendingPastedTexts.length > 0) {
+    combinedParts.push(pendingPastedTexts.join("\n\n---\n\n"));
+  }
+  if (typedText) {
+    combinedParts.push(typedText);
+  }
+  const text = combinedParts.join("\n\n");
 
   if (!text && pendingFiles.length === 0) return;
 
