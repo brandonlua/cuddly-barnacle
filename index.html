@@ -240,7 +240,7 @@ img.icon { width: 15px; height: 15px; object-fit: contain; display: block; flex-
 }
 .bubble.assistant { background: transparent; border: none; padding: 0; color: var(--text); }
 
-.typing-dots { display: flex; align-items: center; gap: 4px; padding: 4px 0; position: relative; top: 1px; }
+.typing-dots { display: flex; align-items: center; gap: 4px; padding: 4px 0; position: relative; top: 3px; }
 .typing-dots span { width: 6px; height: 6px; border-radius: 50%; background: var(--text-faint); animation: typing-bounce 1.2s infinite ease-in-out; }
 .typing-dots span:nth-child(2) { animation-delay: 0.15s; }
 .typing-dots span:nth-child(3) { animation-delay: 0.3s; }
@@ -272,7 +272,7 @@ img.icon { width: 15px; height: 15px; object-fit: contain; display: block; flex-
 .icon-btn:hover { background: var(--panel-3); }
 .icon-btn.recording { color: #ea4335; background: rgba(234,67,53,0.12); animation: mic-pulse 1s infinite; }
 @keyframes mic-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.55; } }
-#image-btn { position: relative; top: -1px; }
+#image-btn { position: relative; top: 1px; }
 #send-btn { padding: 9px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); transition: background 0.15s, opacity 0.15s; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; }
 #send-btn svg { display: block; }
 #send-btn:hover { background: var(--accent-hover); }
@@ -409,6 +409,17 @@ img.icon { width: 15px; height: 15px; object-fit: contain; display: block; flex-
   font-size: 12px; line-height: 1; display: flex; align-items: center; justify-content: center; color: var(--text-dim);
   flex-shrink: 0; margin-left: 2px;
 }
+
+.file-result-list { display: flex; flex-direction: column; gap: 8px; margin: 10px 0; }
+.file-result-card { display: flex; align-items: center; gap: 12px; background: var(--panel-2); border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px; }
+.file-result-icon { width: 34px; height: 34px; border-radius: 8px; background: var(--panel-3); color: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 10.5px; font-weight: 700; flex-shrink: 0; }
+.file-result-meta { flex: 1; min-width: 0; }
+.file-result-name { font-size: 13.5px; color: var(--text); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.file-result-sub { font-size: 11.5px; color: var(--text-faintest); margin-top: 1px; }
+.file-result-download { font-size: 12.5px; padding: 6px 14px; border-radius: 12px; background: var(--panel-3); color: var(--text-dim); font-weight: 500; flex-shrink: 0; }
+.file-result-download:hover { background: var(--panel); }
+.file-result-download-all { align-self: flex-start; font-size: 12.5px; padding: 7px 14px; border-radius: 12px; background: var(--panel-2); border: 1px solid var(--border); color: var(--text-dim); font-weight: 500; display: flex; align-items: center; gap: 6px; }
+.file-result-download-all:hover { background: var(--panel-3); }
 
 .dropzone-overlay {
   position: fixed; inset: 0; background: rgba(217,119,87,0.12);
@@ -2109,12 +2120,6 @@ function renderMessageContent(bubble, text) {
   }
 }
 
-function isStructuredContent(text) {
-  const numberedLines = text.match(/^\s*\d+\.\s+.+$/gm) || [];
-  if (numberedLines.length < 2) return false;
-  return /^\s*[*-]\s+/m.test(text);
-}
-
 function renderAttachments(bubble, attachments) {
   if (!attachments || attachments.length === 0) return;
   const attWrap = document.createElement("div");
@@ -2142,6 +2147,64 @@ function renderAttachments(bubble, attachments) {
   bubble.appendChild(attWrap);
 }
 
+function fileTypeLabel(name) {
+  const ext = (name.split(".").pop() || "").toLowerCase();
+  const map = { html: "HTML", js: "JS", java: "Java", jar: "JAR", txt: "Text", py: "Python", css: "CSS", json: "JSON", md: "Markdown", xml: "XML", sh: "Shell" };
+  return map[ext] || ext.toUpperCase();
+}
+
+function downloadFileResult(file) {
+  const blob = new Blob([file.content || ""], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = file.name;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function renderFileResults(bubble, files) {
+  const wrap = document.createElement("div");
+  wrap.className = "file-result-list";
+  files.forEach((file) => {
+    const card = document.createElement("div");
+    card.className = "file-result-card";
+    const icon = document.createElement("div");
+    icon.className = "file-result-icon";
+    icon.textContent = fileExt(file.name);
+    const meta = document.createElement("div");
+    meta.className = "file-result-meta";
+    const name = document.createElement("div");
+    name.className = "file-result-name";
+    name.textContent = file.name;
+    const sub = document.createElement("div");
+    sub.className = "file-result-sub";
+    sub.textContent = "Code · " + fileTypeLabel(file.name);
+    meta.appendChild(name);
+    meta.appendChild(sub);
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "file-result-download";
+    btn.textContent = "Download";
+    btn.addEventListener("click", () => downloadFileResult(file));
+    card.appendChild(icon);
+    card.appendChild(meta);
+    card.appendChild(btn);
+    wrap.appendChild(card);
+  });
+  if (files.length > 1) {
+    const allBtn = document.createElement("button");
+    allBtn.type = "button";
+    allBtn.className = "file-result-download-all";
+    allBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span>Download all</span>';
+    allBtn.addEventListener("click", () => files.forEach(downloadFileResult));
+    wrap.appendChild(allBtn);
+  }
+  bubble.appendChild(wrap);
+}
+
 function formatTimestamp() {
   return new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
 }
@@ -2153,7 +2216,7 @@ function speakText(text) {
   window.speechSynthesis.speak(utter);
 }
 
-function addBubble(role, text, attachments, thinking, browsed) {
+function addBubble(role, text, attachments, thinking, browsed, files) {
   const list = document.getElementById("messages-list");
   const row = document.createElement("div");
   row.className = "msg-row " + role;
@@ -2188,7 +2251,7 @@ function addBubble(role, text, attachments, thinking, browsed) {
   const isLongUser = role === "user" && !!text && text.length > LONG_MSG_EMBED_THRESHOLD;
 
   const bubble = document.createElement("div");
-  bubble.className = "bubble " + role + ((role === "assistant" && isStructuredContent(text)) || isLongUser ? " embed" : "");
+  bubble.className = "bubble " + role + (isLongUser ? " embed" : "");
 
   renderAttachments(bubble, attachments);
 
@@ -2200,6 +2263,9 @@ function addBubble(role, text, attachments, thinking, browsed) {
       bubble.appendChild(badge);
     }
     renderMessageContent(bubble, text);
+    if (files && files.length) {
+      renderFileResults(bubble, files);
+    }
   } else if (text) {
     if (isLongUser && text.length > LONG_MSG_COLLAPSE_THRESHOLD) {
       const textWrap = document.createElement("div");
@@ -2303,6 +2369,7 @@ function addBubble(role, text, attachments, thinking, browsed) {
 }
 
 let lastUserMessage = null;
+let browsingTimer = null;
 
 async function regenerateLast() {
   if (isSending || (!lastUserMessage)) return;
@@ -2320,7 +2387,7 @@ async function regenerateLast() {
       return;
     }
     const data = await res.json();
-    addBubble("assistant", data.reply || "No response.", null, data.thinking, data.browsed);
+    addBubble("assistant", data.reply || "No response.", null, data.thinking, data.browsed, data.files);
   } catch (err) {
     removeTyping();
     addBubble("assistant", "Could not reach the server.");
@@ -2339,14 +2406,25 @@ function showTyping() {
   avatar.innerHTML = '<img src="icons/logo.png" alt="">';
   const bubble = document.createElement("div");
   bubble.className = "bubble assistant";
+  bubble.id = "typing-bubble";
   bubble.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
   row.appendChild(avatar);
   row.appendChild(bubble);
   list.appendChild(row);
   document.getElementById("messages-area").scrollTop = document.getElementById("messages-area").scrollHeight;
+  browsingTimer = setTimeout(() => {
+    const b = document.getElementById("typing-bubble");
+    if (!b) return;
+    b.innerHTML = '<div class="browsing-row"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span>Browsing the web…</span></div>';
+    document.getElementById("messages-area").scrollTop = document.getElementById("messages-area").scrollHeight;
+  }, 3000);
 }
 
 function removeTyping() {
+  if (browsingTimer) {
+    clearTimeout(browsingTimer);
+    browsingTimer = null;
+  }
   const row = document.getElementById("typing-row");
   if (row) row.remove();
 }
@@ -2426,14 +2504,17 @@ async function sendMessage() {
 
   try {
     const conversationId = await ensureConversation();
-    const imageFile = filesToSend.find((f) => f.isImage) || null;
+    const imageFiles = filesToSend.filter((f) => f.isImage);
+    const otherFiles = filesToSend.filter((f) => !f.isImage);
     const res = await fetch(API_BASE + "/api/chat", {
       method: "POST",
       headers: authHeaders({ "Content-Type": "application/json" }),
       body: JSON.stringify({
         message: text,
         conversationId,
-        image: imageFile ? { mimeType: imageFile.mimeType, data: imageFile.base64 } : null
+        image: imageFiles[0] ? { mimeType: imageFiles[0].mimeType, data: imageFiles[0].base64, name: imageFiles[0].name } : null,
+        images: imageFiles.map((f) => ({ mimeType: f.mimeType, data: f.base64, name: f.name })),
+        files: otherFiles.map((f) => ({ name: f.name, mimeType: f.mimeType, data: f.base64, isText: f.isText }))
       })
     });
     removeTyping();
@@ -2442,7 +2523,7 @@ async function sendMessage() {
       return;
     }
     const data = await res.json();
-    addBubble("assistant", data.reply || "No response.", null, data.thinking, data.browsed);
+    addBubble("assistant", data.reply || "No response.", null, data.thinking, data.browsed, data.files);
     if (data.title) {
       applyTitle(data.title);
     } else {
