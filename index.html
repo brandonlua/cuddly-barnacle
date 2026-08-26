@@ -49,6 +49,7 @@ body {
 button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
 input, textarea { font-family: inherit; color: inherit; }
 svg.stroke-icon { stroke: currentColor; }
+img.icon { width: 15px; height: 15px; object-fit: contain; display: block; flex-shrink: 0; filter: var(--icon-filter); }
 
 #login-screen {
   min-height: 100vh;
@@ -390,6 +391,40 @@ svg.stroke-icon { stroke: currentColor; }
 .mail-item .mail-snippet { font-size: 12.5px; color: var(--text-faintest); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
 .mail-empty { color: var(--text-faintest); font-size: 13px; padding: 18px 8px; text-align: center; }
 
+.settings-overlay-inner {
+  width: 100%; max-width: 860px; height: min(78vh, 640px);
+  background: var(--panel); border: 1px solid var(--border); border-radius: 18px;
+  display: flex; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+}
+.settings-nav-pane { width: 220px; flex-shrink: 0; border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 14px 10px; }
+.settings-search { display: flex; align-items: center; gap: 8px; background: var(--panel-2); border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px; margin: 0 4px 14px; }
+.settings-search input { flex: 1; background: transparent; border: none; outline: none; font-size: 13px; color: var(--text); }
+.settings-search input::placeholder { color: var(--text-faintest); }
+.settings-section-label { font-size: 11px; color: var(--text-faintest); text-transform: uppercase; letter-spacing: 0.04em; padding: 0 8px; margin: 6px 0 6px; }
+.settings-nav-item {
+  display: flex; align-items: center; gap: 10px; width: 100%; text-align: left;
+  padding: 8px 10px; border-radius: 9px; font-size: 13.5px; color: var(--text-dim); transition: background 0.15s, color 0.15s;
+}
+.settings-nav-item:hover { background: var(--panel-2); }
+.settings-nav-item.active { background: var(--panel-3); color: var(--text); font-weight: 500; }
+.settings-nav-item svg { flex-shrink: 0; color: var(--text-faint); }
+.settings-content-pane { flex: 1; min-width: 0; display: flex; flex-direction: column; position: relative; }
+.settings-content-close { position: absolute; top: 14px; right: 14px; padding: 6px; border-radius: 8px; color: var(--text-faintest); }
+.settings-content-close:hover { background: var(--panel-2); color: var(--text-dim); }
+.settings-content-scroll { flex: 1; overflow-y: auto; padding: 26px 30px 30px; }
+.settings-heading { font-size: 15px; font-weight: 600; margin-bottom: 18px; }
+.settings-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.settings-row:last-child { border-bottom: none; }
+.settings-row-label { font-size: 13.5px; color: var(--text); }
+.settings-row-sub { font-size: 12px; color: var(--text-faintest); margin-top: 2px; }
+.settings-profile-avatar { width: 56px; height: 56px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 600; overflow: hidden; }
+.settings-profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.appearance-toggle { display: flex; gap: 6px; background: var(--panel-2); border: 1px solid var(--border); border-radius: 10px; padding: 3px; }
+.appearance-toggle button { padding: 6px 10px; border-radius: 8px; color: var(--text-faint); }
+.appearance-toggle button.active { background: var(--panel-3); color: var(--text); }
+.settings-signout-row { margin-top: 6px; }
+.settings-signout-row button { color: #ea4335; font-size: 13.5px; padding: 8px 0; }
+
 .storage-banner {
   position: fixed; left: 16px; bottom: 16px; z-index: 70;
   display: none;
@@ -507,23 +542,23 @@ svg.stroke-icon { stroke: currentColor; }
       </div>
 
       <button class="new-chat-pill" id="new-chat-btn">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <img class="icon" src="icons/newchat.png" alt="" onerror="this.style.display='none'">
         <span>New chat</span>
       </button>
 
       <button class="sidebar-search" id="search-btn">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <img class="icon" src="icons/search.png" alt="" onerror="this.style.display='none'">
         <span>Search chats...</span>
       </button>
     </div>
 
     <div class="sidebar-nav">
       <button class="sidebar-item" id="code-btn">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        <img class="icon" src="icons/code.png" alt="" onerror="this.style.display='none'">
         <span>Code</span>
       </button>
       <button class="sidebar-item" id="mails-btn">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M22 6l-10 7L2 6"/></svg>
+        <img class="icon" src="icons/mail.png" alt="" onerror="this.style.display='none'">
         <span>Inbox</span>
         <span class="mail-nav-badge" id="mail-badge" style="display:none;"></span>
       </button>
@@ -662,6 +697,37 @@ svg.stroke-icon { stroke: currentColor; }
       <input id="network-code-input" type="text" placeholder="Enter code" style="width:100%;background:var(--panel-2);border:1px solid var(--border);border-radius:16px;padding:10px 14px;font-size:14px;outline:none;text-transform:uppercase;">
       <button class="primary-btn" id="network-code-submit-btn" style="margin-top:8px;">Unlock</button>
       <div id="network-code-error" style="display:none;font-size:12.5px;color:#ea4335;margin-top:6px;text-align:center;">That code isn't valid.</div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="settings-overlay">
+  <div class="settings-overlay-inner">
+    <div class="settings-nav-pane">
+      <div class="settings-search">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="settings-search-input" placeholder="Search settings">
+      </div>
+      <div class="settings-section-label">Settings</div>
+      <button class="settings-nav-item active" data-panel="general">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span>General</span>
+      </button>
+      <button class="settings-nav-item" data-panel="appearance">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg>
+        <span>Appearance</span>
+      </button>
+      <button class="settings-nav-item" data-panel="account">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>Account</span>
+      </button>
+    </div>
+
+    <div class="settings-content-pane">
+      <button type="button" class="settings-content-close" id="settings-close-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="settings-content-scroll" id="settings-content-scroll"></div>
     </div>
   </div>
 </div>
@@ -1075,9 +1141,133 @@ document.getElementById("theme-toggle-btn").addEventListener("click", () => {
 });
 
 document.getElementById("settings-btn").addEventListener("click", () => {
-  document.getElementById("theme-panel").classList.toggle("active");
-  document.getElementById("model-panel").classList.remove("active");
+  openSettingsModal("general");
 });
+
+function openSettingsModal(panel) {
+  document.getElementById("settings-overlay").classList.add("active");
+  document.querySelectorAll(".settings-nav-item").forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.panel === panel);
+  });
+  renderSettingsPanel(panel);
+}
+
+function closeSettingsModal() {
+  document.getElementById("settings-overlay").classList.remove("active");
+}
+
+document.getElementById("settings-close-btn").addEventListener("click", closeSettingsModal);
+
+document.getElementById("settings-overlay").addEventListener("click", (e) => {
+  if (e.target.id === "settings-overlay") closeSettingsModal();
+});
+
+document.querySelectorAll(".settings-nav-item").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".settings-nav-item").forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+    renderSettingsPanel(btn.dataset.panel);
+  });
+});
+
+document.getElementById("settings-search-input").addEventListener("input", (e) => {
+  const q = e.target.value.trim().toLowerCase();
+  document.querySelectorAll(".settings-nav-item").forEach((btn) => {
+    const label = btn.querySelector("span").textContent.toLowerCase();
+    btn.style.display = !q || label.includes(q) ? "flex" : "none";
+  });
+});
+
+function currentInitial() {
+  return currentUser && currentUser.email ? currentUser.email.charAt(0).toUpperCase() : "U";
+}
+
+function renderSettingsPanel(panel) {
+  const scroll = document.getElementById("settings-content-scroll");
+  const currentMode = localStorage.getItem("mode") || "dark";
+
+  if (panel === "appearance") {
+    scroll.innerHTML =
+      '<div class="settings-heading">Appearance</div>' +
+      '<div class="settings-row">' +
+        '<div><div class="settings-row-label">Theme</div><div class="settings-row-sub">Choose light or dark mode</div></div>' +
+        '<div class="appearance-toggle" id="settings-mode-toggle">' +
+          '<button type="button" data-mode="dark" class="' + (currentMode === "dark" ? "active" : "") + '">Dark</button>' +
+          '<button type="button" data-mode="light" class="' + (currentMode === "light" ? "active" : "") + '">Light</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:10px;">' +
+        '<div><div class="settings-row-label">Accent color</div><div class="settings-row-sub">Used across buttons and highlights</div></div>' +
+        '<div class="swatch-row" id="settings-swatch-row" style="margin-bottom:0;"></div>' +
+      '</div>';
+
+    document.querySelectorAll("#settings-mode-toggle button").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        setMode(btn.dataset.mode);
+        document.querySelectorAll("#settings-mode-toggle button").forEach((b) => b.classList.toggle("active", b === btn));
+      });
+    });
+
+    const row = document.getElementById("settings-swatch-row");
+    const current = localStorage.getItem("accent") || ACCENT_OPTIONS[0];
+    ACCENT_OPTIONS.forEach((color) => {
+      const sw = document.createElement("div");
+      sw.className = "swatch" + (color === current ? " active" : "");
+      sw.style.background = color;
+      sw.addEventListener("click", () => {
+        setAccent(color);
+        row.querySelectorAll(".swatch").forEach((s) => s.classList.remove("active"));
+        sw.classList.add("active");
+      });
+      row.appendChild(sw);
+    });
+    return;
+  }
+
+  if (panel === "account") {
+    const email = currentUser && currentUser.email ? currentUser.email : "";
+    const plan = currentUser && currentUser.paid ? "Paid plan" : (currentUser && currentUser.onTrial ? "Free trial" : "Free plan");
+    scroll.innerHTML =
+      '<div class="settings-heading">Account</div>' +
+      '<div class="settings-row">' +
+        '<div><div class="settings-row-label">Email</div><div class="settings-row-sub">' + email + '</div></div>' +
+      '</div>' +
+      '<div class="settings-row">' +
+        '<div><div class="settings-row-label">Plan</div><div class="settings-row-sub">' + plan + '</div></div>' +
+      '</div>' +
+      '<div class="settings-signout-row">' +
+        '<button type="button" id="settings-signout-btn">Sign out</button>' +
+      '</div>';
+    document.getElementById("settings-signout-btn").addEventListener("click", () => {
+      closeSettingsModal();
+      document.getElementById("signout-btn").click();
+    });
+    return;
+  }
+
+  const name = currentUser && currentUser.name ? currentUser.name : (currentUser ? displayNameFor(currentUser) : "");
+  const email = currentUser && currentUser.email ? currentUser.email : "";
+  const pic = currentUser && currentUser.picture ? '<img src="' + currentUser.picture + '" alt="">' : currentInitial();
+
+  scroll.innerHTML =
+    '<div class="settings-heading">Profile</div>' +
+    '<div class="settings-row">' +
+      '<div class="settings-row-label">Avatar</div>' +
+      '<div class="settings-profile-avatar">' + pic + '</div>' +
+    '</div>' +
+    '<div class="settings-row">' +
+      '<div><div class="settings-row-label">Name</div><div class="settings-row-sub">' + (name || "Not set") + '</div></div>' +
+    '</div>' +
+    '<div class="settings-row">' +
+      '<div><div class="settings-row-label">Email</div><div class="settings-row-sub">' + email + '</div></div>' +
+    '</div>' +
+    '<div class="settings-row">' +
+      '<div><div class="settings-row-label">Theme</div><div class="settings-row-sub">Manage colors and dark/light mode</div></div>' +
+      '<button type="button" class="modal-secondary" id="settings-goto-appearance">Appearance settings</button>' +
+    '</div>';
+
+  document.getElementById("settings-goto-appearance").addEventListener("click", () => openSettingsModal("appearance"));
+}
 
 document.getElementById("model-toggle-btn").addEventListener("click", () => {
   document.getElementById("model-panel").classList.toggle("active");
