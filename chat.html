@@ -1,1 +1,99 @@
+<div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+<div id="chat-screen" style="height:100vh;width:100%;display:none;font-size:14px;">
+  <aside id="sidebar" style="width:268px;flex-shrink:0;background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column;">
+    <div class="sidebar-top" style="padding:16px 14px 10px;">
+      <div class="sidebar-brand" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <div class="sidebar-brand-left" style="display:flex;align-items:center;gap:8px;font-weight:600;font-size:15px;letter-spacing:-0.01em;">
+          <div class="sidebar-brand-logo" style="width:22px;height:22px;border-radius:6px;overflow:hidden;"><img src="icons/logo.png" alt="" style="width:100%;height:100%;object-fit:contain;"></div>
+          <span>asaplimo</span>
+        </div>
+      </div>
 
+      <button class="new-chat-pill" id="new-chat-btn" style="width:100%;display:flex;align-items:center;gap:8px;justify-content:center;background:var(--panel-3);border:1px solid var(--border);color:var(--text);font-weight:500;font-size:13.5px;border-radius:20px;padding:9px 14px;">
+        <img class="icon" src="icons/newchat.png" alt="">
+        <span>New chat</span>
+      </button>
+
+      <button class="sidebar-search" id="search-btn" style="width:100%;display:flex;align-items:center;gap:8px;background:var(--panel-2);border:1px solid var(--border);border-radius:20px;padding:8px 14px;margin-top:8px;color:var(--text-faintest);font-size:13px;">
+        <img class="icon" src="icons/search.png" alt="">
+        <span>Search chats...</span>
+      </button>
+    </div>
+
+    <div class="sidebar-nav" style="padding:4px 14px 0;display:flex;flex-direction:column;gap:1px;">
+      <button class="sidebar-item" id="code-btn" style="width:100%;display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;color:var(--text-dim);font-size:13.5px;background:transparent;text-align:left;">
+        <img class="icon" src="icons/code.png" alt="">
+        <span>Code</span>
+      </button>
+      <button class="sidebar-item" id="mails-btn" style="width:100%;display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;color:var(--text-dim);font-size:13.5px;background:transparent;text-align:left;">
+        <img class="icon" src="icons/mail.png" alt="">
+        <span>Inbox</span>
+        <span class="mail-nav-badge" id="mail-badge" style="display:none;margin-left:auto;background:var(--accent);color:var(--accent-ink);font-size:10.5px;font-weight:600;border-radius:999px;padding:1px 6px;"></span>
+      </button>
+    </div>
+
+    <div class="sidebar-section-label" style="padding:0 14px;margin-top:18px;margin-bottom:6px;font-size:11.5px;color:var(--text-faintest);font-weight:600;text-transform:uppercase;">Chats and tasks</div>
+    <div class="sidebar-recents" id="recents-list" style="flex:1;overflow-y:auto;padding:0 10px;"></div>
+
+    <div id="trial-pill-wrap"></div>
+
+    <div class="sidebar-footer" style="border-top:1px solid var(--border);padding:10px;display:flex;align-items:center;gap:6px;">
+      <button class="signout-btn" id="signout-btn" style="flex:1;min-width:0;display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:10px;background:transparent;">
+        <div class="avatar" id="avatar-slot" style="width:26px;height:26px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:var(--accent-ink);flex-shrink:0;overflow:hidden;">U</div>
+        <div class="signout-text" style="min-width:0;flex:1;text-align:left;">
+          <div class="signout-name" id="user-email" style="font-size:12.5px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Sign out</div>
+          <div class="signout-sub" id="user-plan-sub" style="font-size:11px;color:var(--text-faintest);">Free plan</div>
+        </div>
+      </button>
+      <button class="settings-btn" id="settings-btn" title="Settings" style="padding:8px;border-radius:10px;color:var(--text-faintest);">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+    </div>
+  </aside>
+
+  <main id="main-panel" style="flex:1;display:flex;flex-direction:column;min-width:0;">
+    <header id="chat-header" style="height:56px;flex-shrink:0;display:flex;align-items:center;padding:0 22px;border-bottom:1px solid var(--border);color:var(--text-dim);position:relative;">
+      <button class="theme-toggle" id="hamburger-btn" title="Menu" style="padding:6px;border-radius:50%;color:var(--text-faintest);display:none;margin-right:6px;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <span class="chat-title" style="font-size:14px;font-weight:500;">New chat</span>
+      <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-left:4px;color:var(--text-faintest);"><polyline points="6 9 12 15 18 9"/></svg>
+
+      <button class="theme-toggle" id="model-toggle-btn" style="margin-left:auto;margin-right:8px;display:flex;align-items:center;gap:6px;padding:6px 12px;border:1px solid var(--border);border-radius:16px;background:var(--panel-2);">
+        <span id="model-label" style="font-size:13px;color:var(--text-dim);">Flash Lite</span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+
+      <div class="theme-panel" id="model-panel" style="position:absolute;top:54px;right:100px;width:210px;background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:14px;z-index:40;opacity:0;transform:scale(0.94) translateY(-6px);pointer-events:none;transition:all 0.14s ease;">
+        <h4 style="font-size:11px;text-transform:uppercase;letter-spacing:0.04em;color:var(--text-faintest);margin-bottom:10px;">Model</h4>
+        <div id="model-list" style="display:flex;flex-direction:column;gap:4px;"></div>
+      </div>
+    </header>
+
+    <div id="messages-area" style="flex:1;overflow-y:auto;padding:32px 24px 8px;">
+      <div id="empty-state" style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;">
+        <div class="empty-logo" style="width:44px;height:44px;border-radius:50%;background:var(--panel-2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin-bottom:16px;box-shadow:0 2px 10px rgba(0,0,0,0.25);overflow:hidden;"><img src="icons/logo.png" alt="asaplimo" style="width:28px;height:28px;object-fit:contain;"></div>
+        <h2 id="empty-greeting" style="font-size:21px;font-weight:500;">Hi there</h2>
+        <p style="font-size:14px;color:var(--text-faintest);margin-top:4px;max-width:380px;">Your intelligent AI companion for homework, coding, writing, and everyday problem solving.</p>
+      </div>
+      <div id="messages-list" style="max-width:min(94%,900px);margin:0 auto;display:none;flex-direction:column;gap:26px;padding-bottom:20px;"></div>
+    </div>
+
+    <div id="input-area" style="padding:0 24px 20px;">
+      <div id="file-preview-wrap" style="display:none;flex-wrap:wrap;gap:8px;max-width:min(94%,900px);margin:0 auto 8px;"></div>
+      <form id="input-form" style="max-width:min(94%,900px);margin:0 auto;background:var(--panel-2);border:1px solid var(--border);border-radius:26px;padding:6px;display:flex;align-items:flex-end;gap:4px;">
+        <div style="position: relative;">
+          <button type="button" class="icon-btn" id="image-btn" title="Add files or photos" style="padding:9px;border-radius:50%;color:var(--text-faint);display:inline-flex;align-items:center;justify-content:center;background:transparent;">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+        </div>
+        <input type="file" id="file-input" accept="*/*" multiple style="display:none">
+        <textarea id="chat-input" rows="1" placeholder="Ask anything..." style="flex:1;background:transparent;border:none;outline:none;resize:none;max-height:160px;padding:9px 6px;line-height:1.4;font-size:14px;"></textarea>
+        <button type="submit" id="send-btn" disabled style="padding:9px;border-radius:50%;background:var(--accent);color:var(--accent-ink);flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+        </button>
+      </form>
+      <p class="input-footnote" style="text-align:center;font-size:11.5px;color:var(--text-faintest);margin-top:10px;">asaplimo can make mistakes. Made by gbubemi (AKA Mitchell)</p>
+    </div>
+  </main>
+</div>
