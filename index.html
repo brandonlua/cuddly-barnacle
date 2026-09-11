@@ -21,7 +21,6 @@
 <meta name="twitter:image" content="icons/logo.png">
 
 <style>
-/* Base dynamic variables and resets shared globally */
 :root {
   --bg: #191815;
   --panel: #141310;
@@ -114,7 +113,6 @@ img.icon { width: 15px; height: 15px; object-fit: contain; display: block; flex-
 </head>
 <body>
 
-<!-- Dynamic UI Containers populated via fetch from login.html, chat.html, gui.html -->
 <div id="login-screen"></div>
 <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
 <div class="dropzone-overlay" id="dropzone-overlay">
@@ -141,7 +139,6 @@ img.icon { width: 15px; height: 15px; object-fit: contain; display: block; flex-
 
 <div id="chat-screen"></div>
 
-<!-- Global Modals (Search, Mails, Trials, Paywall, Settings) -->
 <div class="overlay" id="search-overlay">
   <div class="modal" style="max-width: 460px;">
     <h3>Search chats</h3>
@@ -243,7 +240,6 @@ img.icon { width: 15px; height: 15px; object-fit: contain; display: block; flex-
 </div>
 
 <script>
-// Load Partial HTML Layouts
 async function loadPartials() {
   try {
     const [loginRes, chatRes, guiRes] = await Promise.all([
@@ -254,14 +250,12 @@ async function loadPartials() {
     document.getElementById('login-screen').innerHTML = await loginRes.text();
     const chatHtml = await chatRes.text();
     const guiStyles = await guiRes.text();
-    
-    // Inject components
+
     document.getElementById('chat-screen').innerHTML = chatHtml;
     const styleTag = document.createElement('style');
     styleTag.innerHTML = guiStyles;
     document.head.appendChild(styleTag);
 
-    // Initialize logic after DOM injection
     initApp();
   } catch(e) {
     console.error("Failed to load partial layouts", e);
@@ -357,6 +351,8 @@ let allConversations = [];
 let isSending = false;
 let currentUser = null;
 let chatInput, sendBtn, inputForm;
+let lastUserMessage = null;
+let browsingTimer = null;
 
 function getTimeGreeting() {
   const h = new Date().getHours();
@@ -876,8 +872,6 @@ async function startCheckout() {
 
 let pendingFiles = [];
 let pendingPastedTexts = [];
-let lastUserMessage = null;
-let browsingTimer = null;
 
 function totalAttachedCount() { return pendingFiles.length + pendingPastedTexts.length; }
 
@@ -1388,9 +1382,6 @@ function addBubble(role, text, attachments, thinking, browsed, files) {
   document.getElementById("messages-area").scrollTop = document.getElementById("messages-area").scrollHeight;
 }
 
-let lastUserMessage = null;
-let browsingTimer = null;
-
 async function regenerateLast() {
   if (isSending || (!lastUserMessage)) return;
   setSending(true);
@@ -1500,7 +1491,9 @@ async function sendMessage() {
   }
   pendingFiles.forEach((f) => {
     if (f.isText && f.textContent) {
-      combinedParts.push("Attached file: " + f.name + "\n```\n" + f.textContent + "\n```"); });
+      combinedParts.push("Attached file: " + f.name + "\n```\n" + f.textContent + "\n```");
+    }
+  });
   if (typedText) combinedParts.push(typedText);
   const text = combinedParts.join("\n\n");
   if (!text && pendingFiles.length === 0) return;
@@ -1544,7 +1537,6 @@ async function sendMessage() {
   }
 }
 
-// Global initialization after partial load
 function initApp() {
   chatInput = document.getElementById("chat-input");
   sendBtn = document.getElementById("send-btn");
@@ -1570,7 +1562,7 @@ function initApp() {
 
   document.getElementById("new-chat-btn")?.addEventListener("click", () => createNewConversation("chat"));
   document.getElementById("code-btn")?.addEventListener("click", () => createNewConversation("code"));
-  
+
   document.getElementById("hamburger-btn")?.addEventListener("click", () => {
     document.getElementById("sidebar").classList.toggle("open");
     document.getElementById("sidebar-backdrop").classList.toggle("active");
@@ -1583,7 +1575,7 @@ function initApp() {
     document.getElementById("search-input").focus();
   });
   document.getElementById("close-search-btn")?.addEventListener("click", () => document.getElementById("search-overlay").classList.remove("active"));
-  
+
   document.getElementById("mails-btn")?.addEventListener("click", () => {
     document.getElementById("mails-overlay").classList.add("active");
     loadMails();
