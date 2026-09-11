@@ -1,0 +1,31 @@
+<div id="login-screen" style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:0 16px;">
+  <div class="login-box" style="width:100%;max-width:380px;">
+    <div class="login-logo-wrap" style="display:flex;flex-direction:column;align-items:center;margin-bottom:32px;">
+      <div class="login-logo" style="width:48px;height:48px;border-radius:50%;background:var(--panel-2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin-bottom:20px;box-shadow:0 2px 10px rgba(0,0,0,0.25);overflow:hidden;">
+        <img src="icons/logo.png" alt="asaplimo" style="width:32px;height:32px;object-fit:contain;">
+      </div>
+      <div class="login-title" style="font-size:20px;font-weight:500;letter-spacing:-0.01em;">Sign in to continue</div>
+      <div class="login-sub" style="font-size:14px;color:var(--text-faintest);margin-top:4px;">4 days free, then $5/month</div>
+    </div>
+
+    <button class="google-btn" id="google-btn" style="width:100%;display:flex;align-items:center;justify-content:center;gap:12px;border:1px solid var(--border);border-radius:24px;padding:10px;margin-bottom:12px;font-size:14px;transition:background 0.15s;background:transparent;">
+      <svg width="16" height="16" viewBox="0 0 48 48">
+        <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 3l6-6C34.5 5.1 29.6 3 24 3 12.4 3 3 12.4 3 24s9.4 21 21 21 21-9.4 21-21c0-1.2-.1-2.4-.4-3.5z"/>
+        <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.5 15.9 18.9 13 24 13c3.1 0 5.8 1.1 8 3l6-6C34.5 5.1 29.6 3 24 3 16.3 3 9.7 7.3 6.3 14.7z"/>
+        <path fill="#4CAF50" d="M24 45c5.5 0 10.4-1.9 14.1-5.1l-6.5-5.5C29.5 36.4 26.9 37 24 37c-5.2 0-9.6-3.3-11.3-8l-6.6 5.1C9.6 40.6 16.3 45 24 45z"/>
+        <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.2 4.2-4.1 5.6l6.5 5.5C41.4 35.9 45 30.5 45 24c0-1.2-.1-2.4-.4-3.5z"/>
+      </svg>
+      Continue with Google
+    </button>
+
+    <div class="divider" style="display:flex;align-items:center;gap:12px;margin:20px 0;"><div class="line" style="height:1px;flex:1;background:var(--border);"></div><span style="font-size:12px;color:var(--text-faintest);">OR</span><div class="line" style="height:1px;flex:1;background:var(--border);"></div></div>
+
+    <form id="email-form" style="display:flex;flex-direction:column;gap:12px;">
+      <input id="email-input" type="email" required placeholder="Enter your email" style="width:100%;background:var(--panel);border:1px solid var(--border);border-radius:24px;padding:10px 16px;font-size:14px;outline:none;">
+      <button type="submit" class="primary-btn">Continue with email</button>
+    </form>
+
+    <p class="login-footnote" style="font-size:12px;color:var(--text-faintest);text-align:center;margin-top:24px;line-height:1.5;">By continuing you agree to start a 4 day free trial, then $5/month.</p>
+    <p class="login-footnote" style="font-size:12px;color:var(--text-faintest);text-align:center;margin-top:8px;line-height:1.5;">Made by gbubemi (AKA Mitchell)</p>
+  </div>
+</div>
