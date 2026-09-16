@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>about — asaplimo</title>
+<style>
+:root{--bg:#0c0c0c;--fg:#33ff33;--dim:#1c8c1c;--border:#1f4d1f;--panel:#0f150f;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--fg);font-family:"Courier New",monospace;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px;}
+.box{width:100%;max-width:520px;border:1px solid var(--border);background:var(--panel);}
+.bar{display:flex;gap:6px;padding:8px 10px;border-bottom:1px solid var(--border);}
+.dot{width:10px;height:10px;border-radius:50%;}
+.dot.r{background:#ff5f56;}.dot.y{background:#ffbd2e;}.dot.g{background:#27c93f;}
+.term{padding:20px;line-height:1.7;}
+.line{margin-bottom:10px;}
+.prompt::before{content:"$ ";color:var(--dim);}
+a{color:var(--fg);}
+.back{display:inline-block;margin-top:10px;border:1px solid var(--border);padding:6px 10px;text-decoration:none;}
+.back:hover{background:#122612;}
+</style>
+</head>
+<body>
+<div class="box">
+  <div class="bar"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div>
+  <div class="term">
+    <div class="line prompt">cat about.txt</div>
+    <div class="line">this website was made by a boy named Mitchell Akambe.</div>
+    <div class="line">he builds Minecraft mods and web apps for fun.</div>
+    <div class="line">asaplimo is his personal AI chat project.</div>
+    <a class="back" href="chat.html">cd ../chat</a>
+  </div>
+</div>
+</body>
+</html>
