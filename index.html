@@ -73,7 +73,7 @@ async function checkSession(){
   try{
     const res = await fetch(API_BASE + "/api/me", { headers:{ Authorization:"Bearer "+token } });
     const data = await res.json();
-    if(data.authenticated) location.href = "chat.html";
+    if(data.authenticated) location.href = "chat";
   }catch(e){}
 }
 
