@@ -3,33 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>about — asaplimo</title>
+<title>About — asaplimo</title>
+<link rel="icon" type="image/png" href="icons/logo.png">
 <style>
-:root{--bg:#0c0c0c;--fg:#33ff33;--dim:#1c8c1c;--border:#1f4d1f;--panel:#0f150f;}
+:root{--bg:#ffffff;--text:#1e1e1c;--text-dim:#6b6b66;--border:#e5e5e2;--accent:#3b5bfd;}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);color:var(--fg);font-family:"Courier New",monospace;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px;}
-.box{width:100%;max-width:520px;border:1px solid var(--border);background:var(--panel);}
-.bar{display:flex;gap:6px;padding:8px 10px;border-bottom:1px solid var(--border);}
-.dot{width:10px;height:10px;border-radius:50%;}
-.dot.r{background:#ff5f56;}.dot.y{background:#ffbd2e;}.dot.g{background:#27c93f;}
-.term{padding:20px;line-height:1.7;}
-.line{margin-bottom:10px;}
-.prompt::before{content:"$ ";color:var(--dim);}
-a{color:var(--fg);}
-.back{display:inline-block;margin-top:10px;border:1px solid var(--border);padding:6px 10px;text-decoration:none;}
-.back:hover{background:#122612;}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;-webkit-font-smoothing:antialiased;}
+.card{width:100%;max-width:440px;border:1px solid var(--border);border-radius:16px;padding:28px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+.mark{width:40px;height:40px;border-radius:10px;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:18px;margin-bottom:16px;}
+h1{font-size:19px;font-weight:600;margin-bottom:12px;}
+p{color:var(--text-dim);font-size:14px;line-height:1.6;margin-bottom:10px;}
+.back{display:inline-flex;align-items:center;gap:6px;margin-top:14px;border:1px solid var(--border);border-radius:10px;padding:8px 14px;text-decoration:none;color:var(--text);font-size:13.5px;font-weight:500;}
+.back:hover{background:#f7f7f5;}
 </style>
 </head>
 <body>
-<div class="box">
-  <div class="bar"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div>
-  <div class="term">
-    <div class="line prompt">cat about.txt</div>
-    <div class="line">this website was made by a boy named Mitchell Akambe.</div>
-    <div class="line">he builds Minecraft mods and web apps for fun.</div>
-    <div class="line">asaplimo is his personal AI chat project.</div>
-    <a class="back" href="chat.html">cd ../chat</a>
-  </div>
+<div class="card">
+  <div class="mark">A</div>
+  <h1>About asaplimo</h1>
+  <p>This website was made by a developer named Mitchell Akambe.</p>
+  <p>He builds Minecraft mods and web apps for fun. asaplimo is his personal AI chat project.</p>
+  <a class="back" href="chat.html">&larr; Back to chat</a>
 </div>
 </body>
 </html>
