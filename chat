@@ -499,7 +499,7 @@ function renderSearch(list){
   });
 }
 
-document.querySelector("#about-link").addEventListener("click",()=>{ window.open("about.html","_blank"); });
+document.querySelector("#about-link").addEventListener("click",()=>{ window.open("about","_blank"); });
 document.getElementById("close-settings").addEventListener("click",()=>document.getElementById("settings-overlay").classList.remove("active"));
 
 const chatInput=document.getElementById("chat-input");
