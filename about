@@ -21,7 +21,7 @@ p{color:var(--text-dim);font-size:14px;line-height:1.6;margin-bottom:10px;}
 <div class="card">
   <div class="mark">A</div>
   <h1>About asaplimo</h1>
-  <p>This website was made by a developer named Mitchell Akambe.</p>
+  <p>This website was made by a developer named Mitchell Akambe from Nigeria, Born in April 1st 2013.</p>
   <p>He builds Minecraft mods and web apps for fun. asaplimo is his personal AI chat project.</p>
   <a class="back" href="chat.html">&larr; Back to chat</a>
 </div>
