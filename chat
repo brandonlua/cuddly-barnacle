@@ -5,28 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>asaplimo</title>
 <link rel="icon" type="image/png" href="icons/logo.png">
-<script>
-(function(){
-  try{
-    var t = localStorage.getItem("asaplimo_theme");
-    if(!t){ t = (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) ? "dark" : "light"; }
-    document.documentElement.setAttribute("data-theme", t);
-  }catch(e){}
-})();
-</script>
 <style>
 :root{
   --bg:#ffffff;--sidebar:#f7f7f5;--sidebar-hover:#ececea;--border:#e5e5e2;
   --text:#1e1e1c;--text-dim:#6b6b66;--text-faint:#9c9c96;
   --accent:#3b5bfd;--accent-hover:#2d47d6;
-  --bubble-user:#f0f0ee;--danger:#e0483f;--surface:#ffffff;
+  --bubble-user:#f0f0ee;--danger:#e0483f;
+  --panel-bg:#ffffff;--code-bg:#f0f0ee;--pre-bg:#1e1e1c;--pre-text:#f2f2ee;
+  --shadow:0 1px 3px rgba(0,0,0,.04);--shadow-lg:0 8px 24px rgba(0,0,0,.08);
   --radius:14px;
 }
 :root[data-theme="dark"]{
-  --bg:#1c1c1a;--sidebar:#161615;--sidebar-hover:#262624;--border:#332;--border:#333330;
-  --text:#ececea;--text-dim:#a8a8a2;--text-faint:#7a7a75;
-  --accent:#5b7cff;--accent-hover:#7089ff;
-  --bubble-user:#2c2c29;--danger:#ff6b60;--surface:#242422;
+  --bg:#1b1b1a;--sidebar:#141413;--sidebar-hover:#262624;--border:#302f2d;
+  --text:#ececea;--text-dim:#a7a7a1;--text-faint:#77766f;
+  --accent:#5b7dff;--accent-hover:#7592ff;
+  --bubble-user:#2a2a28;--danger:#ff6b61;
+  --panel-bg:#212120;--code-bg:#2a2a28;--pre-bg:#0f0f0e;--pre-text:#e8e8e4;
+  --shadow:0 1px 3px rgba(0,0,0,.3);--shadow-lg:0 8px 24px rgba(0,0,0,.45);
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;}
@@ -41,7 +36,7 @@ button{cursor:pointer;}
 .brand{display:flex;align-items:center;gap:8px;padding:14px 14px 8px;font-weight:600;letter-spacing:-.01em;}
 .brand .mark{width:22px;height:22px;border-radius:6px;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;}
 .side-pad{padding:6px 10px;}
-.btn-row{width:100%;display:flex;align-items:center;gap:8px;text-align:left;border:1px solid var(--border);border-radius:10px;padding:9px 10px;margin-bottom:6px;color:var(--text);font-size:13.5px;background:var(--surface);}
+.btn-row{width:100%;display:flex;align-items:center;gap:8px;text-align:left;border:1px solid var(--border);border-radius:10px;padding:9px 10px;margin-bottom:6px;color:var(--text);font-size:13.5px;background:var(--panel-bg);}
 .btn-row:hover{background:var(--sidebar-hover);}
 .btn-row svg{flex-shrink:0;}
 .label{color:var(--text-faint);font-size:11px;margin:14px 14px 4px;text-transform:uppercase;letter-spacing:.04em;}
@@ -49,7 +44,7 @@ button{cursor:pointer;}
 .recent{display:block;width:100%;text-align:left;padding:8px 10px;border-radius:8px;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13.5px;margin-bottom:1px;}
 .recent:hover{background:var(--sidebar-hover);color:var(--text);}
 .recent.active{background:var(--sidebar-hover);color:var(--text);font-weight:500;}
-#plan-pill{margin:8px 12px;border:1px solid var(--border);border-radius:10px;padding:10px;font-size:12px;color:var(--text-dim);background:var(--surface);}
+#plan-pill{margin:8px 12px;border:1px solid var(--border);border-radius:10px;padding:10px;font-size:12px;color:var(--text-dim);background:var(--panel-bg);}
 #plan-pill button{width:100%;border-radius:8px;background:var(--accent);color:#fff;padding:6px 8px;margin-top:8px;font-size:12.5px;font-weight:500;}
 #plan-pill button:hover{background:var(--accent-hover);}
 #sidebar-footer{border-top:1px solid var(--border);padding:10px 14px;display:flex;justify-content:space-between;align-items:center;}
@@ -63,11 +58,14 @@ button{cursor:pointer;}
 #chat-title{color:var(--text);font-weight:600;font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 #about-link{margin-left:auto;color:var(--text-faint);font-size:13px;cursor:pointer;}
 #about-link:hover{color:var(--text);}
-#theme-toggle{border:1px solid var(--border);border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;color:var(--text-dim);flex-shrink:0;}
-#theme-toggle:hover{background:var(--sidebar-hover);}
 #model-btn{border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:13px;color:var(--text-dim);display:flex;align-items:center;gap:4px;}
 #model-btn:hover{background:var(--sidebar-hover);}
-#model-panel{position:absolute;top:50px;right:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:6px;display:none;min-width:180px;z-index:20;box-shadow:0 8px 24px rgba(0,0,0,.16);}
+#model-panel{position:absolute;top:50px;right:16px;background:var(--panel-bg);border:1px solid var(--border);border-radius:10px;padding:6px;display:none;min-width:180px;z-index:20;box-shadow:var(--shadow-lg);}
+#theme-btn{border:1px solid var(--border);border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;color:var(--text-dim);flex-shrink:0;}
+#theme-btn:hover{background:var(--sidebar-hover);}
+#theme-btn svg{display:none;}
+:root:not([data-theme="dark"]) #theme-btn .icon-moon{display:block;}
+:root[data-theme="dark"] #theme-btn .icon-sun{display:block;}
 #model-panel.active{display:block;}
 .model-row{display:block;width:100%;text-align:left;padding:8px 10px;border-radius:6px;color:var(--text-dim);font-size:13.5px;}
 .model-row:hover{background:var(--sidebar-hover);color:var(--text);}
@@ -83,14 +81,10 @@ button{cursor:pointer;}
 .row.user{justify-content:flex-end;}
 .row.assistant{justify-content:flex-start;align-items:flex-start;}
 .avatar{width:26px;height:26px;border-radius:7px;background:var(--accent);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;margin-top:2px;}
-/* the wrapper div holds bubble+timestamp; capping ITS width (not the bubble's)
-   against the row's own determinate width avoids the flex/percentage sizing
-   bug that was squeezing short messages down to one letter per line */
-.row.user > div{max-width:80%;}
 .bubble{max-width:100%;line-height:1.6;white-space:pre-wrap;word-break:break-word;font-size:15px;}
-.bubble.user{background:var(--bubble-user);color:var(--text);border-radius:16px;padding:9px 14px;width:fit-content;max-width:100%;}
+.bubble.user{background:var(--bubble-user);color:var(--text);border-radius:16px;padding:9px 14px;max-width:80%;}
 .bubble.assistant{background:transparent;color:var(--text);padding:2px 0;}
-.bubble code{background:var(--sidebar-hover);padding:1px 5px;border-radius:4px;font-size:.9em;}
+.bubble code{background:#f0f0ee;padding:1px 5px;border-radius:4px;font-size:.9em;}
 .bubble pre{background:#1e1e1c;color:#f2f2ee;border-radius:10px;padding:12px 14px;overflow-x:auto;margin-top:8px;font-size:13px;line-height:1.5;}
 .meta{font-size:10.5px;color:var(--text-faint);margin-top:4px;}
 .row.user .meta{text-align:right;margin-right:2px;}
@@ -103,10 +97,10 @@ button{cursor:pointer;}
 
 #input-area{padding:8px 16px 18px;}
 #file-preview{max-width:720px;margin:0 auto 8px;display:none;flex-wrap:wrap;gap:6px;}
-.chip{display:flex;align-items:center;gap:6px;border:1px solid var(--border);border-radius:8px;padding:5px 9px;font-size:12px;color:var(--text-dim);background:var(--surface);}
+.chip{display:flex;align-items:center;gap:6px;border:1px solid var(--border);border-radius:8px;padding:5px 9px;font-size:12px;color:var(--text-dim);background:var(--panel-bg);}
 .chip button{color:var(--text-faint);}
 .chip button:hover{color:var(--danger);}
-#input-form{max-width:720px;margin:0 auto;display:flex;align-items:flex-end;gap:4px;border:1px solid var(--border);border-radius:26px;padding:8px 8px 8px 14px;background:var(--surface);box-shadow:0 1px 3px rgba(0,0,0,.04);}
+#input-form{max-width:720px;margin:0 auto;display:flex;align-items:flex-end;gap:4px;border:1px solid var(--border);border-radius:26px;padding:8px 8px 8px 14px;background:var(--panel-bg);box-shadow:var(--shadow);}
 #input-form:focus-within{border-color:var(--accent);}
 #chat-input{flex:1;resize:none;outline:none;max-height:160px;padding:6px 4px;font-size:15px;line-height:1.4;}
 #chat-input::placeholder{color:var(--text-faint);}
@@ -120,7 +114,7 @@ button{cursor:pointer;}
 
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;padding:16px;z-index:50;}
 .overlay.active{display:flex;}
-.modal{width:100%;max-width:400px;border-radius:16px;background:var(--surface);padding:20px;max-height:80vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2);}
+.modal{width:100%;max-width:400px;border-radius:16px;background:var(--panel-bg);padding:20px;max-height:80vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3);}
 .modal h3{margin-bottom:12px;font-size:17px;font-weight:600;}
 .modal p{color:var(--text-dim);font-size:13px;margin-bottom:10px;line-height:1.5;}
 .modal input{width:100%;border:1px solid var(--border);border-radius:8px;padding:9px 10px;margin-bottom:10px;font-size:13.5px;}
@@ -141,7 +135,7 @@ button{cursor:pointer;}
   #hamburger{display:inline-flex !important;}
   .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;z-index:40;}
   .backdrop.active{display:block;}
-  .row.user > div{max-width:88%;}
+  .bubble.user{max-width:88%;}
 }
 #hamburger{display:none;}
 </style>
@@ -179,7 +173,6 @@ button{cursor:pointer;}
       </button>
       <span id="chat-title">New chat</span>
       <span id="about-link">About</span>
-      <button id="theme-toggle" title="Toggle theme"></button>
       <div style="position:relative;">
         <button id="model-btn">Model: <span id="model-label">default</span>
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
@@ -252,34 +245,12 @@ button{cursor:pointer;}
 const API_BASE = "https://frosty-moon-2b57.oakambe24fi.workers.dev";
 const TOKEN_KEY = "asaplimo_session_token";
 const SLUG_MAP_KEY = "asaplimo_slug_map"; // { slug: conversationId }
-const THEME_KEY = "asaplimo_theme";
 const MAX_ITEMS = 10;
 const MAX_FILE_SIZE = 15*1024*1024;
 
 function getToken(){ try{ return localStorage.getItem(TOKEN_KEY); }catch(e){ return null; } }
 function clearToken(){ try{ localStorage.removeItem(TOKEN_KEY); }catch(e){} }
 function authHeaders(extra){ const h=Object.assign({},extra||{}); const t=getToken(); if(t) h.Authorization="Bearer "+t; return h; }
-
-/* ---------- theme ---------- */
-const SUN_ICON='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>';
-const MOON_ICON='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>';
-function currentTheme(){ return document.documentElement.getAttribute("data-theme")==="dark" ? "dark" : "light"; }
-function updateThemeToggleIcon(){
-  const btn=document.getElementById("theme-toggle");
-  if(!btn) return;
-  btn.innerHTML = currentTheme()==="dark" ? SUN_ICON : MOON_ICON;
-}
-function setTheme(t){
-  document.documentElement.setAttribute("data-theme", t);
-  try{ localStorage.setItem(THEME_KEY, t); }catch(e){}
-  updateThemeToggleIcon();
-}
-document.addEventListener("DOMContentLoaded",()=>{
-  updateThemeToggleIcon();
-  document.getElementById("theme-toggle").addEventListener("click",()=>{
-    setTheme(currentTheme()==="dark" ? "light" : "dark");
-  });
-});
 
 /* ---------- shareable /chat/<slug> urls ---------- */
 function loadSlugMap(){ try{ return JSON.parse(localStorage.getItem(SLUG_MAP_KEY)||"{}"); }catch(e){ return {}; } }
@@ -499,7 +470,7 @@ function renderSearch(list){
   });
 }
 
-document.querySelector("#about-link").addEventListener("click",()=>{ window.open("about","_blank"); });
+document.querySelector("#about-link").addEventListener("click",()=>{ window.open("about.html","_blank"); });
 document.getElementById("close-settings").addEventListener("click",()=>document.getElementById("settings-overlay").classList.remove("active"));
 
 const chatInput=document.getElementById("chat-input");
