@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>asaplimo — subscription</title>
 <link rel="icon" type="image/png" href="icons/logo.png">
+<script src="https://js.stripe.com/v3/"></script>
 <style>
 :root{
   --bg:#ffffff;--panel-bg:#ffffff;--border:#e5e5e2;--sidebar-hover:#ececea;
@@ -70,6 +71,15 @@ button{font-family:inherit;cursor:pointer;}
 #code-input:focus{border-color:var(--accent);}
 #code-error{color:var(--danger);font-size:12.5px;text-align:center;display:none;margin-top:6px;}
 
+#card-form{display:flex;flex-direction:column;gap:10px;margin-top:6px;}
+#card-name{width:100%;border:1px solid var(--border);border-radius:10px;padding:11px 14px;outline:none;font-size:14px;color:var(--text);background:var(--panel-bg);}
+#card-name:focus{border-color:var(--accent);}
+#card-name::placeholder{color:var(--text-faint);}
+#card-element{border:1px solid var(--border);border-radius:10px;padding:12px 14px;background:var(--panel-bg);}
+#card-element.StripeElement--focus{border-color:var(--accent);}
+#card-element.StripeElement--invalid{border-color:var(--danger);}
+#card-errors{color:var(--danger);font-size:12.5px;min-height:16px;}
+
 .foot{color:var(--text-faint);font-size:12px;text-align:center;margin-top:30px;line-height:1.6;}
 
 @media (max-width:600px){ .plans{grid-template-columns:1fr;} }
@@ -126,6 +136,14 @@ button{font-family:inherit;cursor:pointer;}
     Pay with Apple Pay
   </button>
 
+  <div class="divider">or pay by card</div>
+  <div id="card-form">
+    <input id="card-name" placeholder="Name on card">
+    <div id="card-element"></div>
+    <div id="card-errors"></div>
+    <button class="btn primary" id="card-pay-btn">Subscribe — $5/month</button>
+  </div>
+
   <span id="code-toggle">Have a code?</span>
   <div id="code-wrap">
     <input id="code-input" placeholder="Enter code" style="text-transform:uppercase;">
@@ -155,10 +173,67 @@ initTheme();
 document.getElementById("theme-btn").addEventListener("click",()=>{
   const current=document.documentElement.getAttribute("data-theme")==="dark"?"light":"dark";
   applyTheme(current);
+  if(typeof cardElement !== "undefined") cardElement.update(cardElementStyle());
 });
 
-function getToken(){ try{ return localStorage.getItem(TOKEN_KEY); }catch(e){ return null; } }
-function authHeaders(extra){ const h=Object.assign({},extra||{}); const t=getToken(); if(t) h.Authorization="Bearer "+t; return h; }
+const STRIPE_PUBLISHABLE_KEY = "pk_test_REPLACE_WITH_YOUR_KEY";
+const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+const elements = stripe.elements();
+
+function cardElementStyle(){
+  const dark = document.documentElement.getAttribute("data-theme")==="dark";
+  return {
+    style:{
+      base:{
+        color: dark ? "#ececea" : "#1e1e1c",
+        fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif",
+        fontSize:"14px",
+        "::placeholder":{ color: dark ? "#77766f" : "#9c9c96" }
+      },
+      invalid:{ color: dark ? "#ff6b61" : "#e0483f" }
+    }
+  };
+}
+
+const cardElement = elements.create("card", cardElementStyle());
+cardElement.mount("#card-element");
+cardElement.on("change", (event)=>{
+  document.getElementById("card-errors").textContent = event.error ? event.error.message : "";
+});
+
+document.getElementById("card-pay-btn").addEventListener("click", async ()=>{
+  const btn=document.getElementById("card-pay-btn");
+  const errBox=document.getElementById("card-errors");
+  const name=document.getElementById("card-name").value.trim();
+  errBox.textContent="";
+  btn.disabled=true; btn.textContent="Processing...";
+  try{
+    const { paymentMethod, error } = await stripe.createPaymentMethod({
+      type:"card",
+      card: cardElement,
+      billing_details: name ? { name } : undefined
+    });
+    if(error){ errBox.textContent=error.message; btn.disabled=false; btn.textContent="Subscribe — $5/month"; return; }
+
+    const res=await fetch(API_BASE+"/api/subscribe",{
+      method:"POST",headers:authHeaders({"Content-Type":"application/json"}),
+      body:JSON.stringify({ paymentMethodId: paymentMethod.id })
+    });
+    const data=await res.json();
+
+    if(!res.ok){ errBox.textContent=data.error||"Payment failed."; btn.disabled=false; btn.textContent="Subscribe — $5/month"; return; }
+
+    if(data.clientSecret){
+      const confirm=await stripe.confirmCardPayment(data.clientSecret);
+      if(confirm.error){ errBox.textContent=confirm.error.message; btn.disabled=false; btn.textContent="Subscribe — $5/month"; return; }
+    }
+
+    location.href="chat.html";
+  }catch(e){
+    errBox.textContent="Something went wrong. Please try again.";
+    btn.disabled=false; btn.textContent="Subscribe — $5/month";
+  }
+});
 
 async function startCheckout(){
   try{
