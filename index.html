@@ -125,7 +125,7 @@ function getToken(){ try{ return localStorage.getItem(TOKEN_KEY); }catch(e){ ret
 function captureTokenFromUrl(){
   const p = new URLSearchParams(location.search);
   const t = p.get("token");
-  if(t){ setToken(t); location.href = "chat.html"; }
+  if(t){ setToken(t); location.href = "chat"; }
 }
 
 async function checkSession(){
