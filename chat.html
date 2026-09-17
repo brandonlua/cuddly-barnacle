@@ -31,7 +31,6 @@ button{cursor:pointer;}
 #app{display:none;height:100vh;}
 #app.active{display:flex;}
 
-/* ---------- sidebar ---------- */
 #sidebar{width:264px;flex-shrink:0;background:var(--sidebar);border-right:1px solid var(--border);display:flex;flex-direction:column;}
 .brand{display:flex;align-items:center;gap:8px;padding:14px 14px 8px;font-weight:600;letter-spacing:-.01em;}
 .brand .mark{width:22px;height:22px;border-radius:6px;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;}
@@ -52,7 +51,6 @@ button{cursor:pointer;}
 #signout-btn{color:var(--text-faint);font-size:12px;}
 #signout-btn:hover{color:var(--danger);}
 
-/* ---------- main ---------- */
 #main{flex:1;display:flex;flex-direction:column;min-width:0;position:relative;}
 #header{height:52px;flex-shrink:0;display:flex;align-items:center;gap:10px;padding:0 16px;border-bottom:1px solid var(--border);}
 #chat-title{color:var(--text);font-weight:600;font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
@@ -251,12 +249,11 @@ button{cursor:pointer;}
 <script>
 const API_BASE = "https://frosty-moon-2b57.oakambe24fi.workers.dev";
 const TOKEN_KEY = "asaplimo_session_token";
-const SLUG_MAP_KEY = "asaplimo_slug_map"; // { slug: conversationId }
+const SLUG_MAP_KEY = "asaplimo_slug_map";
 const THEME_KEY = "asaplimo_theme";
 const MAX_ITEMS = 10;
 const MAX_FILE_SIZE = 15*1024*1024;
 
-/* ---------- theme ---------- */
 function applyTheme(theme){
   document.documentElement.setAttribute("data-theme", theme);
   try{ localStorage.setItem(THEME_KEY, theme); }catch(e){}
@@ -277,7 +274,6 @@ function getToken(){ try{ return localStorage.getItem(TOKEN_KEY); }catch(e){ ret
 function clearToken(){ try{ localStorage.removeItem(TOKEN_KEY); }catch(e){} }
 function authHeaders(extra){ const h=Object.assign({},extra||{}); const t=getToken(); if(t) h.Authorization="Bearer "+t; return h; }
 
-/* ---------- shareable /chat/<slug> urls ---------- */
 function loadSlugMap(){ try{ return JSON.parse(localStorage.getItem(SLUG_MAP_KEY)||"{}"); }catch(e){ return {}; } }
 function saveSlugMap(map){ try{ localStorage.setItem(SLUG_MAP_KEY, JSON.stringify(map)); }catch(e){} }
 function makeSlug(){
@@ -385,7 +381,7 @@ function renderModels(models,current){
   if(cur) document.getElementById("model-label").textContent=cur.label;
 }
 async function selectModel(m){
-  if(m.locked){ document.getElementById("model-panel").classList.remove("active"); document.getElementById("paywall-overlay").classList.add("active"); return; }
+  if(m.locked){ document.getElementById("model-panel").classList.remove("active"); location.href="subscription.html"; return; }
   try{
     const res=await fetch(API_BASE+"/api/set-model",{method:"POST",headers:authHeaders({"Content-Type":"application/json"}),body:JSON.stringify({model:m.id})});
     if(res.ok){ document.getElementById("model-label").textContent=m.label; document.getElementById("model-panel").classList.remove("active"); loadModels(); }
