@@ -5,49 +5,50 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>asaplimo</title>
 <link rel="icon" type="image/png" href="icons/logo.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500&family=JetBrains+Mono:wght@400;500&display=swap">
 <script>try{var t=localStorage.getItem("asaplimo_theme");document.documentElement.setAttribute("data-theme",t||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"))}catch(e){}</script>
 <style>
-:root{--bg:#faf9f5;--panel:#fff;--side:#f3f1ea;--hover:#ebe8df;--line:#e2dfd6;--text:#1f1e1d;--dim:#66645d;--faint:#99968d;--accent:#c4623f;--userbg:#efede5;--code:#f3f1ea}
-:root[data-theme="dark"]{--bg:#262624;--panel:#30302e;--side:#1f1e1d;--hover:#2c2b29;--line:#3e3d3a;--text:#f3f1ea;--dim:#b3b0a7;--faint:#7e7b73;--accent:#d9805f;--userbg:#30302e;--code:#1f1e1d}
+:root{--bg:#faf9f5;--panel:#fff;--side:#f3f1ea;--hover:#ebe8df;--line:#e2dfd6;--text:#1f1e1d;--dim:#66645d;--faint:#99968d;--accent:#4f5fe0;--userbg:#efede5;--code:#f3f1ea}
+:root[data-theme="dark"]{--bg:#1f1f1e;--panel:#2a2a28;--side:#1a1a19;--hover:#313130;--line:#3a3a38;--text:#ececea;--dim:#a8a69e;--faint:#77756e;--accent:#7b88ff;--userbg:#2a2a28;--code:#171716}
 *{box-sizing:border-box;margin:0;padding:0}
 [hidden]{display:none !important}
 body{background:var(--bg);color:var(--text);font:15px/1.6 Inter,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
-button,textarea{font:inherit;color:inherit;background:none;border:0}
-button{cursor:pointer}
+button,textarea,input{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 #app{display:none;height:100dvh}
 #app.on{display:flex}
-#side{width:272px;background:var(--side);border-right:1px solid var(--line);display:flex;flex-direction:column;flex-shrink:0;padding:14px 10px 10px}
-.word{font:500 22px "Source Serif 4",Georgia,serif;padding:4px 10px 14px}
-.newbtn{display:flex;align-items:center;gap:8px;width:100%;padding:9px 10px;border-radius:10px;font-weight:500;text-align:left}
-.newbtn:hover,.conv:hover,.mrow:hover,.icon:hover{background:var(--hover)}
-.lbl{color:var(--faint);font-size:12.5px;padding:16px 10px 6px}
+#side{position:relative;width:272px;background:var(--side);border-right:1px solid var(--line);display:flex;flex-direction:column;flex-shrink:0;padding:14px 10px 10px}
+.brand{display:flex;align-items:center;gap:10px;padding:2px 10px 16px;font:500 21px "Source Serif 4",Georgia,serif}
+.brand img{width:26px;height:26px;border-radius:7px}
+.navb{display:flex;align-items:center;gap:10px;width:100%;padding:8px 10px;border-radius:10px;font-size:14.5px;text-align:left}
+.navb:hover,.conv:hover,.mrow:hover,.icon:hover,.pop button:hover,.pop a:hover{background:var(--hover)}
+#q{width:100%;margin:6px 0;padding:8px 10px;background:var(--bg);border:1px solid var(--line);border-radius:8px;outline:none;font-size:14px}
+.lbl{color:var(--faint);font-size:12.5px;padding:18px 10px 6px}
 #list{flex:1;overflow:auto;display:flex;flex-direction:column;gap:2px}
 .conv{display:block;width:100%;text-align:left;padding:8px 10px;border-radius:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--dim);font-size:14px}
 .conv.on{background:var(--hover);color:var(--text)}
-.me{display:flex;align-items:center;gap:10px;padding:10px 6px 4px;border-top:1px solid var(--line);margin-top:8px}
-.av{width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:600;font-size:14px;flex-shrink:0}
+#userbtn{display:flex;align-items:center;gap:10px;width:100%;padding:10px 8px 6px;border-top:1px solid var(--line);margin-top:8px;text-align:left}
+.av{width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:600;font-size:14px;flex-shrink:0;overflow:hidden}
+.av img{width:100%;height:100%;object-fit:cover}
 .who{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.3}
 .who b{font-size:13.5px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .who span{font-size:12px;color:var(--faint)}
-.icon{border-radius:8px;padding:6px 9px;color:var(--dim);font-size:15px;line-height:1}
-.links{display:flex;gap:14px;padding:6px 8px 2px;font-size:12.5px}
-.links a,.links button{color:var(--faint);text-decoration:none}
-.links a:hover,.links button:hover{color:var(--text)}
-#main{flex:1;display:flex;flex-direction:column;min-width:0;position:relative}
-header{display:flex;align-items:center;gap:8px;padding:10px 14px}
-#burger{display:none}
-.mwrap{position:relative}
-#model-btn{padding:6px 10px;border-radius:8px;color:var(--dim);font-size:14px}
-#model-btn:hover{background:var(--hover);color:var(--text)}
-#model-panel{position:absolute;top:100%;left:0;min-width:230px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px;box-shadow:0 8px 30px rgba(0,0,0,.12);z-index:10}
-.mrow{display:block;width:100%;text-align:left;padding:8px 10px;border-radius:8px;font-size:14px}
-.mrow.on{font-weight:600}
+.pop{position:absolute;left:10px;right:10px;bottom:64px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px;box-shadow:0 8px 30px rgba(0,0,0,.25);z-index:15}
+.pop button,.pop a{display:block;width:100%;text-align:left;padding:8px 10px;border-radius:8px;color:var(--text);text-decoration:none;font-size:14px}
+.pop .pe{padding:8px 10px;color:var(--faint);font-size:13px;overflow:hidden;text-overflow:ellipsis}
+.pop hr{border:0;border-top:1px solid var(--line);margin:6px 0}
+.icon{border-radius:8px;padding:6px 9px;color:var(--dim);font-size:16px;line-height:1}
+#main{flex:1;display:flex;flex-direction:column;min-width:0}
+header{display:flex;align-items:center;justify-content:center;padding:10px 14px;min-height:50px;position:relative}
+#burger{display:none;position:absolute;left:10px}
+#pill{padding:5px 14px;border:1px solid var(--line);border-radius:20px;font-size:13px;color:var(--dim)}
+#pill:hover{background:var(--hover)}
+#pill b{color:var(--accent);font-weight:500}
 #msgs{flex:1;overflow:auto;display:flex;flex-direction:column}
 #hello{margin:auto;padding:24px;text-align:center}
 #hello h1{font:400 38px/1.2 "Source Serif 4",Georgia,serif;letter-spacing:-.01em}
-#hello p{color:var(--dim);margin-top:10px}
 #thread{width:100%;max-width:740px;margin:0 auto;padding:16px 18px 24px;display:flex;flex-direction:column;gap:26px}
 .m.user{align-self:flex-end;max-width:85%;background:var(--userbg);border-radius:18px;padding:10px 16px;white-space:pre-wrap;overflow-wrap:anywhere}
 .m.assistant{overflow-wrap:anywhere}
@@ -69,24 +70,59 @@ header{display:flex;align-items:center;gap:8px;padding:10px 14px}
 .dots i:nth-child(2){animation-delay:.15s}
 .dots i:nth-child(3){animation-delay:.3s}
 @keyframes pulse{0%,60%,100%{opacity:.3}30%{opacity:1}}
-#inwrap{width:100%;max-width:760px;margin:0 auto;padding:0 16px 18px}
-#form{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:12px 14px 10px;box-shadow:0 2px 12px rgba(0,0,0,.05)}
+#inwrap{width:100%;max-width:760px;margin:0 auto;padding:0 16px 14px}
+#form{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:12px 14px 10px}
 #form:focus-within{border-color:var(--faint)}
-#in{width:100%;resize:none;outline:0;max-height:200px;line-height:1.5;padding:2px 2px 6px}
+#in{width:100%;resize:none;outline:0;background:none;border:0;max-height:200px;line-height:1.5;padding:2px 2px 6px}
 #in::placeholder{color:var(--faint)}
-.row{display:flex;justify-content:space-between;align-items:center}
+.row{display:flex;align-items:center;gap:6px}
+.sp{flex:1}
 #chip{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--dim);padding:2px 2px 8px}
-#chip button{color:var(--faint)}
+.mwrap{position:relative}
+#model-btn{padding:6px 10px;border-radius:8px;color:var(--dim);font-size:13.5px}
+#model-btn:hover{background:var(--hover);color:var(--text)}
+#model-panel{position:absolute;bottom:100%;right:0;margin-bottom:6px;min-width:230px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px;box-shadow:0 8px 30px rgba(0,0,0,.25);z-index:10}
+.mrow{display:block;width:100%;text-align:left;padding:8px 10px;border-radius:8px;font-size:14px}
+.mrow.on{font-weight:600}
 #send{width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;font-size:17px;display:grid;place-items:center}
 #send:disabled{opacity:.35;cursor:default}
 .note{text-align:center;color:var(--faint);font-size:12px;padding-top:8px}
 #scrim{display:none}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50}
+.smodal{width:100%;max-width:860px;height:min(640px,92dvh);background:var(--panel);border:1px solid var(--line);border-radius:14px;display:flex;flex-direction:column;overflow:hidden}
+.shead{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid var(--line);font-weight:600}
+.sbody{flex:1;display:flex;min-height:0}
+.snav{width:200px;padding:14px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:2px;flex-shrink:0}
+.snav button{text-align:left;padding:8px 10px;border-radius:8px;color:var(--dim)}
+.snav button.on{background:var(--hover);color:var(--text)}
+.spane{flex:1;overflow:auto;padding:6px 26px 26px}
+.spane h3{font-size:15px;font-weight:600;padding:16px 0 4px}
+.srow{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 0;border-bottom:1px solid var(--line)}
+.srow small{display:block;color:var(--faint);font-size:13px}
+.sin{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 12px;outline:none;width:230px;max-width:100%}
+.sin:focus{border-color:var(--faint)}
+.b2{border:1px solid var(--line);border-radius:8px;padding:8px 14px;background:var(--hover);font-size:14px}
+.bp{background:var(--accent);color:#fff;border-radius:10px;padding:11px 16px;font-weight:600;width:100%}
+.bp:disabled{opacity:.5}
+.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{padding:7px 16px;font-size:14px;color:var(--dim)}
+.seg button.on{background:var(--hover);color:var(--text)}
+.bigav{width:44px;height:44px;font-size:18px;cursor:pointer}
+.box{border:1px solid var(--line);border-radius:12px;padding:18px;margin:16px 0}
+.box h4{font-size:16px;font-weight:600}
+.box p{color:var(--dim);margin:4px 0 14px;font-size:14px}
+#card-el{border:1px solid var(--line);border-radius:8px;padding:12px;background:var(--bg);margin:10px 0}
+.err{color:#e5604f;font-size:13px;min-height:18px;margin-bottom:8px}
+.lock{background:var(--hover);border-radius:10px;padding:12px 14px;font-size:14px;margin-top:14px}
 @media(max-width:760px){
   #burger{display:block}
   #side{position:fixed;top:0;bottom:0;left:0;z-index:30;transform:translateX(-100%);transition:transform .18s}
   #side.open{transform:none}
   #scrim.on{display:block;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:20}
   #hello h1{font-size:30px}
+  .sbody{flex-direction:column}
+  .snav{width:auto;flex-direction:row;border-right:0;border-bottom:1px solid var(--line)}
+  .srow{flex-wrap:wrap}
 }
 @media(prefers-reduced-motion:reduce){#side{transition:none}.dots i{animation:none}}
 </style>
@@ -94,22 +130,27 @@ header{display:flex;align-items:center;gap:8px;padding:10px 14px}
 <body>
 <div id="app">
   <aside id="side">
-    <div class="word">asaplimo</div>
-    <button class="newbtn" id="new">+ New chat</button>
+    <div class="brand"><img src="icons/logo.png" alt=""><span>asaplimo</span></div>
+    <button class="navb" id="new">+ New chat</button>
+    <button class="navb" id="sbtn">Search</button>
+    <input id="q" placeholder="Search chats" hidden>
     <div class="lbl">Recents</div>
     <div id="list"></div>
-    <div class="me">
-      <div class="av" id="av"></div>
-      <div class="who"><b id="nm"></b><span id="pl"></span></div>
-      <button class="icon" id="theme" title="Toggle theme" aria-label="Toggle theme">&#9680;</button>
+    <div class="pop" id="umenu" hidden>
+      <div class="pe" id="pemail"></div>
+      <button id="m-set">Settings</button>
+      <button id="m-up">Upgrade plan</button>
+      <a href="about.html">About</a>
+      <hr>
+      <button id="out">Log out</button>
     </div>
-    <div class="links"><a id="up" href="subscription.html" hidden>Upgrade</a><a href="about.html">About</a><button id="out">Sign out</button></div>
+    <button id="userbtn"><div class="av" id="av"></div><div class="who"><b id="nm"></b><span id="pl"></span></div><span class="icon">&#8963;</span></button>
   </aside>
   <div id="scrim"></div>
   <section id="main">
     <header>
       <button class="icon" id="burger" aria-label="Menu">&#9776;</button>
-      <div class="mwrap"><button id="model-btn"><span id="mname">Model</span> &#9662;</button><div id="model-panel" hidden></div></div>
+      <button id="pill" hidden></button>
     </header>
     <div id="msgs">
       <div id="hello"><h1 id="hi">How can I help you today?</h1></div>
@@ -118,22 +159,67 @@ header{display:flex;align-items:center;gap:8px;padding:10px 14px}
     <div id="inwrap">
       <form id="form">
         <div id="chip" hidden><span id="chipn"></span><button type="button" id="chipx" aria-label="Remove image">&times;</button></div>
-        <textarea id="in" rows="1" placeholder="Message asaplimo"></textarea>
+        <textarea id="in" rows="1" placeholder="Write a message..."></textarea>
         <div class="row">
           <button type="button" class="icon" id="attach" title="Attach an image" aria-label="Attach an image">+</button>
           <input type="file" id="file" accept="image/*" hidden>
+          <span class="sp"></span>
+          <div class="mwrap"><button type="button" id="model-btn"><span id="mname">Model</span> &#9662;</button><div id="model-panel" hidden></div></div>
           <button type="submit" id="send" disabled aria-label="Send">&#8593;</button>
         </div>
       </form>
-      <div class="note">asaplimo can make mistakes. Double-check important things.</div>
+      <div class="note">asaplimo is AI and can make mistakes. Please double-check responses.</div>
     </div>
   </section>
 </div>
 
+<div class="overlay" id="settings" hidden>
+  <div class="smodal" role="dialog" aria-label="Settings">
+    <div class="shead"><span>Settings</span><button class="icon" id="sclose" aria-label="Close">&times;</button></div>
+    <div class="sbody">
+      <nav class="snav"><button data-t="account" class="on">Account</button><button data-t="billing">Billing</button><button data-t="appearance">Appearance</button></nav>
+      <div class="spane">
+        <section data-p="account">
+          <h3>Profile</h3>
+          <div class="srow"><div>Profile photo<small>PNG, JPEG or WebP.</small></div><div class="av bigav" id="bigav" title="Change photo"></div><input type="file" id="photo" accept="image/*" hidden></div>
+          <div class="srow"><div>Full name</div><input class="sin" id="fname" maxlength="60"></div>
+          <div class="srow"><div>Email</div><div id="semail" style="color:var(--dim)"></div></div>
+          <div class="srow"><div>Log out<small>You can sign back in with Google any time.</small></div><button class="b2" id="out2">Log out</button></div>
+        </section>
+        <section data-p="billing" hidden>
+          <h3>Plan</h3>
+          <div class="srow"><div>Current plan<small id="plansub"></small></div><div id="planname" style="font-weight:600"></div></div>
+          <div id="lockmsg" class="lock" hidden>Your free trial has ended. Subscribe below to keep chatting.</div>
+          <div id="payarea">
+            <div class="box">
+              <h4>Premium &middot; $5/month</h4>
+              <p>Premium models, unlimited messages and image uploads. Cancel anytime.</p>
+              <input class="sin" id="cardname" placeholder="Name on card" style="width:100%">
+              <div id="card-el"></div>
+              <div class="err" id="payerr"></div>
+              <button class="bp" id="paybtn">Subscribe for $5/month</button>
+              <p style="margin:10px 0 0;font-size:12.5px;color:var(--faint)">Payments are processed securely by Stripe.</p>
+            </div>
+            <div class="srow"><div>Have a code?</div><div style="display:flex;gap:8px"><input class="sin" id="codein" placeholder="Enter code" style="width:150px;text-transform:uppercase"><button class="b2" id="codebtn">Unlock</button></div></div>
+            <div class="err" id="codeerr" style="margin-top:8px"></div>
+          </div>
+          <div id="paid" class="box" hidden><h4>You're on Premium</h4><p style="margin:4px 0 0">Thanks for supporting asaplimo. Every model is unlocked.</p></div>
+        </section>
+        <section data-p="appearance" hidden>
+          <h3>Appearance</h3>
+          <div class="srow"><div>Theme</div><div class="seg"><button data-th="light" id="th-light">Light</button><button data-th="dark" id="th-dark">Dark</button></div></div>
+        </section>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 const API="https://frosty-moon-2b57.oakambe24fi.workers.dev",TK="asaplimo_session_token",TH="asaplimo_theme";
+const STRIPE_PK="pk_test_REPLACE_WITH_YOUR_KEY";
 const $=id=>document.getElementById(id);
-let convId=null,convs=[],busy=false,models=[],cur="",img=null;
+const JSONH={"Content-Type":"application/json"};
+let me=null,premium=false,locked=false,convId=null,convs=[],busy=false,models=[],cur="",img=null,stripe=null,card=null;
 const tok=()=>{try{return localStorage.getItem(TK)}catch(e){return null}};
 
 async function api(path,opt){
@@ -143,10 +229,13 @@ async function api(path,opt){
   if(r.status===401){location.href="index.html";throw new Error("auth")}
   return r;
 }
-const JSONH={"Content-Type":"application/json"};
-
-function setTheme(t){document.documentElement.setAttribute("data-theme",t);try{localStorage.setItem(TH,t)}catch(e){}}
-$("theme").onclick=()=>setTheme(document.documentElement.getAttribute("data-theme")==="dark"?"light":"dark");
+function theme(t){
+  document.documentElement.setAttribute("data-theme",t);
+  try{localStorage.setItem(TH,t)}catch(e){}
+  $("th-light").classList.toggle("on",t==="light");
+  $("th-dark").classList.toggle("on",t==="dark");
+}
+document.querySelectorAll("[data-th]").forEach(b=>b.onclick=()=>theme(b.dataset.th));
 
 function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
 function inline(s){
@@ -214,7 +303,11 @@ function closeSide(){$("side").classList.remove("open");$("scrim").classList.rem
 $("new").onclick=()=>{reset();closeSide()};
 $("burger").onclick=()=>{$("side").classList.add("open");$("scrim").classList.add("on")};
 $("scrim").onclick=closeSide;
-$("out").onclick=async()=>{try{await api("/api/logout",{method:"POST"})}catch(e){}try{localStorage.removeItem(TK)}catch(e){}location.href="index.html"};
+$("sbtn").onclick=()=>{$("q").hidden=!$("q").hidden;if(!$("q").hidden)$("q").focus();else{$("q").value="";renderList()}};
+$("q").oninput=renderList;
+async function logout(){try{await api("/api/logout",{method:"POST"})}catch(e){}try{localStorage.removeItem(TK)}catch(e){}location.href="index.html"}
+$("out").onclick=logout;
+$("out2").onclick=logout;
 
 async function loadConvs(){
   const r=await api("/api/conversations"),d=await r.json();
@@ -222,8 +315,9 @@ async function loadConvs(){
   renderList();
 }
 function renderList(){
+  const q=$("q").value.trim().toLowerCase();
   $("list").innerHTML="";
-  convs.forEach(c=>{
+  convs.filter(c=>!q||(c.title||"").toLowerCase().includes(q)).forEach(c=>{
     const b=document.createElement("button");
     b.className="conv"+(c.id===convId?" on":"");
     b.textContent=c.title||"New chat";
@@ -241,6 +335,135 @@ async function openConv(id){
   renderList();
 }
 
+function openSettings(t){
+  $("settings").hidden=false;
+  document.querySelectorAll(".snav button").forEach(b=>b.classList.toggle("on",b.dataset.t===t));
+  document.querySelectorAll("[data-p]").forEach(s=>{s.hidden=s.dataset.p!==t});
+  if(t==="billing"&&!premium)mountCard();
+  $("umenu").hidden=true;
+  closeSide();
+}
+document.querySelectorAll(".snav button").forEach(b=>b.onclick=()=>openSettings(b.dataset.t));
+$("sclose").onclick=()=>{$("settings").hidden=true};
+$("settings").addEventListener("mousedown",e=>{if(e.target===$("settings"))$("settings").hidden=true});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){$("settings").hidden=true;$("umenu").hidden=true;$("model-panel").hidden=true}});
+$("userbtn").onclick=e=>{e.stopPropagation();$("umenu").hidden=!$("umenu").hidden};
+$("m-set").onclick=()=>openSettings("account");
+$("m-up").onclick=()=>openSettings("billing");
+$("pill").onclick=()=>openSettings("billing");
+document.addEventListener("click",e=>{
+  if(!e.target.closest(".mwrap"))$("model-panel").hidden=true;
+  if(!e.target.closest("#umenu"))$("umenu").hidden=true;
+});
+
+function paintAv(el){
+  el.innerHTML="";
+  if(me.avatarUrl){const i=document.createElement("img");i.src=me.avatarUrl;i.alt="";el.appendChild(i)}
+  else el.textContent=(me.shown||"?").charAt(0).toUpperCase();
+}
+function applyMe(){
+  premium=!!(me.paid||me.networkUnlocked);
+  locked=!premium&&!!me.trialExpired;
+  me.shown=me.displayName||me.name||(me.email||"").split("@")[0]||"there";
+  const first=me.shown.split(" ")[0];
+  $("nm").textContent=me.shown;
+  $("pemail").textContent=me.email||"";
+  $("semail").textContent=me.email||"";
+  $("fname").value=me.displayName||me.name||"";
+  paintAv($("av"));paintAv($("bigav"));
+  const days=me.daysLeft+" day"+(me.daysLeft===1?"":"s")+" left";
+  const label=premium?"Premium":(locked?"Trial ended":"Free trial");
+  $("pl").textContent=premium?"Premium":(locked?"Trial ended":days+" in trial");
+  $("planname").textContent=label;
+  $("plansub").textContent=premium?"All models unlocked":(locked?"Subscribe to keep chatting":days);
+  $("pill").hidden=premium;
+  $("pill").innerHTML=locked?"Trial ended &middot; <b>Upgrade</b>":"Free trial &middot; "+days+" &middot; <b>Upgrade</b>";
+  $("m-up").hidden=premium;
+  $("hi").textContent="Hi, "+first+". How can I help?";
+  $("payarea").hidden=premium;
+  $("paid").hidden=!premium;
+  $("lockmsg").hidden=!locked;
+}
+async function refreshMe(){
+  const r=await api("/api/me"),d=await r.json();
+  if(!d.authenticated){location.href="index.html";return}
+  me=d;applyMe();
+}
+async function saveProfile(p){
+  const r=await api("/api/profile",{method:"POST",headers:JSONH,body:JSON.stringify(p)});
+  if(r.ok){const d=await r.json();me.displayName=d.displayName;me.avatarUrl=d.avatarUrl;applyMe()}
+}
+$("fname").onchange=()=>saveProfile({displayName:$("fname").value});
+$("bigav").onclick=()=>$("photo").click();
+$("photo").onchange=e=>{
+  const f=e.target.files[0];
+  e.target.value="";
+  if(!f)return;
+  const url=URL.createObjectURL(f),im=new Image();
+  im.onload=()=>{
+    const s=Math.min(im.width,im.height),c=document.createElement("canvas");
+    c.width=c.height=256;
+    c.getContext("2d").drawImage(im,(im.width-s)/2,(im.height-s)/2,s,s,0,0,256,256);
+    URL.revokeObjectURL(url);
+    saveProfile({avatarUrl:c.toDataURL("image/jpeg",.85)});
+  };
+  im.src=url;
+};
+
+function loadStripe(){
+  return new Promise((res,rej)=>{
+    if(window.Stripe)return res();
+    const s=document.createElement("script");
+    s.src="https://js.stripe.com/v3/";
+    s.onload=res;s.onerror=rej;
+    document.head.appendChild(s);
+  });
+}
+async function mountCard(){
+  if(card)return;
+  try{
+    await loadStripe();
+    stripe=Stripe(STRIPE_PK);
+    const dark=document.documentElement.getAttribute("data-theme")==="dark";
+    card=stripe.elements().create("card",{style:{base:{color:dark?"#ececea":"#1f1e1d",fontSize:"15px",fontFamily:"Inter, sans-serif","::placeholder":{color:"#77756e"}}}});
+    card.mount("#card-el");
+    card.on("change",e=>{$("payerr").textContent=e.error?e.error.message:""});
+  }catch(e){$("payerr").textContent="Could not load the payment form. Check your connection."}
+}
+async function pay(){
+  if(!stripe||!card)return;
+  const b=$("paybtn"),er=$("payerr");
+  er.textContent="";b.disabled=true;b.textContent="Processing...";
+  try{
+    const pm=await stripe.createPaymentMethod({type:"card",card,billing_details:{name:$("cardname").value.trim()||undefined,email:me.email}});
+    if(pm.error)throw new Error(pm.error.message);
+    const r=await api("/api/subscribe",{method:"POST",headers:JSONH,body:JSON.stringify({paymentMethodId:pm.paymentMethod.id})});
+    const d=await r.json();
+    if(!r.ok)throw new Error(d.error||"Payment failed.");
+    if(d.clientSecret){
+      const c=await stripe.confirmCardPayment(d.clientSecret);
+      if(c.error)throw new Error(c.error.message);
+    }
+    if(d.subscriptionId){
+      const v=await api("/api/subscribe/verify",{method:"POST",headers:JSONH,body:JSON.stringify({subscriptionId:d.subscriptionId})});
+      const vd=await v.json();
+      if(!vd.paid)throw new Error("Your payment is still processing. Refresh in a minute.");
+    }
+    await refreshMe();
+    loadModels();
+  }catch(e){
+    if(e.message!=="auth")er.textContent=e.message||"Something went wrong.";
+  }finally{
+    b.disabled=false;b.textContent="Subscribe for $5/month";
+  }
+}
+$("paybtn").onclick=pay;
+$("codebtn").onclick=async()=>{
+  const r=await api("/api/network-unlock",{method:"POST",headers:JSONH,body:JSON.stringify({code:$("codein").value})});
+  if(r.ok){$("codeerr").textContent="";await refreshMe();loadModels()}
+  else $("codeerr").textContent="That code isn't valid.";
+};
+
 async function loadModels(){
   const r=await api("/api/models"),d=await r.json();
   models=d.models||[];cur=d.current;
@@ -249,11 +472,12 @@ async function loadModels(){
   $("model-panel").innerHTML="";
   models.forEach(x=>{
     const b=document.createElement("button");
+    b.type="button";
     b.className="mrow"+(x.id===cur?" on":"");
     b.textContent=x.label+(x.locked?" (Premium)":"");
     b.onclick=async()=>{
       $("model-panel").hidden=true;
-      if(x.locked){location.href="subscription.html";return}
+      if(x.locked){openSettings("billing");return}
       const s=await api("/api/set-model",{method:"POST",headers:JSONH,body:JSON.stringify({model:x.id})});
       if(s.ok)loadModels();
     };
@@ -261,7 +485,6 @@ async function loadModels(){
   });
 }
 $("model-btn").onclick=()=>{$("model-panel").hidden=!$("model-panel").hidden};
-document.addEventListener("click",e=>{if(!e.target.closest(".mwrap"))$("model-panel").hidden=true});
 
 const inp=$("in");
 function upd(){$("send").disabled=busy||(!inp.value.trim()&&!img)}
@@ -269,7 +492,6 @@ function grow(){inp.style.height="auto";inp.style.height=Math.min(inp.scrollHeig
 inp.oninput=()=>{grow();upd()};
 inp.onkeydown=e=>{if(e.key==="Enter"&&!e.shiftKey&&!e.isComposing){e.preventDefault();send()}};
 $("form").onsubmit=e=>{e.preventDefault();send()};
-
 $("attach").onclick=()=>$("file").click();
 $("file").onchange=e=>{
   const f=e.target.files[0];
@@ -285,6 +507,7 @@ $("chipx").onclick=()=>{clearImg();upd()};
 async function send(){
   const text=inp.value.trim();
   if((!text&&!img)||busy)return;
+  if(locked){openSettings("billing");return}
   busy=true;
   add("user",text||"(image)");
   const sent=img;
@@ -299,7 +522,7 @@ async function send(){
     if(sent)body.image=sent;
     const r=await api("/api/chat",{method:"POST",headers:JSONH,body:JSON.stringify(body)});
     t.remove();
-    if(r.status===402){location.href="subscription.html";return}
+    if(r.status===402){me.trialExpired=true;applyMe();openSettings("billing");return}
     if(!r.ok){add("assistant","Something went wrong. Please try again.");return}
     const d=await r.json();
     add("assistant",d.reply||"No response.",d.thinking);
@@ -311,20 +534,11 @@ async function send(){
 async function init(){
   if(!tok()){location.href="index.html";return}
   try{
-    const r=await api("/api/me"),d=await r.json();
-    if(!d.authenticated){location.href="index.html";return}
-    if(d.trialExpired&&!d.paid&&!d.networkUnlocked){location.href="subscription.html";return}
-    const name=d.displayName||d.name||(d.email||"").split("@")[0]||"there";
-    const first=name.split(" ")[0];
-    $("nm").textContent=name;
-    $("av").textContent=name.charAt(0).toUpperCase();
-    const premium=d.paid||d.networkUnlocked;
-    $("pl").textContent=premium?"Premium":(d.onTrial?d.daysLeft+" days left in trial":"Free");
-    $("up").hidden=!!premium;
-    $("hi").textContent="Hi, "+first+". How can I help?";
+    await refreshMe();
+    theme(document.documentElement.getAttribute("data-theme")||"light");
     $("app").classList.add("on");
     loadConvs();loadModels();
-    inp.focus();
+    if(locked)openSettings("billing");else inp.focus();
   }catch(e){if(e.message!=="auth")location.href="index.html"}
 }
 init();
