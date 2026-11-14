@@ -5,84 +5,59 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>asaplimo — log in</title>
 <link rel="icon" type="image/png" href="icons/logo.png">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500&display=swap">
+<script>try{var t=localStorage.getItem("asaplimo_theme");document.documentElement.setAttribute("data-theme",t||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"))}catch(e){}</script>
 <style>
-:root{--bg:#1e1f22;--side:#2b2d30;--line:#393b40;--text:#bcbec4;--dim:#868a91;--accent:#3574f0;--code:#17181a;--user:#6aab73;}
+:root{--bg:#faf9f5;--panel:#fff;--hover:#ebe8df;--line:#e2dfd6;--text:#1f1e1d;--dim:#66645d;--faint:#99968d;--accent:#c4623f}
+:root[data-theme="dark"]{--bg:#262624;--panel:#30302e;--hover:#3a3937;--line:#3e3d3a;--text:#f3f1ea;--dim:#b3b0a7;--faint:#7e7b73;--accent:#d9805f}
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font:14px/1.55 Inter,-apple-system,"Segoe UI",sans-serif;min-height:100dvh;display:grid;grid-template-columns:1.1fr 1fr}
+body{background:var(--bg);color:var(--text);font:15px/1.6 Inter,-apple-system,"Segoe UI",sans-serif;min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:24px;-webkit-font-smoothing:antialiased}
 button,input{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.editor{background:var(--code);border-right:1px solid var(--line);display:flex;flex-direction:column}
-.tab{align-self:flex-start;padding:7px 16px;background:var(--bg);border-top:2px solid var(--accent);font:12.5px "JetBrains Mono",monospace}
-.tabs{background:var(--side);border-bottom:1px solid var(--line);display:flex}
-.code{padding:28px 0;font:13.5px/1.9 "JetBrains Mono",monospace;overflow:hidden}
-.ln{display:flex;gap:18px;padding:0 28px}
-.ln b{width:18px;text-align:right;color:var(--dim);font-weight:400;user-select:none}
-.ln span{white-space:pre-wrap}
-.ln.u span{color:var(--user)}
-.ln.d span{color:var(--dim)}
-.panel{display:flex;align-items:center;justify-content:center;padding:32px}
-.box{width:100%;max-width:340px}
-.word{font:500 15px "JetBrains Mono",monospace;margin-bottom:34px}
-h1{font-size:24px;font-weight:600;color:#dfe1e5;margin-bottom:6px}
-.sub{color:var(--dim);margin-bottom:26px}
-.btn{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;border:1px solid var(--line);border-radius:6px;padding:10px 14px;font-weight:500;background:var(--side);cursor:pointer}
-.btn:hover{background:#35373b}
-.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-.btn.primary:hover{background:#4b85f2;border-color:#4b85f2}
-.btn.secondary{background:transparent}
-.divider{display:flex;align-items:center;gap:10px;margin:18px 0;color:var(--dim);font-size:12px}
+.box{width:100%;max-width:360px}
+.word{font:500 26px "Source Serif 4",Georgia,serif;margin-bottom:36px;text-align:center}
+h1{font:400 30px/1.2 "Source Serif 4",Georgia,serif;text-align:center;letter-spacing:-.01em;margin-bottom:10px}
+.sub{color:var(--dim);text-align:center;margin-bottom:30px}
+.btn{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-weight:500;background:var(--panel);cursor:pointer}
+.btn:hover{background:var(--hover)}
+.btn.primary{background:var(--text);border-color:var(--text);color:var(--bg)}
+.btn.primary:hover{opacity:.88}
+.btn.secondary{background:transparent;border-color:transparent;color:var(--dim)}
+.divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--faint);font-size:13px}
 .divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
 form{display:flex;flex-direction:column;gap:10px}
-input[type="email"]{width:100%;border:1px solid var(--line);border-radius:6px;padding:10px 12px;background:var(--code);outline:none}
-input[type="email"]:focus{border-color:var(--accent)}
-input::placeholder{color:var(--dim)}
-.foot{color:var(--dim);font-size:12.5px;margin-top:26px}
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;padding:16px;z-index:50}
+input[type="email"]{width:100%;border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--panel);outline:none}
+input[type="email"]:focus{border-color:var(--faint)}
+input::placeholder{color:var(--faint)}
+.foot{color:var(--faint);font-size:13px;text-align:center;margin-top:28px}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:16px;z-index:50}
 .overlay.active{display:flex}
-.modal{width:100%;max-width:360px;border:1px solid var(--line);border-radius:8px;background:var(--side);padding:22px}
-.modal h3{font-size:17px;font-weight:600;color:#dfe1e5;margin-bottom:8px}
-.modal p{color:var(--dim);margin-bottom:18px}
+.modal{width:100%;max-width:380px;border:1px solid var(--line);border-radius:18px;background:var(--panel);padding:24px}
+.modal h3{font:500 22px "Source Serif 4",Georgia,serif;margin-bottom:8px}
+.modal p{color:var(--dim);margin-bottom:20px}
 .modal .btn{margin-bottom:8px}
-@media(max-width:820px){body{grid-template-columns:1fr}.editor{display:none}}
 </style>
 </head>
 <body>
-<section class="editor" aria-hidden="true">
-  <div class="tabs"><div class="tab">main.py</div></div>
-  <div class="code">
-    <div class="ln u"><b>1</b><span>&gt; how do I print hello world?</span></div>
-    <div class="ln"><b>2</b><span></span></div>
-    <div class="ln"><b>3</b><span>Start small. Which command shows text on the screen?</span></div>
-    <div class="ln d"><b>4</b><span>Hint: it ends with ().</span></div>
-    <div class="ln"><b>5</b><span></span></div>
-    <div class="ln u"><b>6</b><span>&gt; print("hello world")</span></div>
-    <div class="ln"><b>7</b><span></span></div>
-    <div class="ln"><b>8</b><span>That's your first program. Now change the text.</span></div>
-  </div>
-</section>
+<div class="box">
+  <div class="word">asaplimo</div>
+  <h1>Log in to continue</h1>
+  <div class="sub">4 days free, then $5/month. Cancel anytime.</div>
 
-<main class="panel">
-  <div class="box">
-    <div class="word">asaplimo</div>
-    <h1>Log in</h1>
-    <div class="sub">4 days free, then $5/month. Cancel anytime.</div>
+  <button class="btn" id="google-btn">
+    <svg width="17" height="17" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.52 12.27c0-.85-.08-1.67-.22-2.45H12v4.64h6.48a5.54 5.54 0 01-2.4 3.64v3h3.88c2.27-2.09 3.56-5.17 3.56-8.83z"/><path fill="#34A853" d="M12 24c3.24 0 5.96-1.07 7.96-2.9l-3.88-3c-1.08.72-2.46 1.15-4.08 1.15-3.13 0-5.78-2.11-6.73-4.96H1.26v3.11A12 12 0 0012 24z"/><path fill="#FBBC05" d="M5.27 14.29a7.2 7.2 0 010-4.58V6.6H1.26a12 12 0 000 10.8l4.01-3.11z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.44-3.44C17.95 1.19 15.24 0 12 0A12 12 0 001.26 6.6l4.01 3.11C6.22 6.86 8.87 4.75 12 4.75z"/></svg>
+    Continue with Google
+  </button>
 
-    <button class="btn" id="google-btn">
-      <svg width="17" height="17" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.52 12.27c0-.85-.08-1.67-.22-2.45H12v4.64h6.48a5.54 5.54 0 01-2.4 3.64v3h3.88c2.27-2.09 3.56-5.17 3.56-8.83z"/><path fill="#34A853" d="M12 24c3.24 0 5.96-1.07 7.96-2.9l-3.88-3c-1.08.72-2.46 1.15-4.08 1.15-3.13 0-5.78-2.11-6.73-4.96H1.26v3.11A12 12 0 0012 24z"/><path fill="#FBBC05" d="M5.27 14.29a7.2 7.2 0 010-4.58V6.6H1.26a12 12 0 000 10.8l4.01-3.11z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.44-3.44C17.95 1.19 15.24 0 12 0A12 12 0 001.26 6.6l4.01 3.11C6.22 6.86 8.87 4.75 12 4.75z"/></svg>
-      Continue with Google
-    </button>
+  <div class="divider">or</div>
 
-    <div class="divider">or</div>
+  <form id="email-form">
+    <input id="email-input" type="email" required placeholder="Email address">
+    <button type="submit" class="btn primary">Continue with email</button>
+  </form>
 
-    <form id="email-form">
-      <input id="email-input" type="email" required placeholder="Email address">
-      <button type="submit" class="btn primary">Continue with email</button>
-    </form>
-
-    <div class="foot">Made by gbubemi (aka Mitchell)</div>
-  </div>
-</main>
+  <div class="foot">Made by gbubemi (aka Mitchell)</div>
+</div>
 
 <div class="overlay" id="trial-overlay">
   <div class="modal">
