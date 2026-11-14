@@ -29,13 +29,21 @@ form{display:flex;flex-direction:column;gap:10px}
 input[type="email"]{width:100%;border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--panel);outline:none}
 input[type="email"]:focus{border-color:var(--faint)}
 input::placeholder{color:var(--faint)}
-.foot{color:var(--faint);font-size:13px;text-align:center;margin-top:28px}
+.agree{color:var(--faint);font-size:12.5px;text-align:center;margin-top:20px;line-height:1.55}
+.agree a,.links a{color:var(--dim);text-decoration:underline}
+.agree a:hover,.links a:hover{color:var(--text)}
+.links{display:flex;justify-content:center;flex-wrap:wrap;gap:4px 14px;font-size:13px;margin-top:14px}
+.links a{text-decoration:none}
+.links a:hover{text-decoration:underline}
+.foot{color:var(--faint);font-size:13px;text-align:center;margin-top:22px}
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:16px;z-index:50}
 .overlay.active{display:flex}
 .modal{width:100%;max-width:380px;border:1px solid var(--line);border-radius:18px;background:var(--panel);padding:24px}
 .modal h3{font:500 22px "Source Serif 4",Georgia,serif;margin-bottom:8px}
 .modal p{color:var(--dim);margin-bottom:20px}
 .modal .btn{margin-bottom:8px}
+.modal .small{font-size:12.5px;color:var(--faint);margin:4px 0 0;text-align:center}
+.modal .small a{color:var(--dim);text-decoration:underline}
 </style>
 </head>
 <body>
@@ -56,6 +64,15 @@ input::placeholder{color:var(--faint)}
     <button type="submit" class="btn primary">Continue with email</button>
   </form>
 
+  <div class="agree">By continuing, you agree to our <a href="terms.html">Terms of Service</a> and acknowledge our <a href="privacy.html">Privacy Policy</a> and <a href="cookies.html">Cookie Policy</a>. You must be 13 or older.</div>
+
+  <div class="links">
+    <a href="about.html">About</a>
+    <a href="terms.html">Terms</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="cookies.html">Cookies</a>
+  </div>
+
   <div class="foot">Made by gbubemi (aka Mitchell)</div>
 </div>
 
@@ -65,6 +82,7 @@ input::placeholder{color:var(--faint)}
     <p>4 days free. Cancel before it ends and you won't be charged. $5/month after that.</p>
     <button class="btn primary" id="start-trial-btn">Start free trial</button>
     <button class="btn secondary" id="dismiss-trial-btn">Cancel</button>
+    <p class="small">By starting, you agree to the <a href="terms.html">Terms of Service</a> and <a href="privacy.html">Privacy Policy</a>.</p>
   </div>
 </div>
 
