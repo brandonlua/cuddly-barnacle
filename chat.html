@@ -64,7 +64,25 @@ header{display:flex;align-items:center;gap:8px;padding:10px 16px;min-height:54px
 #thread{width:100%;max-width:760px;margin:0 auto;padding:12px 18px 24px;display:flex;flex-direction:column;gap:22px}
 .m.user{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
 .m.user .ub{align-self:flex-end;width:fit-content;max-width:85%;background:var(--userbg);border:1px solid var(--line);border-radius:18px;padding:9px 16px;white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;font-size:15px;line-height:1.5}
-.m.user .ts{font-size:12px;color:var(--faint);padding-right:6px}
+.m.user .uact{display:flex;align-items:center;gap:6px;padding-right:4px;color:var(--faint);font-size:12px}
+.ucopy{color:var(--faint);padding:4px 6px;border-radius:7px;display:grid;place-items:center;font-size:12px}
+.ucopy:hover{background:var(--hover);color:var(--text)}
+.pcards{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;max-width:85%}
+.pcard{position:relative;width:150px;height:118px;display:flex;flex-direction:column;justify-content:space-between;text-align:left;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:var(--userbg);overflow:hidden;cursor:pointer}
+.pcard:hover{border-color:var(--faint)}
+.pcard .pv{font:11px/1.4 "JetBrains Mono",monospace;color:var(--dim);overflow:hidden;white-space:pre-wrap;overflow-wrap:anywhere;max-height:68px;-webkit-mask-image:linear-gradient(#000 60%,transparent);mask-image:linear-gradient(#000 60%,transparent)}
+.pcard .pb{align-self:flex-start;font-size:10.5px;letter-spacing:.04em;padding:2px 8px;border:1px solid var(--line);border-radius:7px;color:var(--dim);background:var(--bg)}
+.pcard .px{position:absolute;top:6px;right:6px;width:20px;height:20px;border-radius:50%;background:var(--bg);border:1px solid var(--line);color:var(--dim);display:grid;place-items:center;font-size:13px;line-height:1}
+#pchips{display:flex;flex-wrap:wrap;gap:8px;padding:0 6px 8px}
+.dcard{display:flex;align-items:center;gap:12px;width:100%;max-width:420px;text-align:left;margin:.4em 0 1em;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
+.dcard:hover{background:var(--hover)}
+.dcard .dic{width:38px;height:38px;border-radius:10px;background:var(--hover);display:grid;place-items:center;color:var(--accent);flex-shrink:0}
+.dcard .dt{display:flex;flex-direction:column;min-width:0;line-height:1.35}
+.dcard .dt b{font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dcard .dt small{color:var(--faint);font-size:12.5px}
+.vmodal{width:100%;max-width:900px;height:min(720px,92dvh);background:var(--panel);border:1px solid var(--line);border-radius:16px;display:flex;flex-direction:column;overflow:hidden}
+.vact{display:flex;align-items:center;gap:8px}
+#vbody{flex:1;overflow:auto;margin:0;padding:16px 20px;background:var(--code);color:var(--text);font:13px/1.7 "JetBrains Mono",monospace;white-space:pre;tab-size:2}
 .m.assistant{overflow-wrap:anywhere;padding:0 4px}
 .bub p{margin:0 0 .9em}
 .bub p:last-child{margin-bottom:0}
@@ -184,6 +202,7 @@ header{display:flex;align-items:center;gap:8px;padding:10px 16px;min-height:54px
       </div>
       <div id="inwrap">
         <div class="mwrap"><button type="button" id="model-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l2.2 5.8L20 11l-5.8 2.2L12 19l-2.2-5.8L4 11l5.8-2.2z"/></svg><span id="mname">Model</span></button><div id="model-panel" hidden></div></div>
+        <div id="pchips" hidden></div>
         <div id="chip" hidden><span id="chipn"></span><button type="button" id="chipx" aria-label="Remove image">&times;</button></div>
         <form id="form">
           <textarea id="in" rows="1" placeholder="Message the agent..."></textarea>
@@ -238,6 +257,13 @@ header{display:flex;align-items:center;gap:8px;padding:10px 16px;min-height:54px
   </div>
 </div>
 
+<div class="overlay" id="viewer" hidden>
+  <div class="vmodal" role="dialog" aria-label="Document viewer">
+    <div class="shead"><span id="vtitle"></span><div class="vact"><button class="b2" id="vcopy" type="button">Copy</button><button class="b2" id="vdl" type="button">Download</button><button class="icon" id="vclose" type="button" aria-label="Close">&times;</button></div></div>
+    <pre id="vbody"></pre>
+  </div>
+</div>
+
 <script>
 const API="https://frosty-moon-2b57.oakambe24fi.workers.dev",TK="asaplimo_session_token",TH="asaplimo_theme";
 const STRIPE_PK="pk_test_REPLACE_WITH_YOUR_KEY";
@@ -289,7 +315,51 @@ function block(t){
   close();
   return out.join("");
 }
+const docs=[],LONG=300,TEXTEXT=["md","markdown","txt","text"];
+function docCard(attrs,body){
+  const at=n=>{const m=attrs.match(new RegExp(n+'\\s*=\\s*["\']([^"\']*)["\']'));return m?m[1]:""};
+  const title=at("title")||"Document";
+  let type=(at("type")||at("lang")).toLowerCase();
+  const dot=title.lastIndexOf(".");
+  if(!type&&dot>0)type=title.slice(dot+1).toLowerCase();
+  if(!type)type="txt";
+  let c=body.replace(/^\s*\n/,"").replace(/\s+$/,"");
+  c=c.replace(/^```\w*\n([\s\S]*?)\n```$/,"$1");
+  docs.push({title,ext:type,content:c});
+  const kind=TEXTEXT.includes(type)?"Document":"Code";
+  return '<button class="dcard" type="button" data-doc="'+(docs.length-1)+'"><span class="dic">'+FILE+'</span><span class="dt"><b>'+esc(title)+'</b><small>'+kind+' &middot; '+esc(type.toUpperCase())+'</small></span></button>';
+}
+function pcardEl(content,rm){
+  const i=docs.push({title:"Pasted text",ext:"txt",content})-1;
+  const d=document.createElement("div");
+  d.className="pcard";d.dataset.doc=i;d.tabIndex=0;d.setAttribute("role","button");
+  const v=document.createElement("div");v.className="pv";v.textContent=content.slice(0,400);
+  const b=document.createElement("span");b.className="pb";b.textContent="PASTED";
+  d.appendChild(v);d.appendChild(b);
+  if(rm){
+    const x=document.createElement("button");
+    x.type="button";x.className="px";x.setAttribute("aria-label","Remove");x.innerHTML="&times;";
+    x.onclick=e=>{e.stopPropagation();rm(d)};
+    d.appendChild(x);
+  }
+  return d;
+}
+function parseUser(text){
+  const pasted=[];
+  let rest=text.replace(/<pasted_text>\n?([\s\S]*?)\n?<\/pasted_text>/g,(m,c)=>{pasted.push(c);return ""}).trim();
+  if(rest.split("\n").length>LONG){pasted.push(rest);rest=""}
+  return{pasted,rest};
+}
 function render(t){
+  const parts=t.split(/<document\b([^>]*)>([\s\S]*?)<\/document>/g);
+  let h="";
+  for(let i=0;i<parts.length;i+=3){
+    h+=renderMd(parts[i]||"");
+    if(parts[i+2]!==undefined)h+=docCard(parts[i+1],parts[i+2]);
+  }
+  return h;
+}
+function renderMd(t){
   const p=t.split(/```(\w*)\n?([\s\S]*?)```/g);let h="";
   for(let i=0;i<p.length;i+=3){
     h+=block(p[i]||"");
@@ -307,11 +377,27 @@ function add(role,text,thinking,time){
   const m=document.createElement("div");
   m.className="m "+role;
   if(role==="user"){
-    const u=document.createElement("div");
-    u.className="ub";
-    u.textContent=text;
-    m.appendChild(u);
-    if(time){const s=document.createElement("div");s.className="ts";s.textContent=time;m.appendChild(s)}
+    const {pasted,rest}=parseUser(text);
+    m._raw=[rest].concat(pasted).filter(Boolean).join("\n\n");
+    if(pasted.length){
+      const pc=document.createElement("div");
+      pc.className="pcards";
+      pasted.forEach(p=>pc.appendChild(pcardEl(p)));
+      m.appendChild(pc);
+    }
+    if(rest){
+      const u=document.createElement("div");
+      u.className="ub";
+      u.textContent=rest;
+      m.appendChild(u);
+    }
+    const a=document.createElement("div");
+    a.className="uact";
+    if(time){const s=document.createElement("span");s.textContent=time;a.appendChild(s)}
+    const cb=document.createElement("button");
+    cb.type="button";cb.className="ucopy";cb.setAttribute("aria-label","Copy message");cb.innerHTML=COPY;
+    a.appendChild(cb);
+    m.appendChild(a);
   }else{
     m.innerHTML='<div class="bub">'+(thinking?'<details class="th"><summary>Thinking</summary><div></div></details>':"")+render(text)+"</div>";
     if(thinking)m.querySelector(".th div").textContent=thinking;
@@ -329,12 +415,37 @@ function typing(){
   $("msgs").scrollTop=$("msgs").scrollHeight;
   return m;
 }
+function flash(btn){const h=btn.innerHTML;btn.textContent="Copied";setTimeout(()=>{btn.innerHTML=h},1500)}
 $("thread").addEventListener("click",e=>{
+  const dc=e.target.closest("[data-doc]");
+  if(dc){openViewer(+dc.dataset.doc);return}
+  const uc=e.target.closest(".ucopy");
+  if(uc){navigator.clipboard.writeText(uc.closest(".m")._raw||"").then(()=>flash(uc)).catch(()=>{});return}
   const btn=e.target.closest(".cp");
   if(!btn)return;
   const txt=btn.closest(".code").querySelector("pre").textContent;
-  navigator.clipboard.writeText(txt).then(()=>{btn.textContent="Copied";setTimeout(()=>{btn.innerHTML=COPY},1500)}).catch(()=>{});
+  navigator.clipboard.writeText(txt).then(()=>flash(btn)).catch(()=>{});
 });
+let vdoc=null;
+function openViewer(i){
+  vdoc=docs[i];
+  if(!vdoc)return;
+  $("vtitle").textContent=vdoc.title;
+  $("vbody").textContent=vdoc.content;
+  $("viewer").hidden=false;
+}
+$("vclose").onclick=()=>{$("viewer").hidden=true};
+$("viewer").addEventListener("mousedown",e=>{if(e.target===$("viewer"))$("viewer").hidden=true});
+$("vcopy").onclick=()=>{if(vdoc)navigator.clipboard.writeText(vdoc.content).then(()=>flash($("vcopy"))).catch(()=>{})};
+$("vdl").onclick=()=>{
+  if(!vdoc)return;
+  const name=/\.\w+$/.test(vdoc.title)?vdoc.title:vdoc.title.replace(/\s+/g,"-")+"."+vdoc.ext;
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([vdoc.content],{type:"text/plain"}));
+  a.download=name;
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+};
 
 function setCrumb(){
   const c=convs.find(x=>x.id===convId);
@@ -434,7 +545,7 @@ function openSettings(t){
 document.querySelectorAll(".snav button").forEach(b=>b.onclick=()=>openSettings(b.dataset.t));
 $("sclose").onclick=()=>{$("settings").hidden=true};
 $("settings").addEventListener("mousedown",e=>{if(e.target===$("settings"))$("settings").hidden=true});
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){$("settings").hidden=true;$("model-panel").hidden=true}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){$("settings").hidden=true;$("model-panel").hidden=true;$("viewer").hidden=true}});
 $("pill").onclick=()=>openSettings("billing");
 document.addEventListener("click",e=>{
   if(!e.target.closest(".mwrap"))$("model-panel").hidden=true;
@@ -568,7 +679,19 @@ async function loadModels(){
 $("model-btn").onclick=()=>{$("model-panel").hidden=!$("model-panel").hidden};
 
 const inp=$("in");
-function upd(){$("send").disabled=busy||(!inp.value.trim()&&!img)}
+let pend=[];
+function drawPend(){$("pchips").hidden=!pend.length}
+function upd(){$("send").disabled=busy||(!inp.value.trim()&&!img&&!pend.length)}
+inp.addEventListener("paste",e=>{
+  const t=(e.clipboardData||window.clipboardData).getData("text");
+  if(t&&t.split("\n").length>LONG){
+    e.preventDefault();
+    const el=pcardEl(t,d=>{pend=pend.filter(p=>p.el!==d);d.remove();drawPend();upd()});
+    pend.push({text:t,el});
+    $("pchips").appendChild(el);
+    drawPend();upd();
+  }
+});
 function grow(){inp.style.height="auto";inp.style.height=Math.min(inp.scrollHeight,200)+"px"}
 inp.oninput=()=>{grow();upd()};
 inp.onkeydown=e=>{if(e.key==="Enter"&&!e.shiftKey&&!e.isComposing){e.preventDefault();send()}};
@@ -586,12 +709,15 @@ function clearImg(){img=null;$("chip").hidden=true}
 $("chipx").onclick=()=>{clearImg();upd()};
 
 async function send(){
-  const text=inp.value.trim();
-  if((!text&&!img)||busy)return;
+  let text=inp.value.trim();
+  if((!text&&!img&&!pend.length)||busy)return;
   if(locked){openSettings("billing");return}
+  if(text.split("\n").length>LONG)text="<pasted_text>\n"+text+"\n</pasted_text>";
+  pend.forEach(p=>{text+=(text?"\n\n":"")+"<pasted_text>\n"+p.text+"\n</pasted_text>"});
   busy=true;
   add("user",text||"(image)",null,clock(new Date()));
   const sent=img;
+  pend=[];$("pchips").innerHTML="";drawPend();
   inp.value="";grow();clearImg();upd();
   const t=typing();
   try{
