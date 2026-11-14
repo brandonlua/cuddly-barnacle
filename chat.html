@@ -54,8 +54,14 @@ button{cursor:pointer}
 .txt{flex:1;min-width:0;overflow-wrap:anywhere}
 .m.u .txt{color:var(--user);font-family:"JetBrains Mono",monospace;font-size:13px;white-space:pre-wrap}
 .m.a .txt{line-height:1.65}
+.txt p{margin:0 0 .6em}
+.txt p:last-child{margin-bottom:0}
+.txt ul,.txt ol{margin:0 0 .6em 1.4em}
+.txt h4{margin:.8em 0 .3em;font-size:1em;font-weight:600}
+.txt strong{font-weight:600}
 .txt code{background:var(--code);padding:1px 5px;border-radius:3px;font:12.5px "JetBrains Mono",monospace}
 .txt pre{background:var(--code);border:1px solid var(--line);border-left:3px solid var(--accent);padding:10px 12px;margin:8px 0;overflow-x:auto;font:12.5px/1.55 "JetBrains Mono",monospace;white-space:pre}
+.txt pre code{background:none;padding:0}
 #composer{border-top:1px solid var(--line);background:var(--side);padding:8px 10px;display:flex;gap:8px;align-items:flex-end}
 #composer .pr{font:13px "JetBrains Mono",monospace;color:var(--accent);padding:6px 0}
 #in{flex:1;resize:none;outline:0;max-height:140px;font:13.5px/1.45 "JetBrains Mono",monospace;padding:6px 0}
@@ -105,6 +111,7 @@ button{cursor:pointer}
 
 <script>
 const API="https://frosty-moon-2b57.oakambe24fi.workers.dev",TK="asaplimo_session_token",PK="asaplimo_ide_prefs";
+const PRE=/^\[Tutor mode:[^\]]*\]\n/;
 const LANGS={
   java:{name:"Java",file:"Main.java",ides:{intellij:"IntelliJ IDEA",eclipse:"Eclipse",vscode:"VS Code",netbeans:"NetBeans"},
     hint:"public class Main {\n    public static void main(String[] args) {\n        // ask me anything about Java\n    }\n}"},
@@ -115,7 +122,6 @@ const LANGS={
   html:{name:"HTML/CSS",file:"index.html",ides:{vscode:"VS Code",webstorm:"WebStorm",sublime:"Sublime Text"},
     hint:"<!-- ask me anything about HTML and CSS -->\n<h1>Hello</h1>"}
 };
-// IntelliJ uses the default :root look, so map it to no attribute value
 const $=id=>document.getElementById(id);
 let prefs={lang:"java",ide:"intellij",ides:{}};
 try{Object.assign(prefs,JSON.parse(localStorage.getItem(PK)||"{}"))}catch(e){}
@@ -175,10 +181,34 @@ function renderFiles(){
   });
 }
 function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+function inline(s){
+  s=esc(s);
+  const codes=[];
+  s=s.replace(/`([^`\n]+)`/g,(m,c)=>{codes.push(c);return "\u0000"+(codes.length-1)+"\u0000"});
+  s=s.replace(/\*\*([^*\n]+)\*\*/g,"<strong>$1</strong>");
+  s=s.replace(/(^|[^*\w])\*([^*\n]+)\*(?!\*)/g,"$1<em>$2</em>");
+  return s.replace(/\u0000(\d+)\u0000/g,(m,i)=>"<code>"+codes[i]+"</code>");
+}
+function block(t){
+  const out=[];let list=null;
+  const close=()=>{if(list){out.push("</"+list+">");list=null}};
+  t.split("\n").forEach(l=>{
+    let m;
+    if(m=l.match(/^\s*[-*+]\s+(.*)/)){if(list!=="ul"){close();out.push("<ul>");list="ul"}out.push("<li>"+inline(m[1])+"</li>")}
+    else if(m=l.match(/^\s*\d+[.)]\s+(.*)/)){if(list!=="ol"){close();out.push("<ol>");list="ol"}out.push("<li>"+inline(m[1])+"</li>")}
+    else{
+      close();
+      if(m=l.match(/^#{1,6}\s+(.*)/))out.push("<h4>"+inline(m[1])+"</h4>");
+      else if(l.trim())out.push("<p>"+inline(l)+"</p>");
+    }
+  });
+  close();
+  return out.join("");
+}
 function render(t){
   const p=t.split(/```(\w*)\n?([\s\S]*?)```/g);let h="";
   for(let i=0;i<p.length;i+=3){
-    h+=esc(p[i]||"").replace(/`([^`]+)`/g,"<code>$1</code>").replace(/\n/g,"<br>");
+    h+=block(p[i]||"");
     if(p[i+2]!==undefined)h+="<pre>"+esc(p[i+2].replace(/\n$/,""))+"</pre>";
   }
   return h;
@@ -199,7 +229,7 @@ async function openConv(id){
   try{
     const r=await fetch(API+"/api/conversations/"+id,{headers:hd()});if(!r.ok)return;
     const c=await r.json();convId=c.id;ln=0;$("list").innerHTML="";
-    if(c.messages&&c.messages.length)c.messages.forEach(m=>add(m.role,m.text));else reset();
+    if(c.messages&&c.messages.length)c.messages.forEach(m=>add(m.role,m.role==="user"?m.text.replace(PRE,""):m.text));else reset();
     renderFiles();
   }catch(e){}
 }
@@ -207,7 +237,7 @@ async function ensure(){
   if(convId)return convId;
   try{
     const r=await fetch(API+"/api/conversations",{method:"POST",headers:hd({"Content-Type":"application/json"}),body:JSON.stringify({mode:"chat"})});
-    convId=(await r.json()).id;await loadConvs();
+    convId=(await r.json()).id;
   }catch(e){}
   return convId;
 }
@@ -226,15 +256,18 @@ async function send(){
   busy=true;add("user",text);inp.value="";inp.style.height="auto";upd();
   const typing=add("assistant","");typing.querySelector(".txt").innerHTML='<span class="ty">running...</span>';
   const L=LANGS[prefs.lang];
-  // tutor context is prepended so the bot teaches the picked language
   const msg="[Tutor mode: teach "+L.name+" to a beginner, one small step at a time, give hints before answers.]\n"+text;
   try{
     const id=await ensure();
-    const r=await fetch(API+"/api/chat",{method:"POST",headers:hd({"Content-Type":"application/json"}),body:JSON.stringify({message:msg,conversationId:id,images:[],files:[]})});
+    const r=await fetch(API+"/api/chat",{method:"POST",headers:hd({"Content-Type":"application/json"}),body:JSON.stringify({message:msg,conversationId:id})});
     typing.remove();ln--;
     if(r.status===402){location.href="subscription.html";return}
-    const d=await r.json();add("assistant",d.reply||"No response.");
-    if(d.title){const c=convs.find(x=>x.id===id);if(c)c.title=d.title;renderFiles()}
+    if(r.status===401){location.href="index.html";return}
+    if(!r.ok){add("assistant","The server had a problem ("+r.status+"). Try again in a moment.");return}
+    const d=await r.json();
+    if(d.conversationId&&!convId)convId=d.conversationId;
+    add("assistant",d.reply||"No response.");
+    loadConvs();
   }catch(e){typing.remove();ln--;add("assistant","Could not reach the server.")}
   finally{busy=false;upd();inp.focus()}
 }
