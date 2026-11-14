@@ -9,60 +9,87 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500&family=JetBrains+Mono:wght@400;500&display=swap">
 <script>try{var t=localStorage.getItem("asaplimo_theme");document.documentElement.setAttribute("data-theme",t||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"))}catch(e){}</script>
 <style>
-:root{--bg:#faf9f5;--panel:#fff;--side:#f3f1ea;--hover:#ebe8df;--line:#e2dfd6;--text:#1f1e1d;--dim:#66645d;--faint:#99968d;--accent:#4f5fe0;--userbg:#efede5;--code:#f3f1ea}
-:root[data-theme="dark"]{--bg:#1f1f1e;--panel:#2a2a28;--side:#1a1a19;--hover:#313130;--line:#3a3a38;--text:#ececea;--dim:#a8a69e;--faint:#77756e;--accent:#7b88ff;--userbg:#2a2a28;--code:#171716}
+:root{--bg:#ffffff;--rail:#f1f0ec;--panel:#f6f5f2;--side:#f6f5f2;--hover:#e9e7e1;--line:#e2dfd6;--text:#1f1e1d;--dim:#66645d;--faint:#99968d;--accent:#4f5fe0;--userbg:#f3f2ee;--code:#f6f5f2;--codefg:#0f8a6a;--dot:#e8613c}
+:root[data-theme="dark"]{--bg:#0f0f0f;--rail:#0a0a0a;--panel:#1a1a1a;--side:#141414;--hover:#222222;--line:#262626;--text:#ececea;--dim:#a3a29c;--faint:#6f6e69;--accent:#7b88ff;--userbg:#171717;--code:#131313;--codefg:#2fd3a4;--dot:#f0623c}
 *{box-sizing:border-box;margin:0;padding:0}
 [hidden]{display:none !important}
-body{background:var(--bg);color:var(--text);font:15px/1.6 Inter,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+body{background:var(--rail);color:var(--text);font:15px/1.6 Inter,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
 button,textarea,input{font:inherit;color:inherit}
 button{background:none;border:0;cursor:pointer}
+svg{flex-shrink:0}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-#app{display:none;height:100dvh}
+#app{display:none;height:100dvh;background:var(--rail)}
 #app.on{display:flex}
-#side{position:relative;width:272px;background:var(--side);border-right:1px solid var(--line);display:flex;flex-direction:column;flex-shrink:0;padding:14px 10px 10px}
-.brand{display:flex;align-items:center;gap:10px;padding:2px 10px 16px;font:500 21px "Source Serif 4",Georgia,serif}
-.brand img{width:26px;height:26px;border-radius:7px}
-.navb{display:flex;align-items:center;gap:10px;width:100%;padding:8px 10px;border-radius:10px;font-size:14.5px;text-align:left}
-.navb:hover,.conv:hover,.mrow:hover,.icon:hover,.pop button:hover,.pop a:hover{background:var(--hover)}
-#q{width:100%;margin:6px 0;padding:8px 10px;background:var(--bg);border:1px solid var(--line);border-radius:8px;outline:none;font-size:14px}
-.lbl{color:var(--faint);font-size:12.5px;padding:18px 10px 6px}
-#list{flex:1;overflow:auto;display:flex;flex-direction:column;gap:2px}
-.conv{display:block;width:100%;text-align:left;padding:8px 10px;border-radius:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--dim);font-size:14px}
-.conv.on{background:var(--hover);color:var(--text)}
+#rail{width:60px;display:flex;flex-direction:column;align-items:center;padding:14px 0;gap:6px;flex-shrink:0}
+.rb{position:relative;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;color:var(--dim)}
+.rb:hover,.rb.on{background:var(--hover);color:var(--text)}
+.rb.on::after{content:"";position:absolute;top:6px;right:6px;width:6px;height:6px;border-radius:50%;background:var(--dot)}
+#rail .grow{flex:1}
+.rb .badge{position:absolute;right:1px;bottom:1px;width:16px;height:16px;border-radius:50%;background:var(--panel);border:1px solid var(--line);color:var(--text);font-size:8px;font-weight:600;display:grid;place-items:center;overflow:hidden}
+.rb .badge img{width:100%;height:100%;object-fit:cover}
+#shell{flex:1;display:flex;min-width:0;margin:8px 8px 8px 0;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--bg)}
+#side{position:relative;width:260px;background:var(--side);border-right:1px solid var(--line);display:flex;flex-direction:column;flex-shrink:0;padding:14px 12px 10px}
+#side.collapsed{display:none}
+.shd{display:flex;align-items:center;justify-content:space-between;padding:2px 4px 14px 8px}
+.shd b{font-weight:600;font-size:14.5px}
+.shd .acts{display:flex;gap:2px}
+.icon{border-radius:8px;padding:6px 8px;color:var(--dim);font-size:16px;line-height:1;display:inline-grid;place-items:center}
+.icon:hover,.conv:hover,.mrow:hover,.pop button:hover,.pop a:hover{background:var(--hover)}
+.newb{display:flex;align-items:center;gap:10px;width:100%;padding:9px 14px;border-radius:22px;background:var(--hover);font-size:14.5px;text-align:left}
+.newb:hover{background:var(--line)}
+#q{width:100%;margin:10px 0 0;padding:8px 12px;background:var(--bg);border:1px solid var(--line);border-radius:10px;outline:none;font-size:14px}
+#list{flex:1;overflow:auto;display:flex;flex-direction:column;gap:1px;margin-top:8px}
+.lbl{color:var(--faint);font-size:12px;font-weight:500;padding:18px 10px 6px}
+.conv{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:8px 10px;border-radius:10px;color:var(--text);font-size:14px}
+.conv svg{color:var(--dim)}
+.conv .t{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.conv .ago{color:var(--faint);font-size:12px}
+.conv.on{background:var(--hover)}
 #userbtn{display:flex;align-items:center;gap:10px;width:100%;padding:10px 8px 6px;border-top:1px solid var(--line);margin-top:8px;text-align:left}
 .av{width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:600;font-size:14px;flex-shrink:0;overflow:hidden}
 .av img{width:100%;height:100%;object-fit:cover}
 .who{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.3}
 .who b{font-size:13.5px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .who span{font-size:12px;color:var(--faint)}
-.pop{position:absolute;left:10px;right:10px;bottom:64px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px;box-shadow:0 8px 30px rgba(0,0,0,.25);z-index:15}
+.pop{position:absolute;left:10px;right:10px;bottom:64px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px;box-shadow:0 8px 30px rgba(0,0,0,.35);z-index:15}
 .pop button,.pop a{display:block;width:100%;text-align:left;padding:8px 10px;border-radius:8px;color:var(--text);text-decoration:none;font-size:14px}
 .pop .pe{padding:8px 10px;color:var(--faint);font-size:13px;overflow:hidden;text-overflow:ellipsis}
 .pop hr{border:0;border-top:1px solid var(--line);margin:6px 0}
-.icon{border-radius:8px;padding:6px 9px;color:var(--dim);font-size:16px;line-height:1}
-#main{flex:1;display:flex;flex-direction:column;min-width:0}
-header{display:flex;align-items:center;justify-content:center;padding:10px 14px;min-height:50px;position:relative}
-#burger{display:none;position:absolute;left:10px}
+#main{flex:1;display:flex;flex-direction:column;min-width:0;background:var(--bg)}
+header{display:flex;align-items:center;gap:8px;padding:10px 16px;min-height:54px}
+#burger{display:none}
+.crumb{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--dim);min-width:0}
+.crumb b{font-weight:500;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.crumb button{color:var(--dim)}
+.crumb button:hover{color:var(--text)}
+.hsp{flex:1}
 #pill{padding:5px 14px;border:1px solid var(--line);border-radius:20px;font-size:13px;color:var(--dim)}
 #pill:hover{background:var(--hover)}
 #pill b{color:var(--accent);font-weight:500}
 #msgs{flex:1;overflow:auto;display:flex;flex-direction:column}
 #hello{margin:auto;padding:24px;text-align:center}
 #hello h1{font:400 38px/1.2 "Source Serif 4",Georgia,serif;letter-spacing:-.01em}
-#thread{width:100%;max-width:740px;margin:0 auto;padding:16px 18px 24px;display:flex;flex-direction:column;gap:26px}
-.m.user{align-self:flex-end;max-width:85%;background:var(--userbg);border-radius:18px;padding:10px 16px;white-space:pre-wrap;overflow-wrap:anywhere}
-.m.assistant{overflow-wrap:anywhere}
-.bub p{margin:0 0 .8em}
+#thread{width:100%;max-width:760px;margin:0 auto;padding:12px 18px 24px;display:flex;flex-direction:column;gap:22px}
+.m.user{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.m.user .ub{align-self:stretch;background:var(--userbg);border:1px solid var(--line);border-radius:22px;padding:14px 18px;white-space:pre-wrap;overflow-wrap:anywhere;font:13px/1.6 "JetBrains Mono",monospace;font-family:inherit;font-size:15px}
+.m.user .ts{font-size:12px;color:var(--faint);padding-right:10px}
+.m.assistant{overflow-wrap:anywhere;padding:0 4px}
+.bub p{margin:0 0 .9em}
 .bub p:last-child{margin-bottom:0}
-.bub ul,.bub ol{margin:0 0 .8em 1.4em}
+.bub ul,.bub ol{margin:0 0 .9em 1.4em}
 .bub li{margin-bottom:.25em}
 .bub h4{font:500 17px "Source Serif 4",Georgia,serif;margin:1em 0 .4em}
 .bub strong{font-weight:600}
-.bub code{background:var(--code);border:1px solid var(--line);padding:1px 5px;border-radius:5px;font:13px "JetBrains Mono",monospace}
-.code{position:relative;margin:.4em 0 .9em}
-.code pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px;overflow-x:auto;font:13px/1.6 "JetBrains Mono",monospace}
-.code pre code{background:none;border:0;padding:0}
-.cp{position:absolute;top:8px;right:8px;font-size:12px;color:var(--dim);padding:3px 8px;border-radius:6px;background:var(--panel);border:1px solid var(--line)}
+.bub code{background:var(--code);border:1px solid var(--line);color:var(--codefg);padding:2px 6px;border-radius:6px;font:13.5px "JetBrains Mono",monospace}
+.code{margin:.6em 0 1em;border:1px solid var(--line);border-radius:14px;background:var(--code);overflow:hidden}
+.chead{display:flex;justify-content:space-between;align-items:center;padding:8px 10px 2px 16px;color:var(--faint);font-size:12.5px}
+.chead span{display:flex;align-items:center;gap:8px}
+.cp{color:var(--faint);padding:5px 7px;border-radius:7px;display:grid;place-items:center;font-size:12px}
+.cp:hover{background:var(--hover);color:var(--text)}
+.cbody{display:flex;overflow-x:auto;padding:6px 0 14px}
+.gut{padding:0 14px 0 16px;text-align:right;color:var(--faint);user-select:none;font:13px/1.8 "JetBrains Mono",monospace;white-space:pre}
+.cbody pre{flex:1;padding-right:18px;font:13px/1.8 "JetBrains Mono",monospace;color:var(--codefg);white-space:pre}
+.cbody pre code{background:none;border:0;padding:0;color:inherit;font:inherit}
 .th{color:var(--dim);font-size:13.5px;margin-bottom:10px}
 .th summary{cursor:pointer}
 .th div{white-space:pre-wrap;margin-top:6px;padding-left:12px;border-left:2px solid var(--line)}
@@ -70,26 +97,24 @@ header{display:flex;align-items:center;justify-content:center;padding:10px 14px;
 .dots i:nth-child(2){animation-delay:.15s}
 .dots i:nth-child(3){animation-delay:.3s}
 @keyframes pulse{0%,60%,100%{opacity:.3}30%{opacity:1}}
-#inwrap{width:100%;max-width:760px;margin:0 auto;padding:0 16px 14px}
-#form{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:12px 14px 10px}
-#form:focus-within{border-color:var(--faint)}
-#in{width:100%;resize:none;outline:0;background:none;border:0;max-height:200px;line-height:1.5;padding:2px 2px 6px}
-#in::placeholder{color:var(--faint)}
-.row{display:flex;align-items:center;gap:6px}
-.sp{flex:1}
-#chip{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--dim);padding:2px 2px 8px}
-.mwrap{position:relative}
-#model-btn{padding:6px 10px;border-radius:8px;color:var(--dim);font-size:13.5px}
+#inwrap{width:100%;max-width:800px;margin:0 auto;padding:0 18px 14px}
+.mwrap{position:relative;display:inline-block;margin-bottom:8px}
+#model-btn{display:flex;align-items:center;gap:7px;padding:6px 12px;border-radius:18px;background:var(--panel);border:1px solid var(--line);color:var(--dim);font-size:13.5px}
 #model-btn:hover{background:var(--hover);color:var(--text)}
-#model-panel{position:absolute;bottom:100%;right:0;margin-bottom:6px;min-width:230px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px;box-shadow:0 8px 30px rgba(0,0,0,.25);z-index:10}
+#model-panel{position:absolute;bottom:100%;left:0;margin-bottom:6px;min-width:230px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px;box-shadow:0 8px 30px rgba(0,0,0,.35);z-index:10}
 .mrow{display:block;width:100%;text-align:left;padding:8px 10px;border-radius:8px;font-size:14px}
 .mrow.on{font-weight:600}
-#send{width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;font-size:17px;display:grid;place-items:center}
-#send:disabled{opacity:.35;cursor:default}
+#chip{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--dim);padding:0 6px 8px}
+#form{display:flex;align-items:flex-end;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:28px;padding:10px 12px 10px 22px}
+#form:focus-within{border-color:var(--faint)}
+#in{flex:1;resize:none;outline:0;background:none;border:0;max-height:200px;line-height:1.5;padding:5px 2px;min-height:30px}
+#in::placeholder{color:var(--faint)}
+#send{width:34px;height:34px;border-radius:50%;background:var(--text);color:var(--bg);display:grid;place-items:center;flex-shrink:0}
+#send:disabled{opacity:.3;cursor:default}
 .note{text-align:center;color:var(--faint);font-size:12px;padding-top:8px}
 #scrim{display:none}
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50}
-.smodal{width:100%;max-width:860px;height:min(640px,92dvh);background:var(--panel);border:1px solid var(--line);border-radius:14px;display:flex;flex-direction:column;overflow:hidden}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50}
+.smodal{width:100%;max-width:860px;height:min(640px,92dvh);background:var(--panel);border:1px solid var(--line);border-radius:16px;display:flex;flex-direction:column;overflow:hidden}
 .shead{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid var(--line);font-weight:600}
 .sbody{flex:1;display:flex;min-height:0}
 .snav{width:200px;padding:14px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:2px;flex-shrink:0}
@@ -99,26 +124,28 @@ header{display:flex;align-items:center;justify-content:center;padding:10px 14px;
 .spane h3{font-size:15px;font-weight:600;padding:16px 0 4px}
 .srow{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 0;border-bottom:1px solid var(--line)}
 .srow small{display:block;color:var(--faint);font-size:13px}
-.sin{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 12px;outline:none;width:230px;max-width:100%}
+.sin{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 12px;outline:none;width:230px;max-width:100%}
 .sin:focus{border-color:var(--faint)}
-.b2{border:1px solid var(--line);border-radius:8px;padding:8px 14px;background:var(--hover);font-size:14px}
-.bp{background:var(--accent);color:#fff;border-radius:10px;padding:11px 16px;font-weight:600;width:100%}
+.b2{border:1px solid var(--line);border-radius:10px;padding:8px 14px;background:var(--hover);font-size:14px}
+.bp{background:var(--accent);color:#fff;border-radius:12px;padding:11px 16px;font-weight:600;width:100%}
 .bp:disabled{opacity:.5}
-.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
 .seg button{padding:7px 16px;font-size:14px;color:var(--dim)}
 .seg button.on{background:var(--hover);color:var(--text)}
 .bigav{width:44px;height:44px;font-size:18px;cursor:pointer}
-.box{border:1px solid var(--line);border-radius:12px;padding:18px;margin:16px 0}
+.box{border:1px solid var(--line);border-radius:14px;padding:18px;margin:16px 0}
 .box h4{font-size:16px;font-weight:600}
 .box p{color:var(--dim);margin:4px 0 14px;font-size:14px}
-#card-el{border:1px solid var(--line);border-radius:8px;padding:12px;background:var(--bg);margin:10px 0}
+#card-el{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--bg);margin:10px 0}
 .err{color:#e5604f;font-size:13px;min-height:18px;margin-bottom:8px}
 .lock{background:var(--hover);border-radius:10px;padding:12px 14px;font-size:14px;margin-top:14px}
 @media(max-width:760px){
-  #burger{display:block}
-  #side{position:fixed;top:0;bottom:0;left:0;z-index:30;transform:translateX(-100%);transition:transform .18s}
+  #rail{display:none}
+  #shell{margin:0;border:0;border-radius:0}
+  #burger{display:inline-grid}
+  #side,#side.collapsed{display:flex;position:fixed;top:0;bottom:0;left:0;z-index:30;transform:translateX(-100%);transition:transform .18s;width:280px}
   #side.open{transform:none}
-  #scrim.on{display:block;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:20}
+  #scrim.on{display:block;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:20}
   #hello h1{font-size:30px}
   .sbody{flex-direction:column}
   .snav{width:auto;flex-direction:row;border-right:0;border-bottom:1px solid var(--line)}
@@ -129,48 +156,61 @@ header{display:flex;align-items:center;justify-content:center;padding:10px 14px;
 </head>
 <body>
 <div id="app">
-  <aside id="side">
-    <div class="brand"><img src="icons/logo.png" alt=""><span>asaplimo</span></div>
-    <button class="navb" id="new">+ New chat</button>
-    <button class="navb" id="sbtn">Search</button>
-    <input id="q" placeholder="Search chats" hidden>
-    <div class="lbl">Recents</div>
-    <div id="list"></div>
-    <div class="pop" id="umenu" hidden>
-      <div class="pe" id="pemail"></div>
-      <button id="m-set">Settings</button>
-      <button id="m-up">Upgrade plan</button>
-      <a href="about.html">About</a>
-      <hr>
-      <button id="out">Log out</button>
-    </div>
-    <button id="userbtn"><div class="av" id="av"></div><div class="who"><b id="nm"></b><span id="pl"></span></div><span class="icon">&#8963;</span></button>
-  </aside>
-  <div id="scrim"></div>
-  <section id="main">
-    <header>
-      <button class="icon" id="burger" aria-label="Menu">&#9776;</button>
-      <button id="pill" hidden></button>
-    </header>
-    <div id="msgs">
-      <div id="hello"><h1 id="hi">How can I help you today?</h1></div>
-      <div id="thread"></div>
-    </div>
-    <div id="inwrap">
-      <form id="form">
-        <div id="chip" hidden><span id="chipn"></span><button type="button" id="chipx" aria-label="Remove image">&times;</button></div>
-        <textarea id="in" rows="1" placeholder="Write a message..."></textarea>
-        <div class="row">
-          <button type="button" class="icon" id="attach" title="Attach an image" aria-label="Attach an image">+</button>
-          <input type="file" id="file" accept="image/*" hidden>
-          <span class="sp"></span>
-          <div class="mwrap"><button type="button" id="model-btn"><span id="mname">Model</span> &#9662;</button><div id="model-panel" hidden></div></div>
-          <button type="submit" id="send" disabled aria-label="Send">&#8593;</button>
+  <nav id="rail">
+    <button class="rb" id="r-new" aria-label="New chat" title="New chat"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+    <button class="rb" id="r-search" aria-label="Search" title="Search"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button>
+    <button class="rb on" id="r-home" aria-label="Home" title="Home"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l9 7.5V21h-6v-6H9v6H3V10.5z"/></svg></button>
+    <button class="rb" id="r-up" aria-label="Upgrade" title="Upgrade"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l2.2 5.8L20 11l-5.8 2.2L12 19l-2.2-5.8L4 11l5.8-2.2z"/></svg></button>
+    <span class="grow"></span>
+    <button class="rb" id="r-set" aria-label="Settings" title="Settings"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg><span class="badge" id="rbadge"></span></button>
+  </nav>
+  <div id="shell">
+    <aside id="side">
+      <div class="shd">
+        <b>Home</b>
+        <div class="acts">
+          <button class="icon" id="sbtn" aria-label="Search chats"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button>
+          <button class="icon" id="collapse" aria-label="Hide sidebar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/></svg></button>
         </div>
-      </form>
-      <div class="note">asaplimo is AI and can make mistakes. Please double-check responses.</div>
-    </div>
-  </section>
+      </div>
+      <button class="newb" id="new"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>New</button>
+      <input id="q" placeholder="Search chats" hidden>
+      <div id="list"></div>
+      <div class="pop" id="umenu" hidden>
+        <div class="pe" id="pemail"></div>
+        <button id="m-set">Settings</button>
+        <button id="m-up">Upgrade plan</button>
+        <a href="about.html">About</a>
+        <hr>
+        <button id="out">Log out</button>
+      </div>
+      <button id="userbtn"><div class="av" id="av"></div><div class="who"><b id="nm"></b><span id="pl"></span></div><span class="icon">&#8963;</span></button>
+    </aside>
+    <div id="scrim"></div>
+    <section id="main">
+      <header>
+        <button class="icon" id="burger" aria-label="Menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+        <div class="crumb"><button id="crumb-home">Home</button><span>&rsaquo;</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l2.2 5.8L20 11l-5.8 2.2L12 19l-2.2-5.8L4 11l5.8-2.2z"/></svg><b id="crumb">New chat</b></div>
+        <span class="hsp"></span>
+        <button id="pill" hidden></button>
+      </header>
+      <div id="msgs">
+        <div id="hello"><h1 id="hi">How can I help you today?</h1></div>
+        <div id="thread"></div>
+      </div>
+      <div id="inwrap">
+        <div class="mwrap"><button type="button" id="model-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l2.2 5.8L20 11l-5.8 2.2L12 19l-2.2-5.8L4 11l5.8-2.2z"/></svg><span id="mname">Model</span><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button><div id="model-panel" hidden></div></div>
+        <div id="chip" hidden><span id="chipn"></span><button type="button" id="chipx" aria-label="Remove image">&times;</button></div>
+        <form id="form">
+          <textarea id="in" rows="1" placeholder="Message the agent..."></textarea>
+          <button type="button" class="icon" id="attach" title="Attach an image" aria-label="Attach an image"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+          <input type="file" id="file" accept="image/*" hidden>
+          <button type="submit" id="send" disabled aria-label="Send"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+        </form>
+        <div class="note">asaplimo is AI and can make mistakes. Please double-check responses.</div>
+      </div>
+    </section>
+  </div>
 </div>
 
 <div class="overlay" id="settings" hidden>
@@ -219,6 +259,9 @@ const API="https://frosty-moon-2b57.oakambe24fi.workers.dev",TK="asaplimo_sessio
 const STRIPE_PK="pk_test_REPLACE_WITH_YOUR_KEY";
 const $=id=>document.getElementById(id);
 const JSONH={"Content-Type":"application/json"};
+const SPARK='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l2.2 5.8L20 11l-5.8 2.2L12 19l-2.2-5.8L4 11l5.8-2.2z"/></svg>';
+const COPY='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 012-2h9"/></svg>';
+const FILE='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5"/></svg>';
 let me=null,premium=false,locked=false,convId=null,convs=[],busy=false,models=[],cur="",img=null,stripe=null,card=null;
 const tok=()=>{try{return localStorage.getItem(TK)}catch(e){return null}};
 
@@ -266,16 +309,26 @@ function render(t){
   const p=t.split(/```(\w*)\n?([\s\S]*?)```/g);let h="";
   for(let i=0;i<p.length;i+=3){
     h+=block(p[i]||"");
-    if(p[i+2]!==undefined)h+='<div class="code"><button class="cp" type="button">Copy</button><pre><code>'+esc(p[i+2].replace(/\n$/,""))+"</code></pre></div>";
+    if(p[i+2]!==undefined){
+      const code=p[i+2].replace(/\n$/,""),lang=p[i+1]||"code";
+      const nums=code.split("\n").map((x,n)=>n+1).join("\n");
+      h+='<div class="code"><div class="chead"><span>'+FILE+esc(lang.charAt(0).toUpperCase()+lang.slice(1))+'</span><button class="cp" type="button" aria-label="Copy code">'+COPY+'</button></div><div class="cbody"><div class="gut">'+nums+'</div><pre><code>'+esc(code)+"</code></pre></div></div>";
+    }
   }
   return h;
 }
-function add(role,text,thinking){
+function clock(d){return d.toLocaleTimeString([],{hour:"numeric",minute:"2-digit"})}
+function add(role,text,thinking,time){
   $("hello").hidden=true;
   const m=document.createElement("div");
   m.className="m "+role;
-  if(role==="user")m.textContent=text;
-  else{
+  if(role==="user"){
+    const u=document.createElement("div");
+    u.className="ub";
+    u.textContent=text;
+    m.appendChild(u);
+    if(time){const s=document.createElement("div");s.className="ts";s.textContent=time;m.appendChild(s)}
+  }else{
     m.innerHTML='<div class="bub">'+(thinking?'<details class="th"><summary>Thinking</summary><div></div></details>':"")+render(text)+"</div>";
     if(thinking)m.querySelector(".th div").textContent=thinking;
   }
@@ -293,15 +346,32 @@ function typing(){
   return m;
 }
 $("thread").addEventListener("click",e=>{
-  if(!e.target.classList.contains("cp"))return;
-  const btn=e.target;
-  navigator.clipboard.writeText(btn.nextElementSibling.textContent).then(()=>{btn.textContent="Copied";setTimeout(()=>{btn.textContent="Copy"},1500)}).catch(()=>{});
+  const btn=e.target.closest(".cp");
+  if(!btn)return;
+  const txt=btn.closest(".code").querySelector("pre").textContent;
+  navigator.clipboard.writeText(txt).then(()=>{btn.textContent="Copied";setTimeout(()=>{btn.innerHTML=COPY},1500)}).catch(()=>{});
 });
 
+function setCrumb(){
+  const c=convs.find(x=>x.id===convId);
+  $("crumb").textContent=c?(c.title||"New chat"):"New chat";
+}
 function reset(){convId=null;$("thread").innerHTML="";$("hello").hidden=false;renderList();$("in").focus()}
 function closeSide(){$("side").classList.remove("open");$("scrim").classList.remove("on")}
+function openSearch(){
+  $("side").classList.remove("collapsed");
+  $("q").hidden=false;
+  $("q").focus();
+}
 $("new").onclick=()=>{reset();closeSide()};
+$("r-new").onclick=reset;
+$("r-home").onclick=reset;
+$("crumb-home").onclick=reset;
+$("r-search").onclick=openSearch;
+$("r-up").onclick=()=>openSettings("billing");
+$("r-set").onclick=()=>openSettings("account");
 $("burger").onclick=()=>{$("side").classList.add("open");$("scrim").classList.add("on")};
+$("collapse").onclick=()=>{if(matchMedia("(max-width:760px)").matches)closeSide();else $("side").classList.add("collapsed")};
 $("scrim").onclick=closeSide;
 $("sbtn").onclick=()=>{$("q").hidden=!$("q").hidden;if(!$("q").hidden)$("q").focus();else{$("q").value="";renderList()}};
 $("q").oninput=renderList;
@@ -314,16 +384,52 @@ async function loadConvs(){
   convs=d.conversations||[];
   renderList();
 }
+function convTime(c){
+  const v=c.updatedAt||c.updated_at||c.updated||c.createdAt||c.created_at||c.created;
+  if(v===undefined||v===null)return null;
+  const t=typeof v==="number"?(v<1e12?v*1000:v):Date.parse(v);
+  return isNaN(t)?null:t;
+}
+function groupOf(t){
+  if(t===null)return "Recents";
+  const now=new Date(),d=new Date(t),day=864e5;
+  const start=new Date(now.getFullYear(),now.getMonth(),now.getDate()).getTime();
+  if(t>=start)return "Today";
+  if(t>=start-6*day)return "Last 7 days";
+  if(d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth())return "Earlier this month";
+  if(t>=start-60*day)return "Last month";
+  return "Older";
+}
+function ago(t){
+  if(t===null)return "";
+  const m=Math.floor((Date.now()-t)/6e4);
+  if(m<1)return "now";
+  if(m<60)return m+"m";
+  if(m<1440)return Math.floor(m/60)+"h";
+  return new Date(t).toLocaleDateString([],{month:"short",day:"numeric"});
+}
 function renderList(){
   const q=$("q").value.trim().toLowerCase();
   $("list").innerHTML="";
+  let last=null;
   convs.filter(c=>!q||(c.title||"").toLowerCase().includes(q)).forEach(c=>{
+    const t=convTime(c),g=groupOf(t);
+    if(g!==last){
+      const l=document.createElement("div");
+      l.className="lbl";
+      l.textContent=g;
+      $("list").appendChild(l);
+      last=g;
+    }
     const b=document.createElement("button");
     b.className="conv"+(c.id===convId?" on":"");
-    b.textContent=c.title||"New chat";
+    b.innerHTML=SPARK+'<span class="t"></span><span class="ago"></span>';
+    b.querySelector(".t").textContent=c.title||"New chat";
+    b.querySelector(".ago").textContent=ago(t);
     b.onclick=()=>{closeSide();openConv(c.id)};
     $("list").appendChild(b);
   });
+  setCrumb();
 }
 async function openConv(id){
   const r=await api("/api/conversations/"+id);
@@ -353,7 +459,7 @@ $("m-up").onclick=()=>openSettings("billing");
 $("pill").onclick=()=>openSettings("billing");
 document.addEventListener("click",e=>{
   if(!e.target.closest(".mwrap"))$("model-panel").hidden=true;
-  if(!e.target.closest("#umenu"))$("umenu").hidden=true;
+  if(!e.target.closest("#umenu")&&!e.target.closest("#userbtn"))$("umenu").hidden=true;
 });
 
 function paintAv(el){
@@ -370,7 +476,7 @@ function applyMe(){
   $("pemail").textContent=me.email||"";
   $("semail").textContent=me.email||"";
   $("fname").value=me.displayName||me.name||"";
-  paintAv($("av"));paintAv($("bigav"));
+  paintAv($("av"));paintAv($("bigav"));paintAv($("rbadge"));
   const days=me.daysLeft+" day"+(me.daysLeft===1?"":"s")+" left";
   const label=premium?"Premium":(locked?"Trial ended":"Free trial");
   $("pl").textContent=premium?"Premium":(locked?"Trial ended":days+" in trial");
@@ -379,6 +485,7 @@ function applyMe(){
   $("pill").hidden=premium;
   $("pill").innerHTML=locked?"Trial ended &middot; <b>Upgrade</b>":"Free trial &middot; "+days+" &middot; <b>Upgrade</b>";
   $("m-up").hidden=premium;
+  $("r-up").hidden=premium;
   $("hi").textContent="Hi, "+first+". How can I help?";
   $("payarea").hidden=premium;
   $("paid").hidden=!premium;
@@ -509,7 +616,7 @@ async function send(){
   if((!text&&!img)||busy)return;
   if(locked){openSettings("billing");return}
   busy=true;
-  add("user",text||"(image)");
+  add("user",text||"(image)",null,clock(new Date()));
   const sent=img;
   inp.value="";grow();clearImg();upd();
   const t=typing();
