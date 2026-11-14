@@ -1,5 +1,6 @@
 (function(){
   var saved=null;
   try{saved=localStorage.getItem("asaplimo_theme");}catch(e){}
-  if(!document.documentElement.hasAttribute("data-theme"))document.documentElement.setAttribute("data-theme",saved||"dark");
+  if(!saved&&window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)saved="dark";
+  if(!document.documentElement.hasAttribute("data-theme"))document.documentElement.setAttribute("data-theme",saved||"light");
 })();
