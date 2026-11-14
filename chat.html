@@ -34,7 +34,7 @@ svg{flex-shrink:0}
 .shd b{font-weight:600;font-size:14.5px}
 .shd .acts{display:flex;gap:2px}
 .icon{border-radius:8px;padding:6px 8px;color:var(--dim);font-size:16px;line-height:1;display:inline-grid;place-items:center}
-.icon:hover,.conv:hover,.mrow:hover,.pop button:hover,.pop a:hover{background:var(--hover)}
+.icon:hover,.conv:hover,.mrow:hover{background:var(--hover)}
 .newb{display:flex;align-items:center;gap:10px;width:100%;padding:9px 14px;border-radius:22px;background:var(--hover);font-size:14.5px;text-align:left}
 .newb:hover{background:var(--line)}
 #q{width:100%;margin:10px 0 0;padding:8px 12px;background:var(--bg);border:1px solid var(--line);border-radius:10px;outline:none;font-size:14px}
@@ -45,16 +45,8 @@ svg{flex-shrink:0}
 .conv .t{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .conv .ago{color:var(--faint);font-size:12px}
 .conv.on{background:var(--hover)}
-#userbtn{display:flex;align-items:center;gap:10px;width:100%;padding:10px 8px 6px;border-top:1px solid var(--line);margin-top:8px;text-align:left}
 .av{width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:600;font-size:14px;flex-shrink:0;overflow:hidden}
 .av img{width:100%;height:100%;object-fit:cover}
-.who{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.3}
-.who b{font-size:13.5px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.who span{font-size:12px;color:var(--faint)}
-.pop{position:absolute;left:10px;right:10px;bottom:64px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px;box-shadow:0 8px 30px rgba(0,0,0,.35);z-index:15}
-.pop button,.pop a{display:block;width:100%;text-align:left;padding:8px 10px;border-radius:8px;color:var(--text);text-decoration:none;font-size:14px}
-.pop .pe{padding:8px 10px;color:var(--faint);font-size:13px;overflow:hidden;text-overflow:ellipsis}
-.pop hr{border:0;border-top:1px solid var(--line);margin:6px 0}
 #main{flex:1;display:flex;flex-direction:column;min-width:0;background:var(--bg)}
 header{display:flex;align-items:center;gap:8px;padding:10px 16px;min-height:54px}
 #burger{display:none}
@@ -70,9 +62,9 @@ header{display:flex;align-items:center;gap:8px;padding:10px 16px;min-height:54px
 #hello{margin:auto;padding:24px;text-align:center}
 #hello h1{font:400 38px/1.2 "Source Serif 4",Georgia,serif;letter-spacing:-.01em}
 #thread{width:100%;max-width:760px;margin:0 auto;padding:12px 18px 24px;display:flex;flex-direction:column;gap:22px}
-.m.user{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
-.m.user .ub{align-self:stretch;background:var(--userbg);border:1px solid var(--line);border-radius:22px;padding:14px 18px;white-space:pre-wrap;overflow-wrap:anywhere;font:13px/1.6 "JetBrains Mono",monospace;font-family:inherit;font-size:15px}
-.m.user .ts{font-size:12px;color:var(--faint);padding-right:10px}
+.m.user{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.m.user .ub{align-self:flex-end;width:fit-content;max-width:85%;background:var(--userbg);border:1px solid var(--line);border-radius:18px;padding:9px 16px;white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;font-size:15px;line-height:1.5}
+.m.user .ts{font-size:12px;color:var(--faint);padding-right:6px}
 .m.assistant{overflow-wrap:anywhere;padding:0 4px}
 .bub p{margin:0 0 .9em}
 .bub p:last-child{margin-bottom:0}
@@ -177,15 +169,6 @@ header{display:flex;align-items:center;gap:8px;padding:10px 16px;min-height:54px
       <button class="newb" id="new"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>New</button>
       <input id="q" placeholder="Search chats" hidden>
       <div id="list"></div>
-      <div class="pop" id="umenu" hidden>
-        <div class="pe" id="pemail"></div>
-        <button id="m-set">Settings</button>
-        <button id="m-up">Upgrade plan</button>
-        <a href="about.html">About</a>
-        <hr>
-        <button id="out">Log out</button>
-      </div>
-      <button id="userbtn"><div class="av" id="av"></div><div class="who"><b id="nm"></b><span id="pl"></span></div><span class="icon">&#8963;</span></button>
     </aside>
     <div id="scrim"></div>
     <section id="main">
@@ -377,7 +360,6 @@ $("scrim").onclick=closeSide;
 $("sbtn").onclick=()=>{$("q").hidden=!$("q").hidden;if(!$("q").hidden)$("q").focus();else{$("q").value="";renderList()}};
 $("q").oninput=renderList;
 async function logout(){try{await api("/api/logout",{method:"POST"})}catch(e){}try{localStorage.removeItem(TK)}catch(e){}location.href="index.html"}
-$("out").onclick=logout;
 $("out2").onclick=logout;
 
 async function loadConvs(){
@@ -447,20 +429,15 @@ function openSettings(t){
   document.querySelectorAll(".snav button").forEach(b=>b.classList.toggle("on",b.dataset.t===t));
   document.querySelectorAll("[data-p]").forEach(s=>{s.hidden=s.dataset.p!==t});
   if(t==="billing"&&!premium)mountCard();
-  $("umenu").hidden=true;
   closeSide();
 }
 document.querySelectorAll(".snav button").forEach(b=>b.onclick=()=>openSettings(b.dataset.t));
 $("sclose").onclick=()=>{$("settings").hidden=true};
 $("settings").addEventListener("mousedown",e=>{if(e.target===$("settings"))$("settings").hidden=true});
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){$("settings").hidden=true;$("umenu").hidden=true;$("model-panel").hidden=true}});
-$("userbtn").onclick=e=>{e.stopPropagation();$("umenu").hidden=!$("umenu").hidden};
-$("m-set").onclick=()=>openSettings("account");
-$("m-up").onclick=()=>openSettings("billing");
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){$("settings").hidden=true;$("model-panel").hidden=true}});
 $("pill").onclick=()=>openSettings("billing");
 document.addEventListener("click",e=>{
   if(!e.target.closest(".mwrap"))$("model-panel").hidden=true;
-  if(!e.target.closest("#umenu")&&!e.target.closest("#userbtn"))$("umenu").hidden=true;
 });
 
 function paintAv(el){
@@ -473,19 +450,15 @@ function applyMe(){
   locked=!premium&&!!me.trialExpired;
   me.shown=me.displayName||me.name||(me.email||"").split("@")[0]||"there";
   const first=me.shown.split(" ")[0];
-  $("nm").textContent=me.shown;
-  $("pemail").textContent=me.email||"";
   $("semail").textContent=me.email||"";
   $("fname").value=me.displayName||me.name||"";
-  paintAv($("av"));paintAv($("bigav"));paintAv($("rbadge"));
+  paintAv($("bigav"));paintAv($("rbadge"));
   const days=me.daysLeft+" day"+(me.daysLeft===1?"":"s")+" left";
   const label=premium?"Premium":(locked?"Trial ended":"Free trial");
-  $("pl").textContent=premium?"Premium":(locked?"Trial ended":days+" in trial");
   $("planname").textContent=label;
   $("plansub").textContent=premium?"All models unlocked":(locked?"Subscribe to keep chatting":days);
   $("pill").hidden=premium;
   $("pill").innerHTML=locked?"Trial ended &middot; <b>Upgrade</b>":"Free trial &middot; "+days+" &middot; <b>Upgrade</b>";
-  $("m-up").hidden=premium;
   $("r-up").hidden=premium;
   $("hi").textContent="Hi, "+first+". How can I help?";
   $("payarea").hidden=premium;
