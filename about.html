@@ -15,15 +15,24 @@ h1{font-size:24px;margin-bottom:14px;}
 p{color:var(--text-dim);font-size:15px;line-height:1.65;margin-bottom:12px;}
 .back{display:inline-block;margin-top:12px;border:1px solid var(--border);border-radius:10px;padding:9px 14px;text-decoration:none;color:var(--text);font-size:14px;font-weight:500;}
 .back:hover{background:var(--sidebar-hover);}
+.legal{margin-top:22px;display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;}
+.legal a{color:var(--text-dim);text-decoration:none;}
+.legal a:hover{color:var(--text);text-decoration:underline;}
 </style>
 </head>
 <body>
 <div class="card">
   <div class="mark">A</div>
   <h1>About asaplimo</h1>
-  <p>asaplimo is a personal AI chat project built by Mitchell Akambe from Nigeria.</p>
+  <p>asaplimo is a personal AI chat project created by Mitchell Akambe from Nigeria.</p>
   <p>He builds Minecraft mods and web apps for fun, and this is the biggest thing he has made so far.</p>
+  <p>The chat runs on third-party AI models: Gemini Flash Lite and GPT-OSS 120B are free, and Gemini 3.1 Pro is available on Premium. You can switch between them from the model picker in the chat.</p>
   <a class="back" href="chat.html">Back to chat</a>
+  <div class="legal">
+    <a href="terms.html">Terms of Service</a>
+    <a href="privacy.html">Privacy Policy</a>
+    <a href="cookies.html">Cookie Policy</a>
+  </div>
 </div>
 <script src="theme.js"></script>
 </body>
