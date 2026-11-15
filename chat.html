@@ -164,10 +164,12 @@ header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8p
 #model-btn{display:flex;align-items:center;gap:6px;padding:4px 8px;border-radius:8px;background:none;border:0;color:var(--dim);font-size:12.5px;line-height:1.4}
 #model-btn svg{width:12px;height:12px}
 #model-btn:hover{background:var(--hover);color:var(--text)}
-#model-panel{position:absolute;bottom:100%;right:0;margin-bottom:6px;min-width:230px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px;box-shadow:0 8px 30px rgba(0,0,0,.35);z-index:10}
-.mrow{display:block;width:100%;text-align:left;padding:8px 10px;border-radius:8px;font-size:14px}
+#model-panel{position:absolute;bottom:100%;right:0;margin-bottom:6px;min-width:260px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px;box-shadow:0 8px 30px rgba(0,0,0,.35);z-index:10}
+.mrow{display:flex;align-items:center;justify-content:space-between;gap:14px;width:100%;text-align:left;padding:8px 10px;border-radius:8px;font-size:14px}
 .mrow.on{font-weight:600}
+.mrow .mk{color:var(--faint);font-size:12px;font-weight:400}
 #chip{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--dim);padding:0 6px 8px}
+#ended{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 6px 8px;padding:10px 14px;border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--dim);font-size:13.5px}
 .formwrap{position:relative}
 #form{display:flex;align-items:flex-end;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:10px 12px}
 #attach{width:34px;height:34px;padding:0;border-radius:10px;flex-shrink:0}
@@ -186,6 +188,7 @@ header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8p
 #scrim{display:none}
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50}
 #limit{z-index:60}
+#agebox{z-index:70}
 .lmodal{width:100%;max-width:400px;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:28px 24px 18px;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.45)}
 .lic{width:48px;height:48px;border-radius:50%;background:var(--hover);display:grid;place-items:center;margin:0 auto 14px;color:var(--dot)}
 .lmodal h3{font:500 24px "Source Serif 4",Georgia,serif;margin-bottom:10px}
@@ -196,6 +199,7 @@ header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8p
 .lmodal .b2{width:100%;margin-top:8px;padding:10px 14px}
 .lmodal .lx{margin-top:8px;padding:8px;color:var(--faint);font-size:14px;width:100%}
 .lmodal .lx:hover{color:var(--text)}
+.lmodal .sin{text-align:center;margin-top:6px}
 .smodal{width:100%;max-width:900px;height:min(680px,92dvh);background:var(--bg);border:1px solid var(--line);border-radius:20px;display:flex;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.45)}
 .snav{width:220px;background:var(--side);border-right:1px solid var(--line);padding:20px 12px;display:flex;flex-direction:column;gap:2px;flex-shrink:0}
 .snav h2{font:500 21px "Source Serif 4",Georgia,serif;padding:0 10px 16px}
@@ -328,6 +332,7 @@ header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8p
         <div id="thread"></div>
       </div>
       <div id="inwrap">
+        <div id="ended" hidden><span>This conversation was ended by the AI.</span><button type="button" class="b2" id="endnew">New chat</button></div>
         <div id="pchips" hidden></div>
         <div id="chip" hidden><span id="chipn"></span><button type="button" id="chipx" aria-label="Remove image">&times;</button></div>
         <div class="formwrap">
@@ -375,6 +380,18 @@ header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8p
   </div>
 </div>
 
+<div class="overlay" id="agebox" hidden>
+  <div class="lmodal" role="dialog" aria-label="Your age">
+    <div class="lic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>
+    <h3>How old are you?</h3>
+    <p>This sets how the AI talks to you. You can only set it once.</p>
+    <input class="sin full" id="agein" type="number" min="1" max="120" inputmode="numeric" placeholder="Your age">
+    <div class="err" id="ageerr" style="margin-top:8px"></div>
+    <button class="bp" id="agego" type="button">Continue</button>
+    <button class="lx" id="ageout" type="button">Log out</button>
+  </div>
+</div>
+
 <div class="overlay" id="limit" hidden>
   <div class="lmodal" role="dialog" aria-label="Out of usage">
     <div class="lic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
@@ -407,6 +424,7 @@ header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8p
             <input type="file" id="photo" accept="image/*" hidden>
             <div class="srow"><label for="fname" class="sl">Display name</label><input class="sin" id="fname" maxlength="60"></div>
             <div class="srow"><div class="sl">Email</div><div id="semail" class="dim"></div></div>
+            <div class="srow"><div class="sl">Age</div><div id="sage" class="dim"></div></div>
           </div>
           <div class="scard">
             <div class="srow"><div><div class="sl">Log out</div><small>You can sign back in with Google any time.</small></div><button class="b2" id="out2">Log out</button></div>
@@ -425,7 +443,7 @@ header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8p
               <ul>
                 <li id="uh1"></li>
                 <li>Waits last between 1 and 5 hours. They get longer if the AI is treated badly.</li>
-                <li>The AI can limit your usage on its own if you insult, harass or spam it.</li>
+                <li>The AI can warn you, limit your usage, or end a conversation if you insult, harass or spam it.</li>
                 <li>Premium has no usage limits.</li>
               </ul>
             </div>
@@ -480,7 +498,7 @@ const LANGS=["Auto-detect","JavaScript","TypeScript","Python","HTML & CSS","Java
 const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
 const DOWS=["Mo","Tu","We","Th","Fr","Sa","Su"];
 const TITLES={account:"Account",usage:"Usage",billing:"Plan",appearance:"Appearance"};
-let me=null,premium=false,limited=false,limitUntil=0,convId=null,convs=[],busy=false,models=[],cur="",img=null,stripe=null,card=null;
+let me=null,premium=false,limited=false,limitUntil=0,ended=false,convId=null,convs=[],busy=false,models=[],cur="",img=null,stripe=null,card=null;
 let mode="chat",lang="Auto-detect",view="home",calY=0,calM=0,calSel=null,calInit=false;
 const tok=()=>{try{return localStorage.getItem(TK)}catch(e){return null}};
 
@@ -723,9 +741,14 @@ function greet(){
   $("hi").textContent=mode==="code"?"What are we building, "+first+"?":"Hi, "+first+". How can I help?";
 }
 function paintInput(){
-  inp.readOnly=limited;
-  inp.placeholder=limited?"You're out of usage. Resets in "+left()+".":(mode==="code"?"Describe what to build, or paste code...":"Message the agent...");
+  inp.readOnly=limited||ended;
+  inp.placeholder=ended?"This conversation was ended. Start a new chat.":limited?"You're out of usage. Resets in "+left()+".":(mode==="code"?"Describe what to build, or paste code...":"Message the agent...");
   upd();
+}
+function setEnded(v){
+  ended=!!v;
+  $("ended").hidden=!ended;
+  paintInput();
 }
 function paintMode(){
   $("md-chat").classList.toggle("on",mode==="chat");
@@ -755,7 +778,7 @@ function buildLangs(){
 }
 $("lang").onclick=e=>{e.stopPropagation();$("lang-panel").hidden=!$("lang-panel").hidden};
 
-function reset(){convId=null;$("thread").innerHTML="";$("hello").hidden=false;closePanel();renderList();$("in").focus()}
+function reset(){convId=null;$("thread").innerHTML="";$("hello").hidden=false;setEnded(false);closePanel();renderList();$("in").focus()}
 function closeSide(){$("side").classList.remove("open");$("scrim").classList.remove("on")}
 function setView(v){
   view=v;
@@ -781,6 +804,7 @@ function openSearch(){
   $("q").focus();
 }
 $("new").onclick=()=>{reset();closeSide()};
+$("endnew").onclick=()=>{setView("home");reset()};
 $("r-new").onclick=()=>{setView("home");reset()};
 $("r-home").onclick=()=>{setView("home");reset()};
 $("crumb-home").onclick=()=>{setView("home");reset()};
@@ -796,6 +820,7 @@ $("sbtn").onclick=()=>{$("q").hidden=!$("q").hidden;if(!$("q").hidden)$("q").foc
 $("q").oninput=renderList;
 async function logout(){try{await api("/api/logout",{method:"POST"})}catch(e){}try{localStorage.removeItem(TK)}catch(e){}location.href="index.html"}
 $("out2").onclick=logout;
+$("ageout").onclick=logout;
 
 async function loadConvs(){
   const r=await api("/api/conversations"),d=await r.json();
@@ -904,6 +929,7 @@ async function openConv(id){
   closePanel();
   $("thread").innerHTML="";
   if(c.messages&&c.messages.length)c.messages.forEach(x=>add(x.role,x.text));else $("hello").hidden=false;
+  setEnded(c.ended);
   renderList();
 }
 
@@ -933,6 +959,34 @@ $("lclose").onclick=()=>{$("limit").hidden=true};
 $("limit").addEventListener("mousedown",e=>{if(e.target===$("limit"))$("limit").hidden=true});
 $("lbuy").onclick=()=>{$("limit").hidden=true;openSettings("billing")};
 $("lcode").onclick=()=>{$("limit").hidden=true;openSettings("billing");setTimeout(()=>{if(!$("codein").offsetParent)return;$("codein").focus()},60)};
+
+function showAge(){
+  $("agebox").hidden=false;
+  setTimeout(()=>$("agein").focus(),50);
+}
+$("agego").onclick=async()=>{
+  const n=Math.floor(Number($("agein").value)),er=$("ageerr");
+  er.textContent="";
+  if(!n||n<1||n>120){er.textContent="Enter a valid age.";return}
+  $("agego").disabled=true;
+  try{
+    const r=await api("/api/age",{method:"POST",headers:JSONH,body:JSON.stringify({age:n})});
+    const d=await r.json().catch(()=>({}));
+    if(r.ok){
+      me.age=d.age;
+      $("sage").textContent=d.age;
+      $("agebox").hidden=true;
+      inp.focus();
+    }else{
+      er.textContent=d.error==="too_young"?"You must be 13 or older to use asaplimo.":"Could not save your age. Try again.";
+    }
+  }catch(e){
+    if(e.message!=="auth")er.textContent="Could not reach the server.";
+  }finally{
+    $("agego").disabled=false;
+  }
+};
+$("agein").onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();$("agego").click()}};
 
 document.addEventListener("keydown",e=>{
   if(e.key!=="Escape")return;
@@ -981,6 +1035,7 @@ function applyMe(){
   premium=!!(me.paid||me.networkUnlocked);
   me.shown=me.displayName||me.name||(me.email||"").split("@")[0]||"there";
   $("semail").textContent=me.email||"";
+  $("sage").textContent=me.age||"Not set";
   $("fname").value=me.displayName||me.name||"";
   paintAv($("bigav"));paintAv($("rbadge"));
   $("planname").textContent=premium?"Premium":"Free";
@@ -991,6 +1046,7 @@ function applyMe(){
   $("paid").hidden=!premium;
   greet();
   applyUsage();
+  if(!me.age)showAge();
 }
 async function refreshMe(){
   const r=await api("/api/me"),d=await r.json();
@@ -1082,13 +1138,19 @@ async function loadModels(){
   const r=await api("/api/models"),d=await r.json();
   models=d.models||[];cur=d.current;
   const m=models.find(x=>x.id===cur);
-  $("mname").textContent=m?m.label:"Model";
+  $("mname").textContent=m?m.label+(m.maker?" \u00b7 "+m.maker:""):"Model";
   $("model-panel").innerHTML="";
   models.forEach(x=>{
     const b=document.createElement("button");
     b.type="button";
     b.className="mrow"+(x.id===cur?" on":"");
-    b.textContent=x.label+(x.locked?" (Premium)":"");
+    const n=document.createElement("span");
+    n.textContent=x.label+(x.locked?" (Premium)":"");
+    const k=document.createElement("span");
+    k.className="mk";
+    k.textContent=x.maker||"";
+    b.appendChild(n);
+    b.appendChild(k);
     b.onclick=async()=>{
       $("model-panel").hidden=true;
       if(x.locked){openSettings("billing");return}
@@ -1103,8 +1165,9 @@ $("model-btn").onclick=()=>{$("model-panel").hidden=!$("model-panel").hidden};
 const inp=$("in");
 let pend=[];
 function drawPend(){$("pchips").hidden=!pend.length}
-function upd(){$("send").disabled=busy||(!limited&&!inp.value.trim()&&!img&&!pend.length)}
+function upd(){$("send").disabled=busy||ended||(!limited&&!inp.value.trim()&&!img&&!pend.length)}
 inp.addEventListener("paste",e=>{
+  if(ended){e.preventDefault();return}
   if(limited){e.preventDefault();showLimit();return}
   const t=(e.clipboardData||window.clipboardData).getData("text");
   if(t&&t.split("\n").length>LONG){
@@ -1118,16 +1181,21 @@ inp.addEventListener("paste",e=>{
 function grow(){inp.style.height="auto";inp.style.height=Math.min(inp.scrollHeight,200)+"px"}
 inp.oninput=()=>{grow();upd()};
 inp.onkeydown=e=>{
+  if(ended){
+    if(e.key==="Enter")e.preventDefault();
+    return;
+  }
   if(limited){
     if(!e.ctrlKey&&!e.metaKey&&!e.altKey&&(e.key.length===1||e.key==="Enter")){e.preventDefault();showLimit()}
     return;
   }
   if(e.key==="Enter"&&!e.shiftKey&&!e.isComposing){e.preventDefault();send()}
 };
-$("form").addEventListener("mousedown",e=>{if(limited){e.preventDefault();showLimit()}});
+$("form").addEventListener("mousedown",e=>{if(limited&&!ended){e.preventDefault();showLimit()}});
 $("form").onsubmit=e=>{e.preventDefault();send()};
 $("attach").onclick=e=>{
   e.stopPropagation();
+  if(ended)return;
   if(limited){showLimit();return}
   $("plus-menu").hidden=!$("plus-menu").hidden;
 };
@@ -1159,6 +1227,7 @@ function clearImg(){img=null;$("chip").hidden=true}
 $("chipx").onclick=()=>{clearImg();upd()};
 
 async function send(){
+  if(ended)return;
   if(limited){showLimit();return}
   let text=inp.value.trim();
   if((!text&&!img&&!pend.length)||busy)return;
@@ -1186,15 +1255,24 @@ async function send(){
       showLimit();
       return;
     }
+    if(r.status===403){
+      const d=await r.json().catch(()=>({}));
+      um.remove();
+      if(d.error==="conversation_ended")setEnded(true);
+      else if(d.error==="age_required")showAge();
+      else add("assistant","Something went wrong. Please try again.");
+      return;
+    }
     if(!r.ok){add("assistant","Something went wrong. Please try again.");return}
     const d=await r.json();
     if(d.usage){me.usage=d.usage;applyUsage()}
     const am=add("assistant",d.reply||"No response.",d.thinking);
+    if(d.ended)setEnded(true);
     const dcs=am.querySelectorAll(".dcard");
     if(dcs.length&&!matchMedia("(max-width:760px)").matches)openViewer(+dcs[dcs.length-1].dataset.doc);
     loadConvs();
   }catch(e){t.remove();add("assistant","Could not reach the server.")}
-  finally{busy=false;upd();if(!limited)inp.focus()}
+  finally{busy=false;upd();if(!limited&&!ended)inp.focus()}
 }
 
 async function init(){
@@ -1206,7 +1284,7 @@ async function init(){
     paintMode();
     $("app").classList.add("on");
     loadConvs();loadModels();
-    if(!limited)inp.focus();
+    if(!limited&&me.age)inp.focus();
   }catch(e){if(e.message!=="auth")location.href="index.html"}
 }
 init();
