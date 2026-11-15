@@ -186,6 +186,8 @@ header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8p
 #send:disabled{opacity:.3;cursor:default}
 .note{text-align:left;color:var(--faint);font-size:12px}
 #scrim{display:none}
+#drop{position:fixed;inset:6px;z-index:80;display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:rgba(15,15,15,.75);backdrop-filter:blur(6px);border:2px solid var(--accent);border-radius:18px;color:var(--accent);font-size:15px;pointer-events:none}
+#drop.on{display:flex}
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50}
 #limit{z-index:60}
 #agebox{z-index:70}
@@ -383,6 +385,8 @@ header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8p
   </div>
 </div>
 
+<div id="drop"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg><span>Drop files here</span></div>
+
 <div class="overlay" id="agebox" hidden>
   <div class="lmodal" role="dialog" aria-label="Your age">
     <div class="lic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>
@@ -501,6 +505,14 @@ const LANGS=["Auto-detect","JavaScript","TypeScript","Python","HTML & CSS","Java
 const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
 const DOWS=["Mo","Tu","We","Th","Fr","Sa","Su"];
 const MICONS={Google:"icons/IOS_Google_icon.png",OpenAI:"icons/OpenAI-Emblem.png"};
+const RAW="https://raw.githubusercontent.com/brandonlua/cuddly-barnacle/main/";
+function iconFor(el,maker){
+  const p=MICONS[maker];
+  if(!p){el.hidden=true;return}
+  el.hidden=false;
+  el.onerror=()=>{el.onerror=()=>{el.hidden=true};el.src=RAW+p};
+  el.src=p;
+}
 const TITLES={account:"Account",usage:"Usage",billing:"Plan",appearance:"Appearance"};
 let me=null,premium=false,limited=false,limitUntil=0,ended=false,convId=null,convs=[],busy=false,models=[],cur="",img=null,stripe=null,card=null;
 let mode="chat",lang="Auto-detect",view="home",calY=0,calM=0,calSel=null,calInit=false;
@@ -1143,9 +1155,7 @@ async function loadModels(){
   models=d.models||[];cur=d.current;
   const m=models.find(x=>x.id===cur);
   $("mname").textContent=m?m.label:"Model";
-  const mi=$("micon"),msrc=m&&MICONS[m.maker];
-  mi.hidden=!msrc;
-  if(msrc){mi.src=msrc;mi.onerror=()=>{mi.hidden=true}}
+  iconFor($("micon"),m&&m.maker);
   $("model-panel").innerHTML="";
   models.forEach(x=>{
     const b=document.createElement("button");
@@ -1157,8 +1167,7 @@ async function loadModels(){
       const ic=document.createElement("img");
       ic.className="mi";
       ic.alt="";
-      ic.src=MICONS[x.maker];
-      ic.onerror=()=>{ic.remove()};
+      iconFor(ic,x.maker);
       b.appendChild(ic);
     }
     b.appendChild(n);
@@ -1212,9 +1221,9 @@ $("attach").onclick=e=>{
 };
 $("m-img").onclick=()=>{$("plus-menu").hidden=true;$("file").click()};
 $("m-txt").onclick=()=>{$("plus-menu").hidden=true;$("tfile").click()};
-$("tfile").onchange=e=>{
-  const f=e.target.files[0];
-  e.target.value="";
+
+const TXT=/\.(txt|md|js|mjs|ts|jsx|tsx|json|html|css|py|java|c|cpp|h|cs|go|rs|rb|php|sh|yml|yaml|xml|sql|log|csv|kt|lua|swift|gradle|properties|toml)$/i;
+function takeText(f){
   if(!f||f.size>2e6)return;
   const rd=new FileReader();
   rd.onload=()=>{
@@ -1225,15 +1234,45 @@ $("tfile").onchange=e=>{
     drawPend();upd();
   };
   rd.readAsText(f);
-};
-$("file").onchange=e=>{
-  const f=e.target.files[0];
-  e.target.value="";
+}
+function takeImage(f){
   if(!f||f.size>8e6)return;
   const rd=new FileReader();
   rd.onload=()=>{img={mimeType:f.type,data:String(rd.result).split(",")[1]};$("chipn").textContent=f.name;$("chip").hidden=false;upd()};
   rd.readAsDataURL(f);
-};
+}
+function takeFile(f){
+  if(!f)return;
+  if(f.type.startsWith("image/"))takeImage(f);
+  else if(f.type.startsWith("text/")||TXT.test(f.name))takeText(f);
+}
+$("tfile").onchange=e=>{const f=e.target.files[0];e.target.value="";takeText(f)};
+$("file").onchange=e=>{const f=e.target.files[0];e.target.value="";takeImage(f)};
+
+let dragN=0;
+const hasFiles=e=>e.dataTransfer&&Array.from(e.dataTransfer.types||[]).includes("Files");
+window.addEventListener("dragenter",e=>{
+  if(!hasFiles(e))return;
+  e.preventDefault();
+  dragN++;
+  if(!ended&&!limited)$("drop").classList.add("on");
+});
+window.addEventListener("dragover",e=>{if(hasFiles(e))e.preventDefault()});
+window.addEventListener("dragleave",e=>{
+  if(!hasFiles(e))return;
+  dragN=Math.max(0,dragN-1);
+  if(!dragN)$("drop").classList.remove("on");
+});
+window.addEventListener("drop",e=>{
+  if(!hasFiles(e))return;
+  e.preventDefault();
+  dragN=0;
+  $("drop").classList.remove("on");
+  if(ended)return;
+  if(limited){showLimit();return}
+  Array.from(e.dataTransfer.files).forEach(takeFile);
+});
+
 function clearImg(){img=null;$("chip").hidden=true}
 $("chipx").onclick=()=>{clearImg();upd()};
 
