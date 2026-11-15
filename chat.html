@@ -35,6 +35,7 @@ svg{flex-shrink:0}
 .shd .acts{display:flex;gap:2px}
 .icon{border-radius:8px;padding:6px 8px;color:var(--dim);font-size:16px;line-height:1;display:inline-grid;place-items:center}
 .icon:hover,.conv:hover,.mrow:hover{background:var(--hover)}
+.icon.on{color:var(--text);background:var(--hover)}
 .newb{display:flex;align-items:center;gap:10px;width:100%;padding:9px 14px;border-radius:22px;background:var(--hover);font-size:14.5px;text-align:left}
 .newb:hover{background:var(--line)}
 #q{width:100%;margin:10px 0 0;padding:8px 12px;background:var(--bg);border:1px solid var(--line);border-radius:10px;outline:none;font-size:14px}
@@ -45,17 +46,41 @@ svg{flex-shrink:0}
 .conv .t{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .conv .ago{color:var(--faint);font-size:12px}
 .conv.on{background:var(--hover)}
+#cal{flex:1;overflow:auto;margin-top:4px}
+.calh{display:flex;align-items:center;justify-content:space-between;padding:4px 2px 10px}
+.calh b{font-weight:600;font-size:14.5px}
+.calg{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center}
+.dow{font-size:11.5px;color:var(--faint);padding:4px 0}
+.cd{position:relative;aspect-ratio:1;border-radius:9px;font-size:13px;color:var(--text);display:grid;place-items:center}
+.cd:hover{background:var(--hover)}
+.cd.today{color:var(--accent);font-weight:600}
+.cd.sel{background:var(--accent);color:#fff}
+.cd.has::after{content:"";position:absolute;bottom:4px;width:4px;height:4px;border-radius:50%;background:var(--dot)}
+.cd.sel.has::after{background:#fff}
+.calist{display:flex;flex-direction:column;gap:1px}
+.cempty{color:var(--faint);font-size:13.5px;padding:6px 10px}
 .av{width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:600;font-size:14px;flex-shrink:0;overflow:hidden}
 .av img{width:100%;height:100%;object-fit:cover}
 #main{flex:1;display:flex;flex-direction:column;min-width:0;background:var(--bg)}
-header{display:flex;align-items:center;gap:8px;padding:10px 16px;min-height:54px}
+header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;padding:10px 16px;min-height:62px}
+.hl{display:flex;align-items:center;gap:8px;min-width:0}
+.hc{display:flex;align-items:center;gap:8px}
+.hr{display:flex;justify-content:flex-end}
 #burger{display:none}
 .crumb{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--dim);min-width:0}
 .crumb b{font-weight:500;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .crumb button{color:var(--dim)}
 .crumb button:hover{color:var(--text)}
-.hsp{flex:1}
-#pill{padding:5px 14px;border:1px solid var(--line);border-radius:20px;font-size:13px;color:var(--dim)}
+.modes{display:flex;gap:2px;padding:4px;border-radius:14px;background:var(--panel);border:1px solid var(--line)}
+.modes button{display:flex;align-items:center;gap:7px;padding:7px 18px;border-radius:10px;color:var(--dim);font-size:14px;font-weight:500}
+.modes button:hover{color:var(--text)}
+.modes button.on{background:var(--hover);color:var(--text)}
+.lwrap{position:relative}
+#lang{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:10px;color:var(--text);font-size:14px;font-weight:500}
+#lang:hover{background:var(--hover)}
+#lang svg:last-child{color:var(--dim)}
+#lang-panel{position:absolute;top:calc(100% + 6px);left:0;min-width:200px;max-height:320px;overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px;box-shadow:0 8px 30px rgba(0,0,0,.35);z-index:20}
+#pill{padding:5px 14px;border:1px solid var(--line);border-radius:20px;font-size:13px;color:var(--dim);white-space:nowrap}
 #pill:hover{background:var(--hover)}
 #pill b{color:var(--accent);font-weight:500}
 #msgs{flex:1;overflow:auto;display:flex;flex-direction:column}
@@ -86,6 +111,7 @@ header{display:flex;align-items:center;gap:8px;padding:10px 16px;min-height:54px
 #shell.pwide #main{display:none}
 #shell.pwide #panel{flex:1;width:auto;border-left:0}
 .phead{display:flex;align-items:center;gap:8px;padding:10px 14px;min-height:54px;border-bottom:1px solid var(--line)}
+.hsp{flex:1}
 .pseg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;flex-shrink:0}
 .pseg button{padding:6px 10px;color:var(--dim);display:grid;place-items:center}
 .pseg button:hover{color:var(--text)}
@@ -153,36 +179,69 @@ header{display:flex;align-items:center;gap:8px;padding:10px 16px;min-height:54px
 #form:focus-within{border-color:var(--faint)}
 #in{flex:1;resize:none;outline:0;background:none;border:0;max-height:200px;line-height:1.5;padding:5px 2px;min-height:30px}
 #in::placeholder{color:var(--faint)}
+#in:read-only{cursor:pointer}
 #send{width:34px;height:34px;border-radius:50%;background:var(--text);color:var(--bg);display:grid;place-items:center;flex-shrink:0}
 #send:disabled{opacity:.3;cursor:default}
 .note{text-align:left;color:var(--faint);font-size:12px}
 #scrim{display:none}
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50}
-.smodal{width:100%;max-width:860px;height:min(640px,92dvh);background:var(--panel);border:1px solid var(--line);border-radius:16px;display:flex;flex-direction:column;overflow:hidden}
-.shead{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid var(--line);font-weight:600}
-.sbody{flex:1;display:flex;min-height:0}
-.snav{width:200px;padding:14px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:2px;flex-shrink:0}
-.snav button{text-align:left;padding:8px 10px;border-radius:8px;color:var(--dim)}
-.snav button.on{background:var(--hover);color:var(--text)}
-.spane{flex:1;overflow:auto;padding:6px 26px 26px}
-.spane h3{font-size:15px;font-weight:600;padding:16px 0 4px}
-.srow{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 0;border-bottom:1px solid var(--line)}
-.srow small{display:block;color:var(--faint);font-size:13px}
-.sin{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 12px;outline:none;width:230px;max-width:100%}
+#limit{z-index:60}
+.lmodal{width:100%;max-width:400px;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:28px 24px 18px;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.45)}
+.lic{width:48px;height:48px;border-radius:50%;background:var(--hover);display:grid;place-items:center;margin:0 auto 14px;color:var(--dot)}
+.lmodal h3{font:500 24px "Source Serif 4",Georgia,serif;margin-bottom:10px}
+.lmodal p{color:var(--dim);font-size:14.5px;margin-bottom:10px}
+.lmodal p b{color:var(--text);font-weight:600}
+.lmodal .lnote{background:var(--hover);border-radius:10px;padding:8px 12px;font-size:13.5px}
+.lmodal .bp{margin-top:8px}
+.lmodal .b2{width:100%;margin-top:8px;padding:10px 14px}
+.lmodal .lx{margin-top:8px;padding:8px;color:var(--faint);font-size:14px;width:100%}
+.lmodal .lx:hover{color:var(--text)}
+.smodal{width:100%;max-width:900px;height:min(680px,92dvh);background:var(--bg);border:1px solid var(--line);border-radius:20px;display:flex;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.45)}
+.snav{width:220px;background:var(--side);border-right:1px solid var(--line);padding:20px 12px;display:flex;flex-direction:column;gap:2px;flex-shrink:0}
+.snav h2{font:500 21px "Source Serif 4",Georgia,serif;padding:0 10px 16px}
+.snav button{display:flex;align-items:center;gap:10px;text-align:left;padding:9px 10px;border-radius:10px;color:var(--dim);font-size:14.5px}
+.snav button:hover{background:var(--hover);color:var(--text)}
+.snav button.on{background:var(--hover);color:var(--text);font-weight:500}
+.sright{flex:1;display:flex;flex-direction:column;min-width:0}
+.shead{display:flex;justify-content:space-between;align-items:center;padding:18px 26px 12px}
+.shead h3{font:500 24px "Source Serif 4",Georgia,serif}
+.spane{flex:1;overflow:auto;padding:4px 26px 30px}
+.scard{border:1px solid var(--line);border-radius:14px;background:var(--panel);margin-bottom:16px;overflow:hidden}
+.scard .srow{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:15px 18px;border-bottom:1px solid var(--line)}
+.scard .srow:last-child{border-bottom:0}
+.scard .srow small,.scard small{display:block;color:var(--faint);font-size:13px;line-height:1.45}
+.scard.pad{padding:18px}
+.scard.pad h4{font-size:16px;font-weight:600}
+.scard.pad p{color:var(--dim);margin:4px 0 14px;font-size:14px}
+.sl{font-weight:500}
+.dim{color:var(--dim)}
+.sin{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 12px;outline:none;width:240px;max-width:100%}
 .sin:focus{border-color:var(--faint)}
+.sin.full{width:100%}
+.coderow{display:flex;gap:8px}
+.coderow .sin{flex:1;width:auto;text-transform:uppercase}
 .b2{border:1px solid var(--line);border-radius:10px;padding:8px 14px;background:var(--hover);font-size:14px}
+.b2:hover{background:var(--line)}
 .bp{background:var(--accent);color:#fff;border-radius:12px;padding:11px 16px;font-weight:600;width:100%}
 .bp:disabled{opacity:.5}
 .seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
 .seg button{padding:7px 16px;font-size:14px;color:var(--dim)}
 .seg button.on{background:var(--hover);color:var(--text)}
-.bigav{width:44px;height:44px;font-size:18px;cursor:pointer}
-.box{border:1px solid var(--line);border-radius:14px;padding:18px;margin:16px 0}
-.box h4{font-size:16px;font-weight:600}
-.box p{color:var(--dim);margin:4px 0 14px;font-size:14px}
-#card-el{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--bg);margin:10px 0}
+.bigav{width:56px;height:56px;font-size:22px;cursor:pointer}
+.tag{padding:3px 12px;border-radius:20px;background:var(--hover);font-size:13px;font-weight:500;white-space:nowrap}
+.tag.pro{background:var(--accent);color:#fff}
+.umeter{padding:18px}
+.uhead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px}
+.bar{height:9px;border-radius:99px;background:var(--hover);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .3s}
+.bar.full i{background:var(--dot)}
+.how{padding:16px 18px 6px}
+.how h4{font-size:15px;font-weight:600;margin-bottom:8px}
+.how ul{margin:0 0 10px 18px;color:var(--dim);font-size:14px}
+.how li{margin-bottom:6px}
 .err{color:#e5604f;font-size:13px;min-height:18px;margin-bottom:8px}
-.lock{background:var(--hover);border-radius:10px;padding:12px 14px;font-size:14px;margin-top:14px}
+.fine{margin:10px 0 0 !important;font-size:12.5px !important;color:var(--faint) !important}
+#card-el{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--bg);margin:10px 0}
 @media(max-width:760px){
   #rail{display:none}
   #shell{margin:0;border:0;border-radius:0}
@@ -191,13 +250,23 @@ header{display:flex;align-items:center;gap:8px;padding:10px 16px;min-height:54px
   #side.open{transform:none}
   #scrim.on{display:block;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:20}
   #hello h1{font-size:30px}
-  .sbody{flex-direction:column}
-  .snav{width:auto;flex-direction:row;border-right:0;border-bottom:1px solid var(--line)}
-  .srow{flex-wrap:wrap}
+  header{grid-template-columns:auto 1fr auto;padding:8px 10px;gap:6px}
+  .crumb{display:none}
+  .hc{justify-content:center}
+  .modes button{padding:7px 12px}
+  #langn{display:none}
+  #pill .long{display:none}
+  .smodal{flex-direction:column}
+  .snav{width:auto;flex-direction:row;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line);padding:10px}
+  .snav h2{display:none}
+  .snav button{white-space:nowrap}
+  .shead{padding:14px 18px 8px}
+  .spane{padding:4px 16px 24px}
+  .scard .srow{flex-wrap:wrap}
   #panel{position:fixed;inset:0;z-index:40;width:100%;border-left:0}
   #pexp{display:none}
 }
-@media(prefers-reduced-motion:reduce){#side{transition:none}.dots i{animation:none}.th .chev{transition:none}}
+@media(prefers-reduced-motion:reduce){#side{transition:none}.dots i{animation:none}.th .chev,.bar i{transition:none}}
 </style>
 </head>
 <body>
@@ -206,6 +275,7 @@ header{display:flex;align-items:center;gap:8px;padding:10px 16px;min-height:54px
     <button class="rb" id="r-new" aria-label="New chat" title="New chat"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
     <button class="rb" id="r-search" aria-label="Search" title="Search"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button>
     <button class="rb on" id="r-home" aria-label="Home" title="Home"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l9 7.5V21h-6v-6H9v6H3V10.5z"/></svg></button>
+    <button class="rb" id="r-cal" aria-label="Calendar" title="Calendar"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg></button>
     <button class="rb" id="r-up" aria-label="Upgrade" title="Upgrade"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l2.2 5.8L20 11l-5.8 2.2L12 19l-2.2-5.8L4 11l5.8-2.2z"/></svg></button>
     <span class="grow"></span>
     <button class="rb" id="r-set" aria-label="Settings" title="Settings"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg><span class="badge" id="rbadge"></span></button>
@@ -213,8 +283,9 @@ header{display:flex;align-items:center;gap:8px;padding:10px 16px;min-height:54px
   <div id="shell">
     <aside id="side">
       <div class="shd">
-        <b>Home</b>
+        <b id="sidetitle">Home</b>
         <div class="acts">
+          <button class="icon" id="calbtn" aria-label="Calendar" title="Calendar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg></button>
           <button class="icon" id="sbtn" aria-label="Search chats"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button>
           <button class="icon" id="collapse" aria-label="Hide sidebar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/></svg></button>
         </div>
@@ -222,14 +293,35 @@ header{display:flex;align-items:center;gap:8px;padding:10px 16px;min-height:54px
       <button class="newb" id="new"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>New</button>
       <input id="q" placeholder="Search chats" hidden>
       <div id="list"></div>
+      <div id="cal" hidden>
+        <div class="calh">
+          <button class="icon" id="calp" aria-label="Previous month"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+          <b id="calt"></b>
+          <button class="icon" id="caln" aria-label="Next month"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+        </div>
+        <div class="calg" id="calg"></div>
+        <div class="lbl" id="caldh"></div>
+        <div class="calist" id="cald"></div>
+      </div>
     </aside>
     <div id="scrim"></div>
     <section id="main">
       <header>
-        <button class="icon" id="burger" aria-label="Menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
-        <div class="crumb"><button id="crumb-home">Home</button><span>&rsaquo;</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l2.2 5.8L20 11l-5.8 2.2L12 19l-2.2-5.8L4 11l5.8-2.2z"/></svg><b id="crumb">New chat</b></div>
-        <span class="hsp"></span>
-        <button id="pill" hidden></button>
+        <div class="hl">
+          <button class="icon" id="burger" aria-label="Menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+          <div class="crumb"><button id="crumb-home">Home</button><span>&rsaquo;</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l2.2 5.8L20 11l-5.8 2.2L12 19l-2.2-5.8L4 11l5.8-2.2z"/></svg><b id="crumb">New chat</b></div>
+        </div>
+        <div class="hc">
+          <div class="modes" id="modes">
+            <button type="button" id="md-chat" class="on"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 01-11.6 7.1L4 20l1-4.6A8 8 0 1121 12z"/></svg>Chat</button>
+            <button type="button" id="md-code"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 8l-4 4 4 4M16 8l4 4-4 4M14 5l-4 14"/></svg>Code</button>
+          </div>
+          <div class="lwrap" id="lwrap" hidden>
+            <button type="button" id="lang"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.2"/><circle cx="6" cy="18" r="2.2"/><circle cx="18" cy="8" r="2.2"/><path d="M6 8.2v7.6M18 10.2c0 4-6 3-11 6.3"/></svg><span id="langn">Auto-detect</span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+            <div id="lang-panel" hidden></div>
+          </div>
+        </div>
+        <div class="hr"><button id="pill" hidden></button></div>
       </header>
       <div id="msgs">
         <div id="hello"><h1 id="hi">How can I help you today?</h1></div>
@@ -283,41 +375,90 @@ header{display:flex;align-items:center;gap:8px;padding:10px 16px;min-height:54px
   </div>
 </div>
 
+<div class="overlay" id="limit" hidden>
+  <div class="lmodal" role="dialog" aria-label="Out of usage">
+    <div class="lic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+    <h3>You're out of usage</h3>
+    <p id="lbody"></p>
+    <p class="lnote" id="lnote" hidden></p>
+    <p>Your usage resets in <b id="ltime"></b>.</p>
+    <p>Want more? Buy Premium for unlimited usage and every model.</p>
+    <button class="bp" id="lbuy" type="button">Get Premium</button>
+    <button class="b2" id="lcode" type="button">Enter code</button>
+    <button class="lx" id="lclose" type="button">Not now</button>
+  </div>
+</div>
+
 <div class="overlay" id="settings" hidden>
   <div class="smodal" role="dialog" aria-label="Settings">
-    <div class="shead"><span>Settings</span><button class="icon" id="sclose" aria-label="Close">&times;</button></div>
-    <div class="sbody">
-      <nav class="snav"><button data-t="account" class="on">Account</button><button data-t="billing">Billing</button><button data-t="appearance">Appearance</button></nav>
+    <nav class="snav">
+      <h2>Settings</h2>
+      <button data-t="account" class="on"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>Account</button>
+      <button data-t="usage"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Usage</button>
+      <button data-t="billing"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20"/></svg>Plan</button>
+      <button data-t="appearance"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M5 19l1.5-1.5M17.5 6.5L19 5"/></svg>Appearance</button>
+    </nav>
+    <div class="sright">
+      <div class="shead"><h3 id="stitle">Account</h3><button class="icon" id="sclose" aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
       <div class="spane">
         <section data-p="account">
-          <h3>Profile</h3>
-          <div class="srow"><div>Profile photo<small>PNG, JPEG or WebP.</small></div><div class="av bigav" id="bigav" title="Change photo"></div><input type="file" id="photo" accept="image/*" hidden></div>
-          <div class="srow"><div>Full name</div><input class="sin" id="fname" maxlength="60"></div>
-          <div class="srow"><div>Email</div><div id="semail" style="color:var(--dim)"></div></div>
-          <div class="srow"><div>Log out<small>You can sign back in with Google any time.</small></div><button class="b2" id="out2">Log out</button></div>
+          <div class="scard">
+            <div class="srow"><div style="display:flex;align-items:center;gap:14px"><div class="av bigav" id="bigav" title="Change photo"></div><div><div class="sl">Profile photo</div><small>PNG, JPEG or WebP. Click the photo to change it.</small></div></div></div>
+            <input type="file" id="photo" accept="image/*" hidden>
+            <div class="srow"><label for="fname" class="sl">Display name</label><input class="sin" id="fname" maxlength="60"></div>
+            <div class="srow"><div class="sl">Email</div><div id="semail" class="dim"></div></div>
+          </div>
+          <div class="scard">
+            <div class="srow"><div><div class="sl">Log out</div><small>You can sign back in with Google any time.</small></div><button class="b2" id="out2">Log out</button></div>
+          </div>
+        </section>
+        <section data-p="usage" hidden>
+          <div class="scard">
+            <div class="umeter">
+              <div class="uhead"><div><div class="sl" id="utext"></div><small id="ustatus"></small></div><span class="tag" id="uplan"></span></div>
+              <div class="bar" id="ubarw"><i id="ubar"></i></div>
+            </div>
+          </div>
+          <div class="scard">
+            <div class="how">
+              <h4>How usage works</h4>
+              <ul>
+                <li id="uh1"></li>
+                <li>Waits last between 1 and 5 hours. They get longer if the AI is treated badly.</li>
+                <li>The AI can limit your usage on its own if you insult, harass or spam it.</li>
+                <li>Premium has no usage limits.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="scard pad" id="unotebox" hidden><h4>Limited by the AI</h4><p id="unote" style="margin-bottom:0"></p></div>
         </section>
         <section data-p="billing" hidden>
-          <h3>Plan</h3>
-          <div class="srow"><div>Current plan<small id="plansub"></small></div><div id="planname" style="font-weight:600"></div></div>
-          <div id="lockmsg" class="lock" hidden>Your free trial has ended. Subscribe below to keep chatting.</div>
+          <div class="scard">
+            <div class="srow"><div><div class="sl">Current plan</div><small id="plansub"></small></div><span class="tag" id="planname"></span></div>
+          </div>
           <div id="payarea">
-            <div class="box">
+            <div class="scard pad">
               <h4>Premium &middot; $5/month</h4>
-              <p>Premium models, unlimited messages and image uploads. Cancel anytime.</p>
-              <input class="sin" id="cardname" placeholder="Name on card" style="width:100%">
+              <p>Unlimited usage, every model unlocked and image uploads. Cancel anytime.</p>
+              <input class="sin full" id="cardname" placeholder="Name on card">
               <div id="card-el"></div>
               <div class="err" id="payerr"></div>
               <button class="bp" id="paybtn">Subscribe for $5/month</button>
-              <p style="margin:10px 0 0;font-size:12.5px;color:var(--faint)">Payments are processed securely by Stripe.</p>
+              <p class="fine">Payments are processed securely by Stripe.</p>
             </div>
-            <div class="srow"><div>Have a code?</div><div style="display:flex;gap:8px"><input class="sin" id="codein" placeholder="Enter code" style="width:150px;text-transform:uppercase"><button class="b2" id="codebtn">Unlock</button></div></div>
-            <div class="err" id="codeerr" style="margin-top:8px"></div>
+            <div class="scard pad">
+              <h4>Enter code</h4>
+              <p>Have an unlock code? Enter it to unlock Premium.</p>
+              <div class="coderow"><input class="sin" id="codein" placeholder="Enter code"><button class="b2" id="codebtn">Unlock</button></div>
+              <div class="err" id="codeerr" style="margin:8px 0 0"></div>
+            </div>
           </div>
-          <div id="paid" class="box" hidden><h4>You're on Premium</h4><p style="margin:4px 0 0">Thanks for supporting asaplimo. Every model is unlocked.</p></div>
+          <div id="paid" class="scard pad" hidden><h4>You're on Premium</h4><p style="margin-bottom:0">Thanks for supporting asaplimo. Every model is unlocked and usage is unlimited.</p></div>
         </section>
         <section data-p="appearance" hidden>
-          <h3>Appearance</h3>
-          <div class="srow"><div>Theme</div><div class="seg"><button data-th="light" id="th-light">Light</button><button data-th="dark" id="th-dark">Dark</button></div></div>
+          <div class="scard">
+            <div class="srow"><div><div class="sl">Theme</div><small>Choose light or dark.</small></div><div class="seg"><button data-th="light" id="th-light">Light</button><button data-th="dark" id="th-dark">Dark</button></div></div>
+          </div>
         </section>
       </div>
     </div>
@@ -335,7 +476,12 @@ const FILE='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="
 const FILEL='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5"/></svg>';
 const GLOBE='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18"/></svg>';
 const CHEV='<svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
-let me=null,premium=false,locked=false,convId=null,convs=[],busy=false,models=[],cur="",img=null,stripe=null,card=null;
+const LANGS=["Auto-detect","JavaScript","TypeScript","Python","HTML & CSS","Java","C#","C++","Go","Rust","PHP","Lua","Kotlin","Swift"];
+const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
+const DOWS=["Mo","Tu","We","Th","Fr","Sa","Su"];
+const TITLES={account:"Account",usage:"Usage",billing:"Plan",appearance:"Appearance"};
+let me=null,premium=false,limited=false,limitUntil=0,convId=null,convs=[],busy=false,models=[],cur="",img=null,stripe=null,card=null;
+let mode="chat",lang="Auto-detect",view="home",calY=0,calM=0,calSel=null,calInit=false;
 const tok=()=>{try{return localStorage.getItem(TK)}catch(e){return null}};
 
 async function api(path,opt){
@@ -560,21 +706,86 @@ $("pdl").onclick=()=>{
   setTimeout(()=>URL.revokeObjectURL(a.href),1000);
 };
 
+function left(){
+  const m=Math.ceil(Math.max(0,limitUntil-Date.now())/6e4);
+  if(m<1)return "under a minute";
+  if(m<60)return m+"m";
+  const h=Math.floor(m/60),r=m%60;
+  return h+"h"+(r?" "+r+"m":"");
+}
 function setCrumb(){
   const c=convs.find(x=>x.id===convId);
   $("crumb").textContent=c?(c.title||"New chat"):"New chat";
 }
+function greet(){
+  if(!me)return;
+  const first=me.shown.split(" ")[0];
+  $("hi").textContent=mode==="code"?"What are we building, "+first+"?":"Hi, "+first+". How can I help?";
+}
+function paintInput(){
+  inp.readOnly=limited;
+  inp.placeholder=limited?"You're out of usage. Resets in "+left()+".":(mode==="code"?"Describe what to build, or paste code...":"Message the agent...");
+  upd();
+}
+function paintMode(){
+  $("md-chat").classList.toggle("on",mode==="chat");
+  $("md-code").classList.toggle("on",mode==="code");
+  $("lwrap").hidden=mode!=="code";
+  greet();
+  paintInput();
+}
+function setMode(m){
+  if(m===mode)return;
+  mode=m;
+  paintMode();
+  reset();
+}
+$("md-chat").onclick=()=>setMode("chat");
+$("md-code").onclick=()=>setMode("code");
+function buildLangs(){
+  $("lang-panel").innerHTML="";
+  LANGS.forEach(l=>{
+    const b=document.createElement("button");
+    b.type="button";
+    b.className="mrow"+(l===lang?" on":"");
+    b.textContent=l;
+    b.onclick=()=>{lang=l;$("langn").textContent=l;$("lang-panel").hidden=true;buildLangs()};
+    $("lang-panel").appendChild(b);
+  });
+}
+$("lang").onclick=e=>{e.stopPropagation();$("lang-panel").hidden=!$("lang-panel").hidden};
+
 function reset(){convId=null;$("thread").innerHTML="";$("hello").hidden=false;closePanel();renderList();$("in").focus()}
 function closeSide(){$("side").classList.remove("open");$("scrim").classList.remove("on")}
-function openSearch(){
+function setView(v){
+  view=v;
+  $("r-home").classList.toggle("on",v==="home");
+  $("r-cal").classList.toggle("on",v==="cal");
+  $("calbtn").classList.toggle("on",v==="cal");
   $("side").classList.remove("collapsed");
+  $("sidetitle").textContent=v==="home"?"Home":"Calendar";
+  $("list").hidden=v!=="home";
+  $("cal").hidden=v!=="cal";
+  $("new").hidden=v!=="home";
+  $("sbtn").hidden=v!=="home";
+  if(v!=="home"){$("q").hidden=true;$("q").value=""}
+  if(v==="cal"&&!calInit){
+    const n=new Date();
+    calY=n.getFullYear();calM=n.getMonth();calSel=dayKey(n.getTime());calInit=true;
+  }
+  renderList();
+}
+function openSearch(){
+  setView("home");
   $("q").hidden=false;
   $("q").focus();
 }
 $("new").onclick=()=>{reset();closeSide()};
-$("r-new").onclick=reset;
-$("r-home").onclick=reset;
-$("crumb-home").onclick=reset;
+$("r-new").onclick=()=>{setView("home");reset()};
+$("r-home").onclick=()=>{setView("home");reset()};
+$("crumb-home").onclick=()=>{setView("home");reset()};
+$("r-cal").onclick=()=>setView(view==="cal"?"home":"cal");
+$("calbtn").onclick=()=>setView(view==="cal"?"home":"cal");
 $("r-search").onclick=openSearch;
 $("r-up").onclick=()=>openSettings("billing");
 $("r-set").onclick=()=>openSettings("account");
@@ -615,11 +826,56 @@ function ago(t){
   if(m<1440)return Math.floor(m/60)+"h";
   return new Date(t).toLocaleDateString([],{month:"short",day:"numeric"});
 }
+function dayKey(t){const d=new Date(t);return d.getFullYear()+"-"+d.getMonth()+"-"+d.getDate()}
+function convBtn(c,right){
+  const b=document.createElement("button");
+  b.className="conv"+(c.id===convId?" on":"");
+  b.innerHTML=SPARK+'<span class="t"></span><span class="ago"></span>';
+  b.querySelector(".t").textContent=c.title||"New chat";
+  b.querySelector(".ago").textContent=right;
+  b.onclick=()=>{closeSide();openConv(c.id)};
+  return b;
+}
+function renderCal(){
+  const by={};
+  convs.forEach(c=>{const t=convTime(c);if(t===null)return;const k=dayKey(t);(by[k]=by[k]||[]).push(c)});
+  const lead=(new Date(calY,calM,1).getDay()+6)%7,total=new Date(calY,calM+1,0).getDate(),todayK=dayKey(Date.now());
+  $("calt").textContent=MONTHS[calM]+" "+calY;
+  const g=$("calg");
+  g.innerHTML="";
+  DOWS.forEach(d=>{const s=document.createElement("span");s.className="dow";s.textContent=d;g.appendChild(s)});
+  for(let i=0;i<lead;i++)g.appendChild(document.createElement("span"));
+  for(let d=1;d<=total;d++){
+    const k=calY+"-"+calM+"-"+d,b=document.createElement("button");
+    b.type="button";
+    b.className="cd"+(k===todayK?" today":"")+(by[k]?" has":"")+(k===calSel?" sel":"");
+    b.textContent=d;
+    b.onclick=()=>{calSel=k;renderCal()};
+    g.appendChild(b);
+  }
+  const items=(by[calSel]||[]).slice().sort((a,b)=>(convTime(b)||0)-(convTime(a)||0));
+  const p=(calSel||"").split("-").map(Number);
+  const label=p.length===3?new Date(p[0],p[1],p[2]).toLocaleDateString([],{weekday:"short",day:"numeric",month:"short"}):"";
+  $("caldh").textContent=label+(items.length?" \u00b7 "+items.length+" chat"+(items.length===1?"":"s"):"");
+  const lst=$("cald");
+  lst.innerHTML="";
+  if(!items.length){
+    const e=document.createElement("div");
+    e.className="cempty";
+    e.textContent="No chats on this day.";
+    lst.appendChild(e);
+  }
+  items.forEach(c=>{const t=convTime(c);lst.appendChild(convBtn(c,t===null?"":clock(new Date(t))))});
+}
+$("calp").onclick=()=>{calM--;if(calM<0){calM=11;calY--}renderCal()};
+$("caln").onclick=()=>{calM++;if(calM>11){calM=0;calY++}renderCal()};
 function renderList(){
+  setCrumb();
+  if(view==="cal"){renderCal();return}
   const q=$("q").value.trim().toLowerCase();
   $("list").innerHTML="";
-  let last=null;
-  convs.filter(c=>!q||(c.title||"").toLowerCase().includes(q)).forEach(c=>{
+  let last=null,n=0;
+  convs.filter(c=>(c.mode==="code"?"code":"chat")===mode&&(!q||(c.title||"").toLowerCase().includes(q))).forEach(c=>{
     const t=convTime(c),g=groupOf(t);
     if(g!==last){
       const l=document.createElement("div");
@@ -628,29 +884,32 @@ function renderList(){
       $("list").appendChild(l);
       last=g;
     }
-    const b=document.createElement("button");
-    b.className="conv"+(c.id===convId?" on":"");
-    b.innerHTML=SPARK+'<span class="t"></span><span class="ago"></span>';
-    b.querySelector(".t").textContent=c.title||"New chat";
-    b.querySelector(".ago").textContent=ago(t);
-    b.onclick=()=>{closeSide();openConv(c.id)};
-    $("list").appendChild(b);
+    $("list").appendChild(convBtn(c,ago(t)));
+    n++;
   });
-  setCrumb();
+  if(!n){
+    const e=document.createElement("div");
+    e.className="cempty";
+    e.textContent=q?"No chats found.":(mode==="code"?"No code chats yet.":"No chats yet.");
+    $("list").appendChild(e);
+  }
 }
 async function openConv(id){
   const r=await api("/api/conversations/"+id);
   if(!r.ok)return;
   const c=await r.json();
   convId=c.id;
+  const m=c.mode==="code"?"code":"chat";
+  if(m!==mode){mode=m;paintMode()}
   closePanel();
   $("thread").innerHTML="";
-  if(c.messages&&c.messages.length)c.messages.forEach(m=>add(m.role,m.text));else $("hello").hidden=false;
+  if(c.messages&&c.messages.length)c.messages.forEach(x=>add(x.role,x.text));else $("hello").hidden=false;
   renderList();
 }
 
 function openSettings(t){
   $("settings").hidden=false;
+  $("stitle").textContent=TITLES[t]||"Settings";
   document.querySelectorAll(".snav button").forEach(b=>b.classList.toggle("on",b.dataset.t===t));
   document.querySelectorAll("[data-p]").forEach(s=>{s.hidden=s.dataset.p!==t});
   if(t==="billing"&&!premium)mountCard();
@@ -659,10 +918,35 @@ function openSettings(t){
 document.querySelectorAll(".snav button").forEach(b=>b.onclick=()=>openSettings(b.dataset.t));
 $("sclose").onclick=()=>{$("settings").hidden=true};
 $("settings").addEventListener("mousedown",e=>{if(e.target===$("settings"))$("settings").hidden=true});
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){$("settings").hidden=true;$("model-panel").hidden=true;$("plus-menu").hidden=true;$("pmenu").hidden=true;if(!$("panel").hidden)closePanel()}});
 $("pill").onclick=()=>openSettings("billing");
+
+function showLimit(){
+  const u=(me&&me.usage)||{};
+  const ai=u.kind==="ai";
+  $("ltime").textContent=left();
+  $("lbody").textContent=ai?"The AI limited your usage.":"You've used all of your free messages.";
+  $("lnote").textContent=ai&&u.note?u.note:"";
+  $("lnote").hidden=!(ai&&u.note);
+  $("limit").hidden=false;
+}
+$("lclose").onclick=()=>{$("limit").hidden=true};
+$("limit").addEventListener("mousedown",e=>{if(e.target===$("limit"))$("limit").hidden=true});
+$("lbuy").onclick=()=>{$("limit").hidden=true;openSettings("billing")};
+$("lcode").onclick=()=>{$("limit").hidden=true;openSettings("billing");setTimeout(()=>{if(!$("codein").offsetParent)return;$("codein").focus()},60)};
+
+document.addEventListener("keydown",e=>{
+  if(e.key!=="Escape")return;
+  $("settings").hidden=true;
+  $("limit").hidden=true;
+  $("model-panel").hidden=true;
+  $("lang-panel").hidden=true;
+  $("plus-menu").hidden=true;
+  $("pmenu").hidden=true;
+  if(!$("panel").hidden)closePanel();
+});
 document.addEventListener("click",e=>{
   if(!e.target.closest(".mwrap"))$("model-panel").hidden=true;
+  if(!e.target.closest(".lwrap"))$("lang-panel").hidden=true;
   if(!e.target.closest("#plus-menu"))$("plus-menu").hidden=true;
   if(!e.target.closest(".psplit"))$("pmenu").hidden=true;
 });
@@ -672,31 +956,53 @@ function paintAv(el){
   if(me.avatarUrl){const i=document.createElement("img");i.src=me.avatarUrl;i.alt="";el.appendChild(i)}
   else el.textContent=(me.shown||"?").charAt(0).toUpperCase();
 }
+function applyUsage(){
+  const u=me.usage||{};
+  limited=!premium&&!!u.limited&&u.limitedUntil>Date.now();
+  limitUntil=limited?u.limitedUntil:0;
+  const lim=u.limit||0,used=u.used||0;
+  const pct=premium||!lim?0:Math.min(100,Math.round(used/lim*100));
+  $("ubar").style.width=(limited?100:pct)+"%";
+  $("ubarw").classList.toggle("full",limited||pct>=100);
+  $("ubarw").hidden=premium;
+  $("uplan").textContent=premium?"Premium":"Free";
+  $("uplan").classList.toggle("pro",premium);
+  $("utext").textContent=premium?"Unlimited usage":(limited?"Out of usage":used+" of "+lim+" messages used");
+  $("ustatus").textContent=premium?"Premium has no usage limits.":(limited?"Resets in "+left()+".":"You can keep chatting.");
+  $("uh1").textContent="Free accounts get "+lim+" messages. If you run out, your next wait is "+(u.nextWaitHours||1)+(u.nextWaitHours===1?" hour":" hours")+".";
+  const ai=limited&&u.kind==="ai"&&u.note;
+  $("unotebox").hidden=!ai;
+  if(ai)$("unote").textContent=u.note;
+  $("pill").hidden=premium;
+  $("pill").innerHTML=limited?'<span class="long">Out of usage &middot; resets in '+left()+' &middot; </span><b>Upgrade</b>':'<span class="long">'+used+'/'+lim+' used &middot; </span><b>Upgrade</b>';
+  paintInput();
+}
 function applyMe(){
   premium=!!(me.paid||me.networkUnlocked);
-  locked=!premium&&!!me.trialExpired;
   me.shown=me.displayName||me.name||(me.email||"").split("@")[0]||"there";
-  const first=me.shown.split(" ")[0];
   $("semail").textContent=me.email||"";
   $("fname").value=me.displayName||me.name||"";
   paintAv($("bigav"));paintAv($("rbadge"));
-  const days=me.daysLeft+" day"+(me.daysLeft===1?"":"s")+" left";
-  const label=premium?"Premium":(locked?"Trial ended":"Free trial");
-  $("planname").textContent=label;
-  $("plansub").textContent=premium?"All models unlocked":(locked?"Subscribe to keep chatting":days);
-  $("pill").hidden=premium;
-  $("pill").innerHTML=locked?"Trial ended &middot; <b>Upgrade</b>":"Free trial &middot; "+days+" &middot; <b>Upgrade</b>";
+  $("planname").textContent=premium?"Premium":"Free";
+  $("planname").classList.toggle("pro",premium);
+  $("plansub").textContent=premium?"Every model unlocked, no usage limits":"Limited usage";
   $("r-up").hidden=premium;
-  $("hi").textContent="Hi, "+first+". How can I help?";
   $("payarea").hidden=premium;
   $("paid").hidden=!premium;
-  $("lockmsg").hidden=!locked;
+  greet();
+  applyUsage();
 }
 async function refreshMe(){
   const r=await api("/api/me"),d=await r.json();
   if(!d.authenticated){location.href="index.html";return}
   me=d;applyMe();
 }
+setInterval(()=>{
+  if(!me)return;
+  if(limited&&Date.now()>=limitUntil){refreshMe().catch(()=>{});return}
+  applyUsage();
+  if(!$("limit").hidden)$("ltime").textContent=left();
+},20000);
 async function saveProfile(p){
   const r=await api("/api/profile",{method:"POST",headers:JSONH,body:JSON.stringify(p)});
   if(r.ok){const d=await r.json();me.displayName=d.displayName;me.avatarUrl=d.avatarUrl;applyMe()}
@@ -797,8 +1103,9 @@ $("model-btn").onclick=()=>{$("model-panel").hidden=!$("model-panel").hidden};
 const inp=$("in");
 let pend=[];
 function drawPend(){$("pchips").hidden=!pend.length}
-function upd(){$("send").disabled=busy||(!inp.value.trim()&&!img&&!pend.length)}
+function upd(){$("send").disabled=busy||(!limited&&!inp.value.trim()&&!img&&!pend.length)}
 inp.addEventListener("paste",e=>{
+  if(limited){e.preventDefault();showLimit();return}
   const t=(e.clipboardData||window.clipboardData).getData("text");
   if(t&&t.split("\n").length>LONG){
     e.preventDefault();
@@ -810,9 +1117,20 @@ inp.addEventListener("paste",e=>{
 });
 function grow(){inp.style.height="auto";inp.style.height=Math.min(inp.scrollHeight,200)+"px"}
 inp.oninput=()=>{grow();upd()};
-inp.onkeydown=e=>{if(e.key==="Enter"&&!e.shiftKey&&!e.isComposing){e.preventDefault();send()}};
+inp.onkeydown=e=>{
+  if(limited){
+    if(!e.ctrlKey&&!e.metaKey&&!e.altKey&&(e.key.length===1||e.key==="Enter")){e.preventDefault();showLimit()}
+    return;
+  }
+  if(e.key==="Enter"&&!e.shiftKey&&!e.isComposing){e.preventDefault();send()}
+};
+$("form").addEventListener("mousedown",e=>{if(limited){e.preventDefault();showLimit()}});
 $("form").onsubmit=e=>{e.preventDefault();send()};
-$("attach").onclick=e=>{e.stopPropagation();$("plus-menu").hidden=!$("plus-menu").hidden};
+$("attach").onclick=e=>{
+  e.stopPropagation();
+  if(limited){showLimit();return}
+  $("plus-menu").hidden=!$("plus-menu").hidden;
+};
 $("m-img").onclick=()=>{$("plus-menu").hidden=true;$("file").click()};
 $("m-txt").onclick=()=>{$("plus-menu").hidden=true;$("tfile").click()};
 $("tfile").onchange=e=>{
@@ -841,35 +1159,42 @@ function clearImg(){img=null;$("chip").hidden=true}
 $("chipx").onclick=()=>{clearImg();upd()};
 
 async function send(){
+  if(limited){showLimit();return}
   let text=inp.value.trim();
   if((!text&&!img&&!pend.length)||busy)return;
-  if(locked){openSettings("billing");return}
   if(text.split("\n").length>LONG)text="<pasted_text>\n"+text+"\n</pasted_text>";
   pend.forEach(p=>{text+=(text?"\n\n":"")+"<pasted_text>\n"+p.text+"\n</pasted_text>"});
   busy=true;
-  add("user",text||"(image)",null,clock(new Date()));
+  const um=add("user",text||"(image)",null,clock(new Date()));
   const sent=img;
   pend=[];$("pchips").innerHTML="";drawPend();
   inp.value="";grow();clearImg();upd();
   const t=typing();
   try{
     if(!convId){
-      const r=await api("/api/conversations",{method:"POST",headers:JSONH,body:JSON.stringify({mode:"chat"})});
+      const r=await api("/api/conversations",{method:"POST",headers:JSONH,body:JSON.stringify({mode})});
       convId=(await r.json()).id;
     }
-    const body={message:text||"Describe this image.",conversationId:convId};
+    const body={message:text||"Describe this image.",conversationId:convId,language:mode==="code"?lang:""};
     if(sent)body.image=sent;
     const r=await api("/api/chat",{method:"POST",headers:JSONH,body:JSON.stringify(body)});
     t.remove();
-    if(r.status===402){me.trialExpired=true;applyMe();openSettings("billing");return}
+    if(r.status===429){
+      const d=await r.json().catch(()=>({}));
+      um.remove();
+      if(d.usage){me.usage=d.usage;applyUsage()}
+      showLimit();
+      return;
+    }
     if(!r.ok){add("assistant","Something went wrong. Please try again.");return}
     const d=await r.json();
+    if(d.usage){me.usage=d.usage;applyUsage()}
     const am=add("assistant",d.reply||"No response.",d.thinking);
     const dcs=am.querySelectorAll(".dcard");
     if(dcs.length&&!matchMedia("(max-width:760px)").matches)openViewer(+dcs[dcs.length-1].dataset.doc);
     loadConvs();
   }catch(e){t.remove();add("assistant","Could not reach the server.")}
-  finally{busy=false;upd();inp.focus()}
+  finally{busy=false;upd();if(!limited)inp.focus()}
 }
 
 async function init(){
@@ -877,9 +1202,11 @@ async function init(){
   try{
     await refreshMe();
     theme(document.documentElement.getAttribute("data-theme")||"light");
+    buildLangs();
+    paintMode();
     $("app").classList.add("on");
     loadConvs();loadModels();
-    if(locked)openSettings("billing");else inp.focus();
+    if(!limited)inp.focus();
   }catch(e){if(e.message!=="auth")location.href="index.html"}
 }
 init();
