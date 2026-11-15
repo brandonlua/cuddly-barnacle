@@ -167,6 +167,8 @@ header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8p
 #model-panel{position:absolute;bottom:100%;right:0;margin-bottom:6px;min-width:260px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px;box-shadow:0 8px 30px rgba(0,0,0,.35);z-index:10}
 .mrow{display:flex;align-items:center;justify-content:space-between;gap:14px;width:100%;text-align:left;padding:8px 10px;border-radius:8px;font-size:14px}
 .mrow.on{font-weight:600}
+.mrow .minfo{display:flex;align-items:center;gap:10px}
+.mrow .mico{width:20px;height:20px;border-radius:4px;object-fit:cover}
 .mrow .mk{color:var(--faint);font-size:12px;font-weight:400}
 #chip{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--dim);padding:0 6px 8px}
 #ended{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 6px 8px;padding:10px 14px;border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--dim);font-size:13.5px}
@@ -1147,12 +1149,20 @@ async function loadModels(){
     const b=document.createElement("button");
     b.type="button";
     b.className="mrow"+(x.id===cur?" on":"");
+    const info=document.createElement("span");
+    info.className="minfo";
+    if(x.iconUrl){
+      const ico=document.createElement("img");
+      ico.src=x.iconUrl;ico.className="mico";ico.alt="";
+      info.appendChild(ico);
+    }
     const n=document.createElement("span");
     n.textContent=x.label+(x.locked?" (Premium)":"");
+    info.appendChild(n);
     const k=document.createElement("span");
     k.className="mk";
     k.textContent=x.maker||"";
-    b.appendChild(n);
+    b.appendChild(info);
     b.appendChild(k);
     b.onclick=async()=>{
       $("model-panel").hidden=true;
