@@ -2,77 +2,118 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>asaplimo — log in</title>
 <link rel="icon" type="image/png" href="icons/logo.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500&display=swap">
 <script>try{var t=localStorage.getItem("asaplimo_theme");document.documentElement.setAttribute("data-theme",t||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"))}catch(e){}</script>
 <style>
-:root{--bg:#faf9f5;--panel:#fff;--hover:#ebe8df;--line:#e2dfd6;--text:#1f1e1d;--dim:#66645d;--faint:#99968d;--accent:#4f5fe0}
-:root[data-theme="dark"]{--bg:#1f1f1e;--panel:#2a2a28;--hover:#313130;--line:#3a3a38;--text:#ececea;--dim:#a8a69e;--faint:#77756e;--accent:#7b88ff}
+:root{--bg:#ffffff;--rail:#f1f0ec;--panel:#f6f5f2;--hover:#e9e7e1;--line:#e2dfd6;--text:#1f1e1d;--dim:#66645d;--faint:#99968d;--accent:#4f5fe0;--dot:#e8613c}
+:root[data-theme="dark"]{--bg:#0f0f0f;--rail:#0a0a0a;--panel:#1a1a1a;--hover:#222222;--line:#262626;--text:#ececea;--dim:#a3a29c;--faint:#6f6e69;--accent:#7b88ff;--dot:#f0623c}
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font:15px/1.6 Inter,-apple-system,"Segoe UI",sans-serif;min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:24px;-webkit-font-smoothing:antialiased}
+[hidden]{display:none !important}
+body{background:var(--rail);color:var(--text);font:15px/1.6 Inter,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased;height:100dvh;display:flex}
 button,input{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer}
+svg{flex-shrink:0}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.box{width:100%;max-width:360px}
-.word{display:flex;align-items:center;justify-content:center;gap:12px;font:500 26px "Source Serif 4",Georgia,serif;margin-bottom:36px}.word img{border-radius:10px}
-h1{font:400 30px/1.2 "Source Serif 4",Georgia,serif;text-align:center;letter-spacing:-.01em;margin-bottom:10px}
-.sub{color:var(--dim);text-align:center;margin-bottom:30px}
-.btn{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-weight:500;background:var(--panel);cursor:pointer}
-.btn:hover{background:var(--hover)}
-.btn.primary{background:var(--text);border-color:var(--text);color:var(--bg)}
-.btn.primary:hover{opacity:.88}
-.btn.secondary{background:transparent;border-color:transparent;color:var(--dim)}
-.divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--faint);font-size:13px}
+#rail{width:60px;display:flex;flex-direction:column;align-items:center;padding:14px 0;gap:6px;flex-shrink:0}
+.rb{position:relative;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;color:var(--dim)}
+.rb:hover{background:var(--hover);color:var(--text)}
+.rb.on{background:var(--hover);color:var(--text)}
+.rb.on::after{content:"";position:absolute;top:6px;right:6px;width:6px;height:6px;border-radius:50%;background:var(--dot)}
+#rail .grow{flex:1}
+#shell{flex:1;display:flex;flex-direction:column;min-width:0;margin:8px 8px 8px 0;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--bg)}
+header{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 16px;min-height:62px}
+.crumb{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--dim)}
+.crumb b{font-weight:500;color:var(--text)}
+.modes{display:flex;gap:2px;padding:4px;border-radius:14px;background:var(--panel);border:1px solid var(--line)}
+.modes span{display:flex;align-items:center;gap:7px;padding:7px 18px;border-radius:10px;color:var(--dim);font-size:14px;font-weight:500}
+.modes span.on{background:var(--hover);color:var(--text)}
+.hsp{width:90px}
+main{flex:1;overflow:auto;display:flex;flex-direction:column}
+#hello{margin:auto;padding:24px;text-align:center;width:100%;max-width:520px}
+#hello h1{font:400 38px/1.2 "Source Serif 4",Georgia,serif;letter-spacing:-.01em;margin-bottom:10px}
+.sub{color:var(--dim);margin-bottom:28px}
+#form{display:flex;align-items:flex-end;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:10px 12px}
+#form:focus-within{border-color:var(--faint)}
+#form .ico{width:34px;height:34px;display:grid;place-items:center;color:var(--dim)}
+#email-input{flex:1;background:none;border:0;outline:0;padding:5px 2px;min-height:30px;line-height:1.5}
+#email-input::placeholder{color:var(--faint)}
+#send{width:34px;height:34px;border-radius:50%;background:var(--text);color:var(--bg);display:grid;place-items:center;flex-shrink:0}
+.divider{display:flex;align-items:center;gap:12px;margin:18px 0;color:var(--faint);font-size:13px}
 .divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
-form{display:flex;flex-direction:column;gap:10px}
-input[type="email"]{width:100%;border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--panel);outline:none}
-input[type="email"]:focus{border-color:var(--faint)}
-input::placeholder{color:var(--faint)}
-.agree{color:var(--faint);font-size:12.5px;text-align:center;margin-top:20px;line-height:1.55}
+.btn{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;border:1px solid var(--line);border-radius:22px;padding:12px 14px;font-weight:500;background:var(--hover)}
+.btn:hover{background:var(--line)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{opacity:.9}
+.btn.secondary{background:transparent;border-color:transparent;color:var(--dim)}
+.agree{color:var(--faint);font-size:12.5px;margin-top:22px;line-height:1.55}
 .agree a,.links a{color:var(--dim);text-decoration:underline}
 .agree a:hover,.links a:hover{color:var(--text)}
-.links{display:flex;justify-content:center;flex-wrap:wrap;gap:4px 14px;font-size:13px;margin-top:14px}
+.links{display:flex;justify-content:center;flex-wrap:wrap;gap:4px 14px;font-size:13px;margin-top:12px}
 .links a{text-decoration:none}
 .links a:hover{text-decoration:underline}
-.foot{color:var(--faint);font-size:13px;text-align:center;margin-top:22px}
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:16px;z-index:50}
+.foot{display:flex;align-items:center;justify-content:center;padding:10px 18px 16px;color:var(--faint);font-size:12px}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;padding:16px;z-index:50}
 .overlay.active{display:flex}
-.modal{width:100%;max-width:380px;border:1px solid var(--line);border-radius:18px;background:var(--panel);padding:24px}
-.modal h3{font:500 22px "Source Serif 4",Georgia,serif;margin-bottom:8px}
-.modal p{color:var(--dim);margin-bottom:20px}
+.modal{width:100%;max-width:400px;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:28px 24px 18px;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.45)}
+.modal h3{font:500 24px "Source Serif 4",Georgia,serif;margin-bottom:10px}
+.modal p{color:var(--dim);font-size:14.5px;margin-bottom:16px}
 .modal .btn{margin-bottom:8px}
-.modal .small{font-size:12.5px;color:var(--faint);margin:4px 0 0;text-align:center}
+.modal .small{font-size:12.5px;color:var(--faint);margin:6px 0 0}
 .modal .small a{color:var(--dim);text-decoration:underline}
+@media(max-width:760px){
+  #rail{display:none}
+  #shell{margin:0;border:0;border-radius:0}
+  #hello h1{font-size:30px}
+  .crumb,.hsp{display:none}
+  header{justify-content:center}
+  .modes span{padding:7px 12px}
+}
 </style>
 </head>
 <body>
-<div class="box">
-  <div class="word"><img src="icons/logo.png" alt="" width="36" height="36"><span>asaplimo</span></div>
-  <h1>Log in to continue</h1>
-  <div class="sub">Free to start. Premium is $5/month. Cancel anytime.</div>
-
-  <button class="btn" id="google-btn">
-    <svg width="17" height="17" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.52 12.27c0-.85-.08-1.67-.22-2.45H12v4.64h6.48a5.54 5.54 0 01-2.4 3.64v3h3.88c2.27-2.09 3.56-5.17 3.56-8.83z"/><path fill="#34A853" d="M12 24c3.24 0 5.96-1.07 7.96-2.9l-3.88-3c-1.08.72-2.46 1.15-4.08 1.15-3.13 0-5.78-2.11-6.73-4.96H1.26v3.11A12 12 0 0012 24z"/><path fill="#FBBC05" d="M5.27 14.29a7.2 7.2 0 010-4.58V6.6H1.26a12 12 0 000 10.8l4.01-3.11z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.44-3.44C17.95 1.19 15.24 0 12 0A12 12 0 001.26 6.6l4.01 3.11C6.22 6.86 8.87 4.75 12 4.75z"/></svg>
-    Continue with Google
-  </button>
-
-  <div class="divider">or</div>
-
-  <form id="email-form">
-    <input id="email-input" type="email" required placeholder="Email address">
-    <button type="submit" class="btn primary">Continue with email</button>
-  </form>
-
-  <div class="agree">By continuing, you agree to our <a href="terms.html">Terms of Service</a> and acknowledge our <a href="privacy.html">Privacy Policy</a> and <a href="cookies.html">Cookie Policy</a>. You must be 13 or older.</div>
-
-  <div class="links">
-    <a href="about.html">About</a>
-    <a href="terms.html">Terms</a>
-    <a href="privacy.html">Privacy</a>
-    <a href="cookies.html">Cookies</a>
-  </div>
-
+<nav id="rail">
+  <span class="rb on"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l9 7.5V21h-6v-6H9v6H3V10.5z"/></svg></span>
+  <span class="grow"></span>
+  <span class="rb"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg></span>
+</nav>
+<div id="shell">
+  <header>
+    <div class="crumb"><img src="icons/logo.png" alt="" width="20" height="20" style="border-radius:6px"><b>asaplimo</b></div>
+    <div class="modes">
+      <span class="on"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 01-11.6 7.1L4 20l1-4.6A8 8 0 1121 12z"/></svg>Chat</span>
+      <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 8l-4 4 4 4M16 8l4 4-4 4M14 5l-4 14"/></svg>Code</span>
+    </div>
+    <div class="hsp"></div>
+  </header>
+  <main>
+    <div id="hello">
+      <h1>Log in to continue</h1>
+      <div class="sub">Free to start. Premium is $5/month. Cancel anytime.</div>
+      <button class="btn" id="google-btn" type="button">
+        <svg width="17" height="17" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.52 12.27c0-.85-.08-1.67-.22-2.45H12v4.64h6.48a5.54 5.54 0 01-2.4 3.64v3h3.88c2.27-2.09 3.56-5.17 3.56-8.83z"/><path fill="#34A853" d="M12 24c3.24 0 5.96-1.07 7.96-2.9l-3.88-3c-1.08.72-2.46 1.15-4.08 1.15-3.13 0-5.78-2.11-6.73-4.96H1.26v3.11A12 12 0 0012 24z"/><path fill="#FBBC05" d="M5.27 14.29a7.2 7.2 0 010-4.58V6.6H1.26a12 12 0 000 10.8l4.01-3.11z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.44-3.44C17.95 1.19 15.24 0 12 0A12 12 0 001.26 6.6l4.01 3.11C6.22 6.86 8.87 4.75 12 4.75z"/></svg>
+        Continue with Google
+      </button>
+      <div class="divider">or</div>
+      <form id="email-form">
+        <div id="form">
+          <span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 8l9 6 9-6"/></svg></span>
+          <input id="email-input" type="email" required placeholder="Email address">
+          <button type="submit" id="send" aria-label="Continue with email"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+        </div>
+      </form>
+      <div class="agree">By continuing, you agree to our <a href="terms.html">Terms of Service</a> and acknowledge our <a href="privacy.html">Privacy Policy</a> and <a href="cookies.html">Cookie Policy</a>. You must be 13 or older.</div>
+      <div class="links">
+        <a href="about.html">About</a>
+        <a href="terms.html">Terms</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="cookies.html">Cookies</a>
+      </div>
+    </div>
+  </main>
   <div class="foot">Made by gbubemi (aka Mitchell)</div>
 </div>
 
@@ -80,8 +121,8 @@ input::placeholder{color:var(--faint)}
   <div class="modal">
     <h3>Continue with Google</h3>
     <p>We use your Google account to sign you in. Free accounts have limited usage. Premium is $5/month.</p>
-    <button class="btn primary" id="start-trial-btn">Continue</button>
-    <button class="btn secondary" id="dismiss-trial-btn">Cancel</button>
+    <button class="btn primary" id="start-trial-btn" type="button">Continue</button>
+    <button class="btn secondary" id="dismiss-trial-btn" type="button">Cancel</button>
     <p class="small">By starting, you agree to the <a href="terms.html">Terms of Service</a> and <a href="privacy.html">Privacy Policy</a>.</p>
   </div>
 </div>
