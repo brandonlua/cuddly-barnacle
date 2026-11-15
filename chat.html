@@ -950,7 +950,7 @@ function showLimit(){
   const u=(me&&me.usage)||{};
   const ai=u.kind==="ai";
   $("ltime").textContent=left();
-  $("lbody").textContent=ai?"The AI limited your usage.":"You've used all of your free messages.";
+  $("lbody").textContent=ai?"The AI limited your usage.":"You've used all of your free usage.";
   $("lnote").textContent=ai&&u.note?u.note:"";
   $("lnote").hidden=!(ai&&u.note);
   $("limit").hidden=false;
@@ -1021,9 +1021,9 @@ function applyUsage(){
   $("ubarw").hidden=premium;
   $("uplan").textContent=premium?"Premium":"Free";
   $("uplan").classList.toggle("pro",premium);
-  $("utext").textContent=premium?"Unlimited usage":(limited?"Out of usage":used+" of "+lim+" messages used");
+  $("utext").textContent=premium?"Unlimited usage":(limited?"Out of usage":used+" of "+lim+" used");
   $("ustatus").textContent=premium?"Premium has no usage limits.":(limited?"Resets in "+left()+".":"You can keep chatting.");
-  $("uh1").textContent="Free accounts get "+lim+" messages. If you run out, your next wait is "+(u.nextWaitHours||1)+(u.nextWaitHours===1?" hour":" hours")+".";
+  $("uh1").textContent="Free accounts get "+lim+" usage points. A normal chat message costs 1, and big code updates cost more (about 1 point per 25 lines of code, up to 30). If you run out, your next wait is "+(u.nextWaitHours||1)+(u.nextWaitHours===1?" hour":" hours")+".";
   const ai=limited&&u.kind==="ai"&&u.note;
   $("unotebox").hidden=!ai;
   if(ai)$("unote").textContent=u.note;
