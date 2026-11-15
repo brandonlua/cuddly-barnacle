@@ -46,9 +46,9 @@ main{flex:1;overflow:auto;display:flex;flex-direction:column}
 .divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
 .btn{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;border:1px solid var(--line);border-radius:22px;padding:12px 14px;font-weight:500;background:var(--hover)}
 .btn:hover{background:var(--line)}
-.btn.primary{background:var(--text);border-color:var(--text);color:var(--bg)}
-.btn.apple{margin-top:10px;background:var(--text);border-color:var(--text);color:var(--bg)}
-.btn.apple:hover{opacity:.9}
+.btn.primary,.btn.apple{background:#fff;border-color:var(--line);color:#000}
+.btn.apple{margin-top:10px}
+.btn.primary:hover,.btn.apple:hover{background:#ececea}
 .btn.primary:hover{opacity:.9}
 .btn.secondary{background:transparent;border-color:transparent;color:var(--dim)}
 .agree{color:var(--faint);font-size:12.5px;margin-top:22px;line-height:1.55}
