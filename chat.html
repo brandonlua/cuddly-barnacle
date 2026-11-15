@@ -1263,7 +1263,7 @@ async function send(){
       else add("assistant","Something went wrong. Please try again.");
       return;
     }
-    if(!r.ok){add("assistant","Something went wrong. Please try again.");return}
+    if(!r.ok){const ed=await r.json().catch(()=>({}));add("assistant","Something went wrong."+(ed.detail?"\n\n"+ed.detail:(ed.error?"\n\n"+ed.error:"")));return}
     const d=await r.json();
     if(d.usage){me.usage=d.usage;applyUsage()}
     const am=add("assistant",d.reply||"No response.",d.thinking);
