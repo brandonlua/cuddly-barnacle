@@ -195,11 +195,14 @@ header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8p
 .lmodal p{color:var(--dim);font-size:14.5px;margin-bottom:10px}
 .lmodal p b{color:var(--text);font-weight:600}
 .lmodal .lnote{background:var(--hover);border-radius:10px;padding:8px 12px;font-size:13.5px}
-.lmodal .bp{margin-top:8px}
-.lmodal .b2{width:100%;margin-top:8px;padding:10px 14px}
+.lmodal .bp{margin-top:10px;background:var(--text);color:var(--bg);border-radius:22px;padding:12px 16px;font-weight:500}
+.lmodal .bp:hover{opacity:.9}
+.lmodal .b2{width:100%;margin-top:8px;padding:11px 14px;border-radius:22px;font-weight:500}
 .lmodal .lx{margin-top:8px;padding:8px;color:var(--faint);font-size:14px;width:100%}
 .lmodal .lx:hover{color:var(--text)}
-.lmodal .sin{text-align:center;margin-top:6px}
+.lmodal .sin{text-align:center;margin-top:8px;font-size:22px;font-weight:500;padding:12px 14px;border-radius:14px;background:var(--bg)}
+.lmodal .sin::-webkit-outer-spin-button,.lmodal .sin::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.lmodal .sin[type=number]{-moz-appearance:textfield}
 .smodal{width:100%;max-width:900px;height:min(680px,92dvh);background:var(--bg);border:1px solid var(--line);border-radius:20px;display:flex;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.45)}
 .snav{width:220px;background:var(--side);border-right:1px solid var(--line);padding:20px 12px;display:flex;flex-direction:column;gap:2px;flex-shrink:0}
 .snav h2{font:500 21px "Source Serif 4",Georgia,serif;padding:0 10px 16px}
