@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+<script>if(location.protocol==="http:"&&!/^(localhost|127\.0\.0\.1)$/.test(location.hostname))location.replace("https://"+location.host+location.pathname+location.search+location.hash);if(/\.html$/.test(location.pathname))history.replaceState(null,"",location.pathname.replace(/index\.html$/,"").replace(/\.html$/,"")+location.search+location.hash);</script>
 <title>About — asaplimo</title>
 <link rel="icon" type="image/png" href="icons/logo.png">
 <link rel="stylesheet" href="theme.css">
@@ -25,13 +27,12 @@ p{color:var(--text-dim);font-size:15px;line-height:1.65;margin-bottom:12px;}
   <div class="mark">A</div>
   <h1>About asaplimo</h1>
   <p>asaplimo is a personal AI chat project created by Mitchell Akambe from Nigeria.</p>
-  <p>He builds Minecraft mods and web apps for fun, and this is the biggest thing he has made so far.</p>
   <p>The chat runs on third-party AI models: Gemini Flash Lite and GPT-OSS 120B are free, and Gemini 3.1 Pro is available on Premium. You can switch between them from the model picker in the chat.</p>
-  <a class="back" href="chat.html">Back to chat</a>
+  <a class="back" href="chat">Back to chat</a>
   <div class="legal">
-    <a href="terms.html">Terms of Service</a>
-    <a href="privacy.html">Privacy Policy</a>
-    <a href="cookies.html">Cookie Policy</a>
+    <a href="terms">Terms of Service</a>
+    <a href="privacy">Privacy Policy</a>
+    <a href="cookies">Cookie Policy</a>
   </div>
 </div>
 <script src="theme.js"></script>
