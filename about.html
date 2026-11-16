@@ -2,39 +2,42 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 <script>if(location.protocol==="http:"&&!/^(localhost|127\.0\.0\.1)$/.test(location.hostname))location.replace("https://"+location.host+location.pathname+location.search+location.hash);if(/\.html$/.test(location.pathname))history.replaceState(null,"",location.pathname.replace(/index\.html$/,"").replace(/\.html$/,"")+location.search+location.hash);</script>
 <title>About — asaplimo</title>
 <link rel="icon" type="image/png" href="icons/logo.png">
-<link rel="stylesheet" href="theme.css">
-<style>
-*{box-sizing:border-box;margin:0;padding:0;}
-body{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;-webkit-font-smoothing:antialiased;}
-.card{width:100%;max-width:460px;}
-.mark{width:40px;height:40px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:18px;margin-bottom:18px;}
-h1{font-size:24px;margin-bottom:14px;}
-p{color:var(--text-dim);font-size:15px;line-height:1.65;margin-bottom:12px;}
-.back{display:inline-block;margin-top:12px;border:1px solid var(--border);border-radius:10px;padding:9px 14px;text-decoration:none;color:var(--text);font-size:14px;font-weight:500;}
-.back:hover{background:var(--sidebar-hover);}
-.legal{margin-top:22px;display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;}
-.legal a{color:var(--text-dim);text-decoration:none;}
-.legal a:hover{color:var(--text);text-decoration:underline;}
-</style>
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500&display=swap">
+<script>try{var t=localStorage.getItem("asaplimo_theme");document.documentElement.setAttribute("data-theme",t||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"))}catch(e){}</script>
+<link rel="stylesheet" href="legal.css">
 </head>
 <body>
-<div class="card">
-  <div class="mark">A</div>
-  <h1>About asaplimo</h1>
-  <p>asaplimo is a personal AI chat project created by Mitchell Akambe from Nigeria.</p>
-  <p>The chat runs on third-party AI models: Gemini Flash Lite and GPT-OSS 120B are free, and Gemini 3.1 Pro is available on Premium. You can switch between them from the model picker in the chat.</p>
-  <a class="back" href="chat">Back to chat</a>
-  <div class="legal">
-    <a href="terms">Terms of Service</a>
-    <a href="privacy">Privacy Policy</a>
-    <a href="cookies">Cookie Policy</a>
-  </div>
+<nav id="rail">
+  <a class="rb" href="./" aria-label="Home" title="Home"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l9 7.5V21h-6v-6H9v6H3V10.5z"/></svg></a>
+  <span class="grow"></span>
+  <a class="rb" href="chat" aria-label="Chat" title="Chat"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg></a>
+</nav>
+<div id="shell">
+  <header>
+    <a class="crumb" href="./"><img src="icons/logo.png" alt="" width="20" height="20" style="border-radius:6px"><b>asaplimo</b></a>
+    <div class="modes"><a href="about" class="on">About</a><a href="terms">Terms</a><a href="privacy">Privacy</a><a href="cookies">Cookies</a></div>
+    <span></span>
+  </header>
+  <main>
+    <article class="doc">
+      <img class="mark" src="icons/logo.png" alt="">
+      <h1>About asaplimo</h1>
+      <p class="date">A personal AI chat project</p>
+      <p>asaplimo is a personal AI chat project created by Mitchell Akambe from Nigeria.</p>
+      <p>The chat runs on third-party AI models: Gemini Flash Lite and GPT-OSS 120B are free, and Gemini 3.1 Pro is available on Premium. You can switch between them from the model picker in the chat.</p>
+      <h2>Contact</h2>
+      <p>Questions, feedback or requests: <a href="mailto:mitchellakambe@gmail.com">mitchellakambe@gmail.com</a></p>
+      <div class="links"><a href="terms">Terms of Service</a><a href="privacy">Privacy Policy</a><a href="cookies">Cookie Policy</a></div>
+      <div class="actions"><a class="btn" href="chat">Back to chat</a></div>
+    </article>
+  </main>
+  <div class="foot">Made by gbubemi (aka Mitchell)</div>
 </div>
-<script src="theme.js"></script>
 </body>
 </html>
