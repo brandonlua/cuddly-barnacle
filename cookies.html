@@ -2,88 +2,161 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 <script>if(location.protocol==="http:"&&!/^(localhost|127\.0\.0\.1)$/.test(location.hostname))location.replace("https://"+location.host+location.pathname+location.search+location.hash);if(/\.html$/.test(location.pathname))history.replaceState(null,"",location.pathname.replace(/index\.html$/,"").replace(/\.html$/,"")+location.search+location.hash);</script>
 <title>Cookie Policy — asaplimo</title>
 <link rel="icon" type="image/png" href="icons/logo.png">
-<link rel="stylesheet" href="theme.css">
-<style>
-*{box-sizing:border-box;margin:0;padding:0;}
-body{min-height:100vh;padding:40px 24px;-webkit-font-smoothing:antialiased;}
-.doc{width:100%;max-width:680px;margin:0 auto;}
-h1{font-size:28px;margin-bottom:6px;}
-h2{font-size:17px;margin:28px 0 8px;}
-p,li{color:var(--text-dim);font-size:15px;line-height:1.7;margin-bottom:10px;}
-ul{margin:0 0 10px 22px;}
-.date{font-size:13px;margin-bottom:22px;}
-a{color:var(--text);}
-.tw{overflow-x:auto;margin:6px 0 14px;}
-table{border-collapse:collapse;width:100%;min-width:520px;font-size:14px;}
-th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--border);color:var(--text-dim);vertical-align:top;line-height:1.5;}
-th{color:var(--text);font-weight:600;}
-.back{display:inline-block;margin-top:24px;border:1px solid var(--border);border-radius:10px;padding:9px 14px;text-decoration:none;color:var(--text);font-size:14px;font-weight:500;}
-.back:hover{background:var(--sidebar-hover);}
-.legal{margin-top:22px;display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;}
-.legal a{color:var(--text-dim);text-decoration:none;}
-.legal a:hover{color:var(--text);text-decoration:underline;}
-</style>
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500&display=swap">
+<script>try{var t=localStorage.getItem("asaplimo_theme");document.documentElement.setAttribute("data-theme",t||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"))}catch(e){}</script>
+<link rel="stylesheet" href="legal.css">
 </head>
 <body>
-<div class="doc">
-  <h1>Cookie Policy</h1>
-  <p class="date">Last updated: November 14, 2026</p>
+<nav id="rail">
+  <a class="rb" href="./" aria-label="Home" title="Home"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l9 7.5V21h-6v-6H9v6H3V10.5z"/></svg></a>
+  <span class="grow"></span>
+  <a class="rb" href="chat" aria-label="Chat" title="Chat"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg></a>
+</nav>
+<div id="shell">
+  <header>
+    <a class="crumb" href="./"><img src="icons/logo.png" alt="" width="20" height="20" style="border-radius:6px"><b>asaplimo</b></a>
+    <div class="modes"><a href="about">About</a><a href="terms">Terms</a><a href="privacy">Privacy</a><a href="cookies" class="on">Cookies</a></div>
+    <span></span>
+  </header>
+  <main>
+    <article class="doc">
+      <h1>Cookie Policy</h1>
+      <p class="date">Last updated: November 14, 2026</p>
 
-  <p>This policy explains what cookies and similar browser storage asaplimo (gbubemi.uk) uses. It is part of our <a href="privacy">Privacy Policy</a>.</p>
+      <p>This policy explains what cookies and similar browser storage asaplimo (gbubemi.uk) uses. It is part of our <a href="privacy">Privacy Policy</a>.</p>
 
-  <h2>1. What these are</h2>
-  <p>Cookies are small files a website places on your device. Local storage is a similar feature built into your browser that lets a site save small pieces of data. Both help a site remember you between visits.</p>
+      <h2>1. What these are</h2>
+      <p>Cookies are small files a website places on your device. Local storage is a similar feature built into your browser that lets a site save small pieces of data. Both help a site remember you between visits.</p>
 
-  <h2>2. What we store</h2>
-  <p>asaplimo itself does not set advertising or tracking cookies. It saves two items in your browser's local storage, both strictly necessary for the Service to work:</p>
-  <div class="tw">
-    <table>
-      <tr><th>Name</th><th>Purpose</th><th>Duration</th></tr>
-      <tr><td>asaplimo_session_token</td><td>Keeps you logged in so you do not have to sign in on every page.</td><td>Until you log out or clear your browser data. The login itself expires after 30 days.</td></tr>
-      <tr><td>asaplimo_theme</td><td>Remembers whether you chose light or dark mode.</td><td>Until you clear your browser data.</td></tr>
-    </table>
-  </div>
+      <h2>2. What we store</h2>
+      <p>asaplimo itself does not set advertising or tracking cookies. It saves the following items in your browser's local storage, all needed for the Service to work or to remember your choices:</p>
+      <div class="tw">
+        <table>
+          <tr><th>Name</th><th>Purpose</th><th>Duration</th></tr>
+          <tr><td>asaplimo_session_token</td><td>Keeps you logged in so you do not have to sign in on every page.</td><td>Until you log out or clear your browser data. The login itself expires after 30 days.</td></tr>
+          <tr><td>asaplimo_theme</td><td>Remembers whether you chose light or dark mode.</td><td>Until you clear your browser data.</td></tr>
+          <tr><td>asaplimo_think</td><td>Remembers whether you turned on the Think button.</td><td>Until you clear your browser data.</td></tr>
+        </table>
+      </div>
 
-  <h2>3. Third-party cookies and storage</h2>
-  <ul>
-    <li><b>Google.</b> When you sign in, Google may set its own cookies on its sign-in pages to keep your account secure and remember your sign-in. See Google's privacy policy.</li>
-    <li><b>Stripe.</b> When you open the payment form under Settings &rsaquo; Billing, we load Stripe's payment script. Stripe may set cookies or use browser storage to process payments securely and detect fraud. See Stripe's privacy policy.</li>
-    <li><b>Fonts.</b> We load fonts from Google Fonts, which may receive your IP address when the fonts are requested.</li>
-  </ul>
+      <h2>3. Third-party cookies and storage</h2>
+      <ul>
+        <li><b>Google.</b> When you sign in, Google may set its own cookies on its sign-in pages to keep your account secure and remember your sign-in. See Google's privacy policy.</li>
+        <li><b>Stripe.</b> When you open the payment form under Settings &rsaquo; Plan, we load Stripe's payment script. Stripe may set cookies or use browser storage to process payments securely and detect fraud. See Stripe's privacy policy.</li>
+        <li><b>Fonts and icons.</b> We load fonts from Google Fonts and some icons from public content delivery networks, which may receive your IP address when they are requested.</li>
+      </ul>
 
-  <h2>4. Other data we handle</h2>
-  <p>Information we store on our servers, such as your account details and chats, is described in the <a href="privacy">Privacy Policy</a>.</p>
+      <h2>4. Other data we handle</h2>
+      <p>Information we store on our servers, such as your account details and chats, is described in the <a href="privacy">Privacy Policy</a>.</p>
 
-  <h2>5. We do not use</h2>
-  <ul>
-    <li>advertising cookies;</li>
-    <li>analytics or tracking cookies;</li>
-    <li>cross-site tracking or profiling.</li>
-  </ul>
+      <h2>5. We do not use</h2>
+      <ul>
+        <li>advertising cookies;</li>
+        <li>analytics or tracking cookies;</li>
+        <li>cross-site tracking or profiling.</li>
+      </ul>
 
-  <h2>6. Your choices</h2>
-  <p>Because we only use storage that is strictly necessary, we do not show a cookie banner for it. You can clear local storage and cookies at any time in your browser settings, or by using Log out in Settings, which removes your login token. If you block this storage, you will not be able to stay signed in. You can also block third-party cookies in your browser, but the Google sign-in or the payment form may stop working.</p>
+      <h2>6. Your choices</h2>
+      <p>Because we only use storage that is strictly necessary or that remembers your own settings, we do not show a cookie banner for it. You can clear local storage and cookies at any time in your browser settings, or by using Log out in Settings, which removes your login token. If you block this storage, you will not be able to stay signed in. You can also block third-party cookies in your browser, but the Google sign-in or the payment form may stop working.</p>
 
-  <h2>7. Changes</h2>
-  <p>If we start using other cookies or tracking, we will update this page and ask for your consent where the law requires it.</p>
+      <h2>7. Changes</h2>
+      <p>If we start using other cookies or tracking, we will update this page and ask for your consent where the law requires it.</p>
 
-  <h2>8. Contact</h2>
-  <p>Questions: <a href="mailto:CONTACT_EMAIL">CONTACT_EMAIL</a></p>
+      <h2>8. Contact</h2>
+      <p>Questions: <a href="mailto:mitchellakambe@gmail.com">mitchellakambe@gmail.com</a></p>
 
-  <p>See also our <a href="terms">Terms of Service</a> and <a href="privacy">Privacy Policy</a>.</p>
-
-  <a class="back" href="about">Back</a>
-  <div class="legal">
-    <a href="terms">Terms of Service</a>
-    <a href="privacy">Privacy Policy</a>
-    <a href="cookies">Cookie Policy</a>
-  </div>
+      <div class="links"><a href="about">About</a><a href="terms">Terms of Service</a><a href="privacy">Privacy Policy</a></div>
+      <div class="actions"><a class="btn" href="chat">Back to chat</a></div>
+    </article>
+  </main>
+  <div class="foot">Made by gbubemi (aka Mitchell)</div>
 </div>
-<script src="theme.js"></script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+<script>if(location.protocol==="http:"&&!/^(localhost|127\.0\.0\.1)$/.test(location.hostname))location.replace("https://"+location.host+location.pathname+location.search+location.hash);if(/\.html$/.test(location.pathname))history.replaceState(null,"",location.pathname.replace(/index\.html$/,"").replace(/\.html$/,"")+location.search+location.hash);</script>
+<title>Cookie Policy — asaplimo</title>
+<link rel="icon" type="image/png" href="icons/logo.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500&display=swap">
+<script>try{var t=localStorage.getItem("asaplimo_theme");document.documentElement.setAttribute("data-theme",t||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"))}catch(e){}</script>
+<link rel="stylesheet" href="legal.css">
+</head>
+<body>
+<nav id="rail">
+  <a class="rb" href="./" aria-label="Home" title="Home"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l9 7.5V21h-6v-6H9v6H3V10.5z"/></svg></a>
+  <span class="grow"></span>
+  <a class="rb" href="chat" aria-label="Chat" title="Chat"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg></a>
+</nav>
+<div id="shell">
+  <header>
+    <a class="crumb" href="./"><img src="icons/logo.png" alt="" width="20" height="20" style="border-radius:6px"><b>asaplimo</b></a>
+    <div class="modes"><a href="about">About</a><a href="terms">Terms</a><a href="privacy">Privacy</a><a href="cookies" class="on">Cookies</a></div>
+    <span></span>
+  </header>
+  <main>
+    <article class="doc">
+      <h1>Cookie Policy</h1>
+      <p class="date">Last updated: November 14, 2026</p>
+
+      <p>This policy explains what cookies and similar browser storage asaplimo (gbubemi.uk) uses. It is part of our <a href="privacy">Privacy Policy</a>.</p>
+
+      <h2>1. What these are</h2>
+      <p>Cookies are small files a website places on your device. Local storage is a similar feature built into your browser that lets a site save small pieces of data. Both help a site remember you between visits.</p>
+
+      <h2>2. What we store</h2>
+      <p>asaplimo itself does not set advertising or tracking cookies. It saves the following items in your browser's local storage, all needed for the Service to work or to remember your choices:</p>
+      <div class="tw">
+        <table>
+          <tr><th>Name</th><th>Purpose</th><th>Duration</th></tr>
+          <tr><td>asaplimo_session_token</td><td>Keeps you logged in so you do not have to sign in on every page.</td><td>Until you log out or clear your browser data. The login itself expires after 30 days.</td></tr>
+          <tr><td>asaplimo_theme</td><td>Remembers whether you chose light or dark mode.</td><td>Until you clear your browser data.</td></tr>
+          <tr><td>asaplimo_think</td><td>Remembers whether you turned on the Think button.</td><td>Until you clear your browser data.</td></tr>
+        </table>
+      </div>
+
+      <h2>3. Third-party cookies and storage</h2>
+      <ul>
+        <li><b>Google.</b> When you sign in, Google may set its own cookies on its sign-in pages to keep your account secure and remember your sign-in. See Google's privacy policy.</li>
+        <li><b>Stripe.</b> When you open the payment form under Settings &rsaquo; Plan, we load Stripe's payment script. Stripe may set cookies or use browser storage to process payments securely and detect fraud. See Stripe's privacy policy.</li>
+        <li><b>Fonts and icons.</b> We load fonts from Google Fonts and some icons from public content delivery networks, which may receive your IP address when they are requested.</li>
+      </ul>
+
+      <h2>4. Other data we handle</h2>
+      <p>Information we store on our servers, such as your account details and chats, is described in the <a href="privacy">Privacy Policy</a>.</p>
+
+      <h2>5. We do not use</h2>
+      <ul>
+        <li>advertising cookies;</li>
+        <li>analytics or tracking cookies;</li>
+        <li>cross-site tracking or profiling.</li>
+      </ul>
+
+      <h2>6. Your choices</h2>
+      <p>Because we only use storage that is strictly necessary or that remembers your own settings, we do not show a cookie banner for it. You can clear local storage and cookies at any time in your browser settings, or by using Log out in Settings, which removes your login token. If you block this storage, you will not be able to stay signed in. You can also block third-party cookies in your browser, but the Google sign-in or the payment form may stop working.</p>
+
+      <h2>7. Changes</h2>
+      <p>If we start using other cookies or tracking, we will update this page and ask for your consent where the law requires it.</p>
+
+      <h2>8. Contact</h2>
+      <p>Questions: <a href="mailto:mitchellakambe@gmail.com">mitchellakambe@gmail.com</a></p>
+
+      <div class="links"><a href="about">About</a><a href="terms">Terms of Service</a><a href="privacy">Privacy Policy</a></div>
+      <div class="actions"><a class="btn" href="chat">Back to chat</a></div>
+    </article>
+  </main>
+  <div class="foot">Made by gbubemi (aka Mitchell)</div>
+</div>
 </body>
 </html>
