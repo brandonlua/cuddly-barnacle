@@ -8,6 +8,7 @@
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500&family=JetBrains+Mono:wght@400;500&display=swap">
 <script>try{var t=localStorage.getItem("asaplimo_theme");document.documentElement.setAttribute("data-theme",t||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"))}catch(e){}</script>
+<script>if(/\.html$/.test(location.pathname))history.replaceState(null,"",location.pathname.replace(/index\.html$/,"").replace(/\.html$/,"")+location.search+location.hash);</script>
 <style>
 :root{--bg:#ffffff;--rail:#f1f0ec;--panel:#f6f5f2;--side:#f6f5f2;--hover:#e9e7e1;--line:#e2dfd6;--text:#1f1e1d;--dim:#66645d;--faint:#99968d;--accent:#4f5fe0;--userbg:#f3f2ee;--code:#f6f5f2;--codefg:#0f8a6a;--dot:#e8613c}
 :root[data-theme="dark"]{--bg:#0f0f0f;--rail:#0a0a0a;--panel:#1a1a1a;--side:#141414;--hover:#222222;--line:#262626;--text:#ececea;--dim:#a3a29c;--faint:#6f6e69;--accent:#7b88ff;--userbg:#171717;--code:#131313;--codefg:#2fd3a4;--dot:#f0623c}
@@ -92,13 +93,18 @@ header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8p
 .m.user .uact{display:flex;align-items:center;gap:6px;padding-right:4px;color:var(--faint);font-size:12px}
 .ucopy{color:var(--faint);padding:4px 6px;border-radius:7px;display:grid;place-items:center;font-size:12px}
 .ucopy:hover{background:var(--hover);color:var(--text)}
-.pcards{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;max-width:85%}
-.pcard{position:relative;width:150px;height:118px;display:flex;flex-direction:column;justify-content:space-between;text-align:left;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:var(--userbg);overflow:hidden;cursor:pointer}
-.pcard:hover{border-color:var(--faint)}
-.pcard .pv{font:11px/1.4 "JetBrains Mono",monospace;color:var(--dim);overflow:hidden;white-space:pre-wrap;overflow-wrap:anywhere;max-height:68px;-webkit-mask-image:linear-gradient(#000 60%,transparent);mask-image:linear-gradient(#000 60%,transparent)}
-.pcard .pb{align-self:flex-start;font-size:10.5px;letter-spacing:.04em;padding:2px 8px;border:1px solid var(--line);border-radius:7px;color:var(--dim);background:var(--bg)}
-.pcard .px{position:absolute;top:6px;right:6px;width:20px;height:20px;border-radius:50%;background:var(--bg);border:1px solid var(--line);color:var(--dim);display:grid;place-items:center;font-size:13px;line-height:1}
-#pchips{display:flex;flex-wrap:wrap;gap:8px;padding:0 6px 8px}
+.pcards{display:flex;flex-direction:column;align-items:flex-end;gap:8px;max-width:100%}
+.pcard{position:relative;display:flex;align-items:center;gap:12px;width:270px;max-width:100%;text-align:left;padding:10px 14px;border:1px solid var(--line);border-radius:14px;background:var(--panel);cursor:pointer;transition:background .12s,border-color .12s}
+.pcard:hover{background:var(--hover)}
+.pcard.on{background:var(--hover);border-color:var(--faint)}
+.pcard .dic{width:40px;height:40px;border-radius:10px;background:var(--bg);border:1px solid var(--line);display:grid;place-items:center;color:var(--dim);flex-shrink:0}
+.pcard.on .dic{color:var(--accent)}
+.pcard .dt{display:flex;flex-direction:column;min-width:0;line-height:1.35}
+.pcard .dt b{font-weight:500;font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pcard .dt small{color:var(--faint);font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pcard .px{position:absolute;top:-7px;right:-7px;width:20px;height:20px;border-radius:50%;background:var(--bg);border:1px solid var(--line);color:var(--dim);display:grid;place-items:center;font-size:13px;line-height:1}
+.pcard .px:hover{color:var(--text);background:var(--hover)}
+#pchips{display:flex;flex-wrap:wrap;gap:12px;padding:8px 8px 10px}
 .dcard{display:flex;align-items:center;gap:12px;width:100%;max-width:420px;text-align:left;margin:.4em 0 1em;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:var(--panel);transition:background .12s,border-color .12s}
 .dcard:hover{background:var(--hover)}
 .dcard.on{background:var(--hover);border-color:var(--faint)}
@@ -138,6 +144,8 @@ header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8p
 .bub li{margin-bottom:.25em}
 .bub h4{font:500 17px "Source Serif 4",Georgia,serif;margin:1em 0 .4em}
 .bub strong{font-weight:600}
+.bub a{color:var(--accent);text-decoration:underline;text-underline-offset:2px;text-decoration-thickness:1px;overflow-wrap:anywhere}
+.bub a:hover{text-decoration-thickness:2px}
 .bub code{background:var(--code);border:1px solid var(--line);color:var(--codefg);padding:2px 6px;border-radius:6px;font:13.5px "JetBrains Mono",monospace}
 .code{margin:.6em 0 1em;border:1px solid var(--line);border-radius:14px;background:var(--code);overflow:hidden}
 .chead{display:flex;justify-content:space-between;align-items:center;padding:8px 10px 2px 16px;color:var(--faint);font-size:12.5px}
@@ -548,7 +556,7 @@ async function api(path,opt){
   const o=opt||{};
   o.headers=Object.assign({Authorization:"Bearer "+tok()},o.headers||{});
   const r=await fetch(API+path,o);
-  if(r.status===401){location.href="index.html";throw new Error("auth")}
+  if(r.status===401){location.href="./";throw new Error("auth")}
   return r;
 }
 function theme(t){
@@ -562,10 +570,26 @@ document.querySelectorAll("[data-th]").forEach(b=>b.onclick=()=>theme(b.dataset.
 function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
 function inline(s){
   s=esc(s);
-  const codes=[];
+  const codes=[],links=[];
   s=s.replace(/`([^`\n]+)`/g,(m,c)=>{codes.push(c);return "\u0000"+(codes.length-1)+"\u0000"});
+  s=s.replace(/\[([^\]\n]+)\]\((https?:\/\/[^\s)"]+)\)|(https?:\/\/(?:(?!&lt;|&gt;)[^\s"])+)/g,(m,label,mdUrl,bare)=>{
+    let url=mdUrl||bare,text=label||"",tail="";
+    if(bare){
+      for(;;){
+        const c=url.slice(-1);
+        const open=(url.match(/\(/g)||[]).length,close=(url.match(/\)/g)||[]).length;
+        if(/[.,;:!?'*\]]/.test(c)||(c===")"&&close>open)){tail=c+tail;url=url.slice(0,-1)}
+        else break;
+      }
+      if(!/^https?:\/\/[^\s/]+/.test(url))return m;
+      text=url;
+    }
+    links.push('<a href="'+url+'" target="_blank" rel="noopener noreferrer">'+text+'</a>');
+    return "\u0001"+(links.length-1)+"\u0001"+tail;
+  });
   s=s.replace(/\*\*([^*\n]+)\*\*/g,"<strong>$1</strong>");
   s=s.replace(/(^|[^*\w])\*([^*\n]+)\*(?!\*)/g,"$1<em>$2</em>");
+  s=s.replace(/\u0001(\d+)\u0001/g,(m,i)=>links[i]);
   return s.replace(/\u0000(\d+)\u0000/g,(m,i)=>"<code>"+codes[i]+"</code>");
 }
 function block(t){
@@ -601,11 +625,11 @@ function docCard(attrs,body){
 }
 function pcardEl(content,rm){
   const i=docs.push({title:"Pasted text",ext:"txt",content})-1;
+  const n=content.split("\n").length;
   const d=document.createElement("div");
   d.className="pcard";d.dataset.doc=i;d.tabIndex=0;d.setAttribute("role","button");
-  const v=document.createElement("div");v.className="pv";v.textContent=content.slice(0,400);
-  const b=document.createElement("span");b.className="pb";b.textContent="PASTED";
-  d.appendChild(v);d.appendChild(b);
+  d.setAttribute("aria-label","Open pasted text");
+  d.innerHTML='<span class="dic">'+FILEL+'</span><span class="dt"><b>Pasted text</b><small>'+n.toLocaleString()+' lines &middot; Click to open</small></span>';
   if(rm){
     const x=document.createElement("button");
     x.type="button";x.className="px";x.setAttribute("aria-label","Remove");x.innerHTML="&times;";
@@ -765,6 +789,7 @@ function typing(){
 }
 function flash(btn){const h=btn.innerHTML;btn.textContent="Copied";setTimeout(()=>{btn.innerHTML=h},1500)}
 $("thread").addEventListener("click",e=>{
+  if(e.target.closest("a"))return;
   const dc=e.target.closest("[data-doc]");
   if(dc){openViewer(+dc.dataset.doc);return}
   const uc=e.target.closest(".ucopy");
@@ -773,6 +798,17 @@ $("thread").addEventListener("click",e=>{
   if(!btn)return;
   const txt=btn.closest(".code").querySelector("pre").textContent;
   navigator.clipboard.writeText(txt).then(()=>flash(btn)).catch(()=>{});
+});
+$("pchips").addEventListener("click",e=>{
+  if(e.target.closest(".px"))return;
+  const dc=e.target.closest("[data-doc]");
+  if(dc)openViewer(+dc.dataset.doc);
+});
+document.addEventListener("keydown",e=>{
+  if((e.key==="Enter"||e.key===" ")&&e.target.classList&&e.target.classList.contains("pcard")){
+    e.preventDefault();
+    openViewer(+e.target.dataset.doc);
+  }
 });
 let vdoc=null,vmode="preview";
 function previewable(d){return WEBEXT.includes(d.ext)||d.ext==="md"||d.ext==="markdown"}
@@ -810,6 +846,9 @@ function paintPanel(){
     pc.scrollTop=0;
   }
 }
+function markOpen(i){
+  document.querySelectorAll(".dcard,.pcard").forEach(c=>c.classList.toggle("on",i!==null&&+c.dataset.doc===i));
+}
 function openViewer(i){
   const d=docs[i];
   if(!d)return;
@@ -817,7 +856,7 @@ function openViewer(i){
   vmode=previewable(d)?"preview":"code";
   $("panel").hidden=false;
   paintPanel();
-  document.querySelectorAll(".dcard").forEach(c=>c.classList.toggle("on",+c.dataset.doc===i));
+  markOpen(i);
 }
 function closePanel(){
   $("panel").hidden=true;
@@ -825,7 +864,7 @@ function closePanel(){
   $("pmenu").hidden=true;
   $("pview").innerHTML="";
   vdoc=null;
-  document.querySelectorAll(".dcard.on").forEach(c=>c.classList.remove("on"));
+  markOpen(null);
 }
 $("pclose").onclick=closePanel;
 $("pexp").onclick=()=>$("shell").classList.toggle("pwide");
@@ -938,7 +977,7 @@ $("collapse").onclick=()=>{if(matchMedia("(max-width:760px)").matches)closeSide(
 $("scrim").onclick=closeSide;
 $("sbtn").onclick=()=>{$("q").hidden=!$("q").hidden;if(!$("q").hidden)$("q").focus();else{$("q").value="";renderList()}};
 $("q").oninput=renderList;
-async function logout(){try{await api("/api/logout",{method:"POST"})}catch(e){}try{localStorage.removeItem(TK)}catch(e){}location.href="index.html"}
+async function logout(){try{await api("/api/logout",{method:"POST"})}catch(e){}try{localStorage.removeItem(TK)}catch(e){}location.href="./"}
 $("out2").onclick=logout;
 $("ageout").onclick=logout;
 
@@ -1170,7 +1209,7 @@ function applyMe(){
 }
 async function refreshMe(){
   const r=await api("/api/me"),d=await r.json();
-  if(!d.authenticated){location.href="index.html";return}
+  if(!d.authenticated){location.href="./";return}
   me=d;applyMe();
 }
 setInterval(()=>{
@@ -1301,6 +1340,15 @@ $("think").onclick=()=>{
 let pend=[];
 function drawPend(){$("pchips").hidden=!pend.length}
 function upd(){$("send").disabled=busy||ended||(!limited&&!inp.value.trim()&&!img&&!pend.length)}
+function addPend(t){
+  const el=pcardEl(t,d=>{
+    pend=pend.filter(p=>p.el!==d);d.remove();drawPend();upd();
+    if(vdoc&&+d.dataset.doc===docs.indexOf(vdoc))closePanel();
+  });
+  pend.push({text:t,el});
+  $("pchips").appendChild(el);
+  drawPend();upd();
+}
 inp.addEventListener("paste",e=>{
   if(ended){e.preventDefault();return}
   if(limited){e.preventDefault();showLimit();return}
@@ -1318,10 +1366,7 @@ inp.addEventListener("paste",e=>{
   const t=cd.getData("text");
   if(t&&t.split("\n").length>LONG){
     e.preventDefault();
-    const el=pcardEl(t,d=>{pend=pend.filter(p=>p.el!==d);d.remove();drawPend();upd()});
-    pend.push({text:t,el});
-    $("pchips").appendChild(el);
-    drawPend();upd();
+    addPend(t);
   }
 });
 function grow(){inp.style.height="auto";inp.style.height=Math.min(inp.scrollHeight,200)+"px"}
@@ -1352,13 +1397,7 @@ const TXT=/\.(txt|md|js|mjs|ts|jsx|tsx|json|html|css|py|java|c|cpp|h|cs|go|rs|rb
 function takeText(f){
   if(!f||f.size>2e6)return;
   const rd=new FileReader();
-  rd.onload=()=>{
-    const t=String(rd.result);
-    const el=pcardEl(t,d=>{pend=pend.filter(p=>p.el!==d);d.remove();drawPend();upd()});
-    pend.push({text:t,el});
-    $("pchips").appendChild(el);
-    drawPend();upd();
-  };
+  rd.onload=()=>addPend(String(rd.result));
   rd.readAsText(f);
 }
 function takeImage(f){
@@ -1412,6 +1451,7 @@ async function send(){
   busy=true;
   const um=add("user",text||"(image)",null,clock(new Date()));
   const sent=img;
+  if(vdoc&&vdoc.title==="Pasted text")closePanel();
   pend=[];$("pchips").innerHTML="";drawPend();
   inp.value="";grow();clearImg();upd();
   const t=typing();
@@ -1452,7 +1492,7 @@ async function send(){
 }
 
 async function init(){
-  if(!tok()){location.href="index.html";return}
+  if(!tok()){location.href="./";return}
   try{
     await refreshMe();
     theme(document.documentElement.getAttribute("data-theme")||"light");
@@ -1462,7 +1502,7 @@ async function init(){
     $("app").classList.add("on");
     loadConvs();loadModels();
     if(!limited&&me.age)inp.focus();
-  }catch(e){if(e.message!=="auth")location.href="index.html"}
+  }catch(e){if(e.message!=="auth")location.href="./"}
 }
 init();
 </script>
